@@ -111,6 +111,12 @@ COINDAEMON_TRUSTED_PORT = 8332 # RPC port
 COINDAEMON_TRUSTED_USER = 'stratum'
 COINDAEMON_TRUSTED_PASSWORD = '***somepassword***'
 
+# Coin Algorithm is the option used to determine the algortithm used by stratum
+# This currently only works with POW SHA256 and Scrypt Coins
+# The available options are scrypt and sha256d.
+# If the option does not meet either of these criteria stratum defaults to scrypt
+COINDAEMON_ALGO = 'scrypt'
+
 # ******************** OTHER CORE SETTINGS *********************
 # Use "echo -n '<yourpassword>' | sha256sum | cut -f1 -d' ' "
 # for calculating SHA256 of your preferred password
