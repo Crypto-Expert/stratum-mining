@@ -15,7 +15,14 @@ from Crypto.Hash import SHA256
 from twisted.internet.protocol import Protocol
 from util import *
 
-import ltc_scrypt
+import settings
+if settings.COINDAEMON_ALGO == 'scrypt':
+	print("########################################### Loading LTC Scrypt Module #########################################################")
+	import ltc_scrypt
+else: 
+	print("########################################### NOT Loading LTC Scrypt Module ######################################################")
+	pass
+
 import lib.logger
 log = lib.logger.get_logger('halfnode')
 
@@ -174,7 +181,9 @@ class CBlock(object):
         self.nNonce = 0
         self.vtx = []
         self.sha256 = None
-        self.scrypt = None
+	if settings.COINDAEMON_ALGO == 'scrypt':
+	        self.scrypt = None
+	else: pass
     def deserialize(self, f):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
         self.hashPrevBlock = deser_uint256(f)
@@ -193,37 +202,45 @@ class CBlock(object):
         r.append(struct.pack("<I", self.nNonce))
         r.append(ser_vector(self.vtx))
         return ''.join(r)
-    def calc_sha256(self):
-        if self.sha256 is None:
-            r = []
-            r.append(struct.pack("<i", self.nVersion))
-            r.append(ser_uint256(self.hashPrevBlock))
-            r.append(ser_uint256(self.hashMerkleRoot))
-            r.append(struct.pack("<I", self.nTime))
-            r.append(struct.pack("<I", self.nBits))
-            r.append(struct.pack("<I", self.nNonce))
-            self.sha256 = uint256_from_str(SHA256.new(SHA256.new(''.join(r)).digest()).digest())
-        return self.sha256
 
-    def calc_scrypt(self):
-        if self.scrypt is None:
-            r = []
-            r.append(struct.pack("<i", self.nVersion))
-            r.append(ser_uint256(self.hashPrevBlock))
-            r.append(ser_uint256(self.hashMerkleRoot))
-            r.append(struct.pack("<I", self.nTime))
-            r.append(struct.pack("<I", self.nBits))
-            r.append(struct.pack("<I", self.nNonce))
-            self.scrypt = uint256_from_str(ltc_scrypt.getPoWHash(''.join(r)))
-        return self.scrypt
+    if settings.COINDAEMON_ALGO == 'scrypt':
+       def calc_scrypt(self):
+           if self.scrypt is None:
+               r = []
+               r.append(struct.pack("<i", self.nVersion))
+               r.append(ser_uint256(self.hashPrevBlock))
+               r.append(ser_uint256(self.hashMerkleRoot))
+               r.append(struct.pack("<I", self.nTime))
+               r.append(struct.pack("<I", self.nBits))
+               r.append(struct.pack("<I", self.nNonce))
+               self.scrypt = uint256_from_str(ltc_scrypt.getPoWHash(''.join(r)))
+           return self.scrypt
+    else:
+       def calc_sha256(self):
+           if self.sha256 is None:
+               r = []
+               r.append(struct.pack("<i", self.nVersion))
+               r.append(ser_uint256(self.hashPrevBlock))
+               r.append(ser_uint256(self.hashMerkleRoot))
+               r.append(struct.pack("<I", self.nTime))
+               r.append(struct.pack("<I", self.nBits))
+               r.append(struct.pack("<I", self.nNonce))
+               self.sha256 = uint256_from_str(SHA256.new(SHA256.new(''.join(r)).digest()).digest())
+           return self.sha256
+
 
     def is_valid(self):
-        #self.calc_sha256()
-        self.calc_scrypt()
+	if settings.COINDAEMON_ALGO == 'scrypt':
+	   self.calc_scrypt()
+        else:
+	   self.calc_sha256()
         target = uint256_from_compact(self.nBits)
-        #if self.sha256 > target:
-        if self.scrypt > target:
-            return False
+        if settings.COINDAEMON_ALGO == 'scrypt':
+	   if self.scrypt > target:
+	   	return false
+	else:
+	   if self.sha256 > target:
+           	return False
         hashes = []
         for tx in self.vtx:
             tx.sha256 = None
