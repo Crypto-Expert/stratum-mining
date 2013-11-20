@@ -23,7 +23,7 @@ class BitcoinRPCManager(object):
 	self.conns[0] = BitcoinRPC(settings.COINDAEMON_TRUSTED_HOST,
                              settings.COINDAEMON_TRUSTED_PORT,
                    	     settings.COINDAEMON_TRUSTED_USER,
-                             settings.COINDAEMIN_TRUSTED_PASSWORD)
+                             settings.COINDAEMON_TRUSTED_PASSWORD)
 	self.curr_conn = 0
 	for x in range (1, 99):
 	    if hasattr(settings, 'COINDAEMON_TRUSTED_HOST_' + str(x)) and hasattr(settings, 'COINDAEMON_TRUSTED_PORT_' + str(x)) and hasattr(settings, 'COINDAEMON_TRUSTED_USER_' + str(x)) and hasattr(settings, 'COINDAEMON_TRUSTED_PASSWORD_' + str(x)):

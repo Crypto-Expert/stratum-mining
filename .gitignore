@@ -1,0 +1,4 @@
+*.pyc
+conf/config.py
+*.log
+LOG
