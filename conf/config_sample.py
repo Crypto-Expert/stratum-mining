@@ -16,6 +16,12 @@ COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
+# Coin Algorithm is the option used to determine the algortithm used by stratum
+# This currently only works with POW SHA256 and Scrypt Coins
+# The available options are scrypt and sha256d.
+# If the option does not meet either of these criteria stratum defaults to scrypt
+COINDAEMON_ALGO = 'scrypt'
+
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
@@ -61,7 +67,7 @@ ENABLE_EXAMPLE_SERVICE = False
 HOSTNAME = 'localhost'
 
 # Port used for Socket transport. Use 'None' for disabling the transport.
-LISTEN_SOCKET_TRANSPORT = 3333
+LISTEN_SOCKET_TRANSPORT = 3313
 # Port used for HTTP Poll transport. Use 'None' for disabling the transport
 LISTEN_HTTP_TRANSPORT = None
 # Port used for HTTPS Poll transport
@@ -142,6 +148,13 @@ VDIFF_VARIANCE_PERCENT = 20	# Allow average time to very this % from target with
 # For block confirmation, we have an option to send the block hash in 
 # Please make sure your front end is compatible with the block hash in the solutions table. 
 # For People using the MPOS frontend enabling this is recommended. It allows the frontend to compare the block hash to the coin daemon reducing the liklihood of missing share error's for blocks
-SOLUTION_BLOCK_HASH = False # If enabled, enter the block hash. If false enter the scrypt/sha hash into the shares table 
+SOLUTION_BLOCK_HASH = True # If enabled, enter the block hash. If false enter the scrypt/sha hash into the shares table 
 
-
+# ******************** Getwork Proxy Settings *********************
+# This enables a copy of slush's getwork proxy for old clients
+# It will also auto-redirect new clients to the stratum interface
+# so you can point ALL clients to: http://<yourserver>:<GW_PORT>
+GW_ENABLE = True    # Enable the Proxy
+GW_PORT = 3333      # Getwork Proxy Port
+GW_DISABLE_MIDSTATE = False  # Disable midstate's (Faster but breaks some clients)
+GW_SEND_REAL_TARGET = True  # Propigate >1 difficulty to Clients (breaks some clients)

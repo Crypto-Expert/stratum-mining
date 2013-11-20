@@ -34,3 +34,7 @@ Interfaces.set_worker_manager(WorkerManagerInterface())
 Interfaces.set_timestamper(TimestamperInterface())
 
 mining.setup(on_startup)
+
+if settings.GW_ENABLE == True :
+    from lib.getwork_proxy import GetworkProxy
+    GetworkProxy(on_startup)
