@@ -124,7 +124,6 @@ class BitcoinRPCManager(object):
 	    except:
 		self.next_connection()
 	
-
     def getdifficulty(self):
 	while True:
 	    try:

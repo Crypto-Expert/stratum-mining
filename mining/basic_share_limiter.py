@@ -125,7 +125,7 @@ class BasicShareLimiter(object):
                 ddiff = 1
             # Don't go above LITECOIN or VDIFF_MAX_TARGET
             self.update_litecoin_difficulty()
-            if settings.USE_LITECOIN_DIFF:
+            if settings.USE_COINDAEMON_DIFF:
                 diff_max = min([settings.VDIFF_MAX_TARGET, self.litecoin_diff])
             else:
                 diff_max = settings.VDIFF_MAX_TARGET
