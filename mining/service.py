@@ -7,6 +7,9 @@ from stratum.pubsub import Pubsub
 from interfaces import Interfaces
 from subscription import MiningSubscription
 from lib.exceptions import SubmitException
+import DBInterface
+dbi = DBInterface.DBInterface()
+dbi.init_main()
 
 import lib.logger
 log = lib.logger.get_logger('mining')
@@ -29,7 +32,8 @@ class MiningService(GenericService):
         See blocknotify.sh in /scripts/ for more info.'''
         
         log.info("New block notification received")
-        Interfaces.template_registry.update_block()
+        dbi.do_import(self, dbi, True)
+	Interfaces.template_registry.update_block()
         return True 
 
     @admin
