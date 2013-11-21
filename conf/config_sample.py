@@ -20,8 +20,12 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 # This currently only works with POW SHA256 and Scrypt Coins
 # The available options are scrypt and sha256d.
 # If the option does not meet either of these criteria stratum defaults to scrypt
+# Until AutoReward Selecting Code has been implemented the below options are used to select the type of coin
+# For Reward type there is POW and POS. please ensure you choose the currect type.
+# For SHA256 PoS Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
-
+COINDAEMON_Reward = 'POW'
+COINDAEMON_SHA256_TX = 'no'
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99

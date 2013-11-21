@@ -144,6 +144,14 @@ class CTransaction(object):
         	self.vout = []
         	self.nLockTime = 0
         	self.sha256 = None
+	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+		self.nVersion = 1
+		self.nTime = 0
+		self.vin = []
+		self.vout = []
+		self.nLockTime = 0
+		self.sha256 = None
+		self.strTxComment = ""
 	else: 
 		self.nVersion = 1
  		self.nTime = 0
@@ -158,7 +166,15 @@ class CTransaction(object):
 	        self.vout = deser_vector(f, CTxOut)
 	        self.nLockTime = struct.unpack("<I", f.read(4))[0]
 	        self.sha256 = None
-    	else:
+    	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+		self.nVersion = struct.unpack("<i", f.read(4))[0]
+                self.nTime = struct.unpack("<i", f.read(4))[0]
+                self.vin = deser_vector(f, CTxIn)
+                self.vout = deser_vector(f, CTxOut)
+                self.nLockTime = struct.unpack("<I", f.read(4))[0]
+                self.sha256 = None
+		self.strTxComment = deser_string(f)
+	else:
 		self.nVersion = struct.unpack("<i", f.read(4))[0]
 	        self.nTime = struct.unpack("<i", f.read(4))[0]
 	        self.vin = deser_vector(f, CTxIn)
@@ -173,6 +189,15 @@ class CTransaction(object):
 	        r += ser_vector(self.vout)
 	        r += struct.pack("<I", self.nLockTime)
         	return r
+	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+		r = ""
+                r += struct.pack("<i", self.nVersion)
+                r += struct.pack("<i", self.nTime)
+                r += ser_vector(self.vin)
+                r += ser_vector(self.vout)
+                r += struct.pack("<I", self.nLockTime)
+		r += ser_string(self.strTxComment)
+                return r
 	else:
 		r = ""
 	        r += struct.pack("<i", self.nVersion)
