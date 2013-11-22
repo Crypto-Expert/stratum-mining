@@ -25,14 +25,14 @@ else:
 
 if settings.COINDAEMON_Reward == 'POS':
         print("########################################### Loading POS Support #########################################################")
-        import ltc_scrypt
+        pass
 else:
         print("########################################### NOT Loading POS Support ######################################################")
         pass
 
 if settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SH256_TX == 'yes':
         print("########################################### Loading SHA256 Transaction Message Support #########################################################")
-        import ltc_scrypt
+        pass
 else:
         print("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
         pass
