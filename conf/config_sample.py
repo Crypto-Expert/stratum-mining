@@ -162,3 +162,12 @@ GW_ENABLE = True    # Enable the Proxy
 GW_PORT = 3333      # Getwork Proxy Port
 GW_DISABLE_MIDSTATE = False  # Disable midstate's (Faster but breaks some clients)
 GW_SEND_REAL_TARGET = True  # Propigate >1 difficulty to Clients (breaks some clients)
+
+# ******************** E-Mail Notification Settings *********************
+NOTIFY_EMAIL_TO = ''    # Where to send Start/Found block notifications
+NOTIFY_EMAIL_TO_DEADMINER = ''  # Where to send dead miner notifications
+NOTIFY_EMAIL_FROM = 'root@localhost'  # Sender address
+NOTIFY_EMAIL_SERVER = 'localhost'  # E-Mail Sender
+NOTIFY_EMAIL_USERNAME = ''    # E-Mail server SMTP Logon
+NOTIFY_EMAIL_PASSWORD = ''
+NOTIFY_EMAIL_USETLS = True
