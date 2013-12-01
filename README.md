@@ -22,6 +22,12 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 * Adjustable database commit parameters
 * Bypass password check for workers
 
+#Donations 
+* BTC:  18uj5SzQaYVAPX96JZt1VE4K43m5VeYekP
+* BTE:  8UJLskr8eDYATvYzmaCBw3vbRmeNweT3rW
+* DGC:  D6tdmDCUkZEUaUyLx4dhZH992yTEJSL1tU
+* LTC:  LVDbDHPUF13YZQeJE6AtxDwiF2RyNBsmXh
+* WDC: WeVFgZQsKSKXGak7NJPp9SrcUexghzTPGJ
 
 #Requirements
 *stratum-mining* is built in python. I have been testing it with 2.7.3, but it should work with other versions. The requirements for running the software are below.
@@ -34,8 +40,8 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 
 Other coins have been known to work with this implementation. I have tested with the following coins, but there may be many others that work. 
 
-*Orbitcoin
-*FireFlyCoin
+* Orbitcoin.
+* FireFlyCoin.
 
 #Installation
 
