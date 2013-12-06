@@ -5,6 +5,8 @@ import StringIO
 import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
 	import ltc_scrypt
+elif settings.COINDAEMON_ALGO == 'quark':
+        import quark_hash
 else: pass
 from twisted.internet import defer
 from lib.exceptions import SubmitException
@@ -145,6 +147,8 @@ class TemplateRegistry(object):
         '''Converts difficulty to target'''
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	       	diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
+        elif settings.COINDAEMON_ALGO == 'quark':
+                diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
         else:   diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
 	return diff1 / difficulty
     
@@ -229,12 +233,16 @@ class TemplateRegistry(object):
         # 4. Reverse header and compare it with target of the user
 	if settings.COINDAEMON_ALGO == 'scrypt':
 		hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+        elif settings.COINDAEMON_ALGO == 'quark':
+                hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         else: 	hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	      	header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
+        elif settings.COINDAEMON_ALGO == 'quark':
+                header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
         else: pass        
                  
         target_user = self.diff_to_target(difficulty)        

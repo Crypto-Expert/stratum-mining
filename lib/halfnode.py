@@ -19,6 +19,9 @@ import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
 	print("########################################### Loading LTC Scrypt Module #########################################################")
 	import ltc_scrypt
+elif settings.COINDAEMON_ALGO == 'quark':
+        print("########################################### Loading Quark Module #########################################################")
+        import quark_hash
 else: 
 	print("########################################### NOT Loading LTC Scrypt Module ######################################################")
 	pass
@@ -246,6 +249,8 @@ class CBlock(object):
         self.sha256 = None
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	        self.scrypt = None
+        elif settings.COINDAEMON_ALGO == 'quark':
+                self.quark = None
 	else: pass
 	if settings.COINDAEMON_Reward == 'POS':
 		self.signature = b""
@@ -288,6 +293,18 @@ class CBlock(object):
                r.append(struct.pack("<I", self.nNonce))
                self.scrypt = uint256_from_str(ltc_scrypt.getPoWHash(''.join(r)))
            return self.scrypt
+    elif settings.COINDAEMON_ALGO == 'quark':
+       def calc_quark(self):
+           if self.quark is None:
+               r = []
+               r.append(struct.pack("<i", self.nVersion))
+               r.append(ser_uint256(self.hashPrevBlock))
+               r.append(ser_uint256(self.hashMerkleRoot))
+               r.append(struct.pack("<I", self.nTime))
+               r.append(struct.pack("<I", self.nBits))
+               r.append(struct.pack("<I", self.nNonce))
+               self.quark = uint256_from_str(quark_hash.getPoWHash(''.join(r)))
+           return self.quark
     else:
        def calc_sha256(self):
            if self.sha256 is None:
@@ -305,12 +322,17 @@ class CBlock(object):
     def is_valid(self):
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	   self.calc_scrypt()
+        elif settings.COINDAEMON_ALGO == 'quark':
+           self.calc_quark()
         else:
 	   self.calc_sha256()
         target = uint256_from_compact(self.nBits)
         if settings.COINDAEMON_ALGO == 'scrypt':
 	   if self.scrypt > target:
 	   	return false
+        elif settings.COINDAEMON_ALGO == 'quark':
+           if self.quark > target:
+                return false
 	else:
 	   if self.sha256 > target:
            	return False
