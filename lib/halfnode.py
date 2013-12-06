@@ -322,7 +322,7 @@ class CBlock(object):
     def is_valid(self):
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	   self.calc_scrypt()
-        if settings.COINDAEMON_ALGO == 'quark':
+        elif settings.COINDAEMON_ALGO == 'quark':
            self.calc_quark()
         else:
 	   self.calc_sha256()
