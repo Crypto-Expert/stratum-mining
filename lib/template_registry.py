@@ -5,7 +5,7 @@ import StringIO
 import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
 	import ltc_scrypt
-elif settings.MAIN_COIN_ALGORITHM  == 'scrypt-jane':
+elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
 	import yac_scrypt
 else: pass
 from twisted.internet import defer
