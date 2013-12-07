@@ -30,7 +30,7 @@ else:
         print("########################################### NOT Loading POS Support ######################################################")
         pass
 
-if settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SH256_TX == 'yes':
+if settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
         print("########################################### Loading SHA256 Transaction Message Support #########################################################")
         pass
 else:
