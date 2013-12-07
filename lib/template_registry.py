@@ -5,6 +5,8 @@ import StringIO
 import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
 	import ltc_scrypt
+elif settings.MAIN_COIN_ALGORITHM  == 'scrypt-jane':
+	import yac_scrypt
 else: pass
 from twisted.internet import defer
 from lib.exceptions import SubmitException
@@ -170,7 +172,7 @@ class TemplateRegistry(object):
         return j
         
     def submit_share(self, job_id, worker_name, session, extranonce1_bin, extranonce2, ntime, nonce,
-                     difficulty):
+                     difficulty, submit_time):
         '''Check parameters and finalize block template. If it leads
            to valid block candidate, asynchronously submits the block
            back to the bitcoin network.
@@ -229,11 +231,13 @@ class TemplateRegistry(object):
         # 4. Reverse header and compare it with target of the user
 	if settings.COINDAEMON_ALGO == 'scrypt':
 		hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+	elif settings.MAIN_COIN_ALGORITHM  == 'scrypt-jane':
+		hash_bin = yac_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))        
         else: 	hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
-	if settings.COINDAEMON_ALGO == 'scrypt':
+	if not settings.COINDAEMON_ALGO == 'sha256d':
 	      	header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
         else: pass        
                  
@@ -242,6 +246,10 @@ class TemplateRegistry(object):
 		( 'prev_jobid' not in session or session['prev_jobid'] < job_id \
 		or 'prev_diff' not in session or hash_int > self.diff_to_target(session['prev_diff']) ):
             raise SubmitException("Share is above target")
+
+        if hash_int > target_user and 'prev_ts' in session \
+        and (submit_time - session['prev_ts']) > settings.VDIFF_RETARGET_REJECT_TIME:
+            raise SubmitException("Stale-share above target")
 
         # Mostly for debugging purposes
         target_info = self.diff_to_target(100000)
