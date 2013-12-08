@@ -89,7 +89,6 @@ PASSWORD_SALT = 'some_crazy_string'
 # ******************** Database  *********************
 
 DATABASE_DRIVER = 'sqlite'        # Options: none, sqlite, postgresql or mysql
-DATABASE_EXTEND = True                # False = pushpool db layout, True = pushpool + extra columns
 
 # SQLite
 DB_SQLITE_FILE = 'pooldb.sqlite'
