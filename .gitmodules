@@ -7,6 +7,3 @@
 [submodule "externals/stratum"]
 	path = externals/stratum
 	url = https://github.com/slush0/stratum.git
-[submodule "externals/quarkcoin-hash"]
-	path = externals/quarkcoin-hash
-	url = https://github.com/Neisklar/quarkcoin-hash-python
