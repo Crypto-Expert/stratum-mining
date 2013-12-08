@@ -43,8 +43,28 @@ class DBInterface():
             log.debug("DB_Mysql_Vardiff INIT")
             import DB_Mysql_Vardiff
             return DB_Mysql_Vardiff.DB_Mysql_Vardiff()
-        else:  
+        elif settings.DATABASE_DRIVER == "sqlite":
+            log.debug('DB_Sqlite INIT')
+            import DB_Sqlite
+            return DB_Sqlite.DB_Sqlite()
+        elif settings.DATABASE_DRIVER == "mysql":
             log.debug('DB_Mysql INIT')
+            import DB_Mysql
+            return DB_Mysql.DB_Mysql()
+        elif settings.DATABASE_DRIVER == "postgresql":
+            log.debug('DB_Postgresql INIT')
+            import DB_Postgresql
+            return DB_Postgresql.DB_Postgresql()
+        elif settings.DATABASE_DRIVER == "none":
+            log.debug('DB_None INIT')
+            import DB_None
+            return DB_None.DB_None()
+        else:
+            log.error('Invalid DATABASE_DRIVER -- using NONE')
+            log.debug('DB_None INIT')
+            import DB_None
+            return DB_None.DB_None()
+	    log.debug('DB_Mysql INIT')
             import DB_Mysql
             return DB_Mysql.DB_Mysql()
 
@@ -55,7 +75,9 @@ class DBInterface():
 
     def scheduleImport(self):
         # This schedule's the Import
-        use_thread = True
+        if settings.DATABASE_DRIVER == "sqlite":
+        	use_thread = False
+	else:   use_thread = True
         
         if use_thread:
             self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import_thread)

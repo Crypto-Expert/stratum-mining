@@ -88,11 +88,23 @@ PASSWORD_SALT = 'some_crazy_string'
 
 # ******************** Database  *********************
 
+DATABASE_DRIVER = 'sqlite'        # Options: none, sqlite, postgresql or mysql
+DATABASE_EXTEND = True                # False = pushpool db layout, True = pushpool + extra columns
+
+# SQLite
+DB_SQLITE_FILE = 'pooldb.sqlite'
+# Postgresql
+DB_PGSQL_HOST = 'localhost'
+DB_PGSQL_DBNAME = 'pooldb'
+DB_PGSQL_USER = 'pooldb'
+DB_PGSQL_PASS = '**empty**'
+DB_PGSQL_SCHEMA = 'public'
 # MySQL
 DB_MYSQL_HOST = 'localhost'
 DB_MYSQL_DBNAME = 'pooldb'
 DB_MYSQL_USER = 'pooldb'
 DB_MYSQL_PASS = '**empty**'
+
 
 # ******************** Adv. DB Settings *********************
 #  Don't change these unless you know what you are doing
