@@ -17,8 +17,9 @@ COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
 # Coin Algorithm is the option used to determine the algortithm used by stratum
-# This currently only works with POW SHA256 and Scrypt Coins
-# The available options are scrypt and sha256d.
+# This currently works with POW and POS coins
+# The available options are:
+# scrypt, sha256d, scrypt-jane and quark
 # If the option does not meet either of these criteria stratum defaults to scrypt
 # Until AutoReward Selecting Code has been implemented the below options are used to select the type of coin
 # For Reward type there is POW and POS. please ensure you choose the currect type.
