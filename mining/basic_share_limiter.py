@@ -87,7 +87,7 @@ class BasicShareLimiter(object):
         ts = int(timestamp)
 
         # Init the stats for this worker if it isn't set.        
-        if worker_name not in self.worker_stats :
+        if worker_name not in self.worker_stats or self.worker_stats[worker_name]['last_ts'] < ts - settings.DB_USERCACHE_TIME :
             self.worker_stats[worker_name] = {'last_rtc': (ts - self.retarget / 2), 'last_ts': ts, 'buffer': SpeedBuffer(self.buffersize) }
             dbi.update_worker_diff(worker_name, settings.POOL_TARGET)
             return
@@ -111,33 +111,58 @@ class BasicShareLimiter(object):
             avg = 1
 
         # Figure out our Delta-Diff
-        ddiff = float((float(current_difficulty) * (float(self.target) / float(avg))) - current_difficulty)
+        if settings.VDIFF_FLOAT:
+            ddiff = float((float(current_difficulty) * (float(self.target) / float(avg))) - current_difficulty)
+        else:
+            ddiff = int((float(current_difficulty) * (float(self.target) / float(avg))) - current_difficulty)
+
         if (avg > self.tmax and current_difficulty > settings.VDIFF_MIN_TARGET):
             # For fractional -0.1 ddiff's just drop by 1
-            if ddiff > -1:
-                ddiff = -1
-            # Don't drop below POOL_TARGET
-            if (ddiff + current_difficulty) < settings.VDIFF_MIN_TARGET:
-                ddiff = settings.VDIFF_MIN_TARGET - current_difficulty
+            if settings.VDIFF_X2_TYPE:
+                ddiff = 0.5
+                # Don't drop below POOL_TARGET
+                if (ddiff * current_difficulty) < settings.VDIFF_MIN_TARGET:
+                    ddiff = settings.VDIFF_MIN_TARGET / current_difficulty
+            else:
+                if ddiff > -1:
+                    ddiff = -1
+	        # Don't drop below POOL_TARGET
+	        if (ddiff + current_difficulty) < settings.POOL_TARGET:
+		    ddiff = settings.VDIFF_MIN_TARGET - current_difficulty
         elif avg < self.tmin:
             # For fractional 0.1 ddiff's just up by 1
-            if ddiff < 1:
-                ddiff = 1
-            # Don't go above LITECOIN or VDIFF_MAX_TARGET
-            self.update_litecoin_difficulty()
-            if settings.USE_LITECOIN_DIFF:
-                diff_max = min([settings.VDIFF_MAX_TARGET, self.litecoin_diff])
-            else:
-                diff_max = settings.VDIFF_MAX_TARGET
+            if settings.VDIFF_X2_TYPE:
+                ddiff = 2
+                # Don't go above LITECOIN or VDIFF_MAX_TARGET            
+                if settings.USE_LITECOIN_DIFF:
+                    self.update_litecoin_difficulty()
+                    diff_max = min([settings.VDIFF_MAX_TARGET, self.litecoin_diff])
+                else:
+                    diff_max = settings.VDIFF_MAX_TARGET
 
-            if (ddiff + current_difficulty) > diff_max:
-                ddiff = diff_max - current_difficulty
+                if (ddiff * current_difficulty) > diff_max:
+                    ddiff = diff_max / current_difficulty
+            else:
+                if ddiff < 1:
+                   ddiff = 1
+                # Don't go above LITECOIN or VDIFF_MAX_TARGET
+                if settings.USE_LITECOIN_DIFF:
+                   self.update_litecoin_difficulty()
+                   diff_max = min([settings.VDIFF_MAX_TARGET, self.litecoin_diff])
+                else:
+                   diff_max = settings.VDIFF_MAX_TARGET
+
+                if (ddiff + current_difficulty) > diff_max:
+                    ddiff = diff_max - current_difficulty
             
         else:  # If we are here, then we should not be retargeting.
             return
 
         # At this point we are retargeting this worker
-        new_diff = current_difficulty + ddiff
+        if settings.VDIFF_X2_TYPE:
+            new_diff = current_difficulty * ddiff
+        else:
+            new_diff = current_difficulty + ddiff
         log.info("Retarget for %s %i old: %i new: %i" % (worker_name, ddiff, current_difficulty, new_diff))
 
         self.worker_stats[worker_name]['buffer'].clear()

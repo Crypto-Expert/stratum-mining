@@ -17,11 +17,16 @@ COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
 # Coin Algorithm is the option used to determine the algortithm used by stratum
-# This currently only works with POW SHA256 and Scrypt Coins
-# The available options are scrypt and sha256d.
+# This currently works with POW and POS coins
+# The available options are:
+# scrypt, sha256d, scrypt-jane and quark
 # If the option does not meet either of these criteria stratum defaults to scrypt
+# Until AutoReward Selecting Code has been implemented the below options are used to select the type of coin
+# For Reward type there is POW and POS. please ensure you choose the currect type.
+# For SHA256 PoS Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
-
+COINDAEMON_Reward = 'POW'
+COINDAEMON_SHA256_TX = 'no'
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
@@ -83,11 +88,22 @@ PASSWORD_SALT = 'some_crazy_string'
 
 # ******************** Database  *********************
 
+DATABASE_DRIVER = 'sqlite'        # Options: none, sqlite, postgresql or mysql
+
+# SQLite
+DB_SQLITE_FILE = 'pooldb.sqlite'
+# Postgresql
+DB_PGSQL_HOST = 'localhost'
+DB_PGSQL_DBNAME = 'pooldb'
+DB_PGSQL_USER = 'pooldb'
+DB_PGSQL_PASS = '**empty**'
+DB_PGSQL_SCHEMA = 'public'
 # MySQL
 DB_MYSQL_HOST = 'localhost'
 DB_MYSQL_DBNAME = 'pooldb'
 DB_MYSQL_USER = 'pooldb'
 DB_MYSQL_PASS = '**empty**'
+
 
 # ******************** Adv. DB Settings *********************
 #  Don't change these unless you know what you are doing
@@ -124,25 +140,32 @@ MERKLE_REFRESH_INTERVAL = 60	# How often check memorypool
 INSTANCE_ID = 31		# Used for extranonce and needs to be 0-31
 
 # ******************** Pool Difficulty Settings *********************
-#  Again, Don't change unless you know what this is for.
+VDIFF_X2_TYPE = True  # powers of 2 e.g. 2,4,8,16,32,64,128,256,512,1024
+VDIFF_FLOAT = False    # Use float difficulty
 
 # Pool Target (Base Difficulty)
-# In order to match the Pool Target with a frontend like MPOS the following formula is used: (stratum diff) ~= 2^((target bits in pushpool) - 16) 
-# E.G. a Pool Target of 16 would = a MPOS and PushPool Target bit's of 20
-POOL_TARGET = 16			# Pool-wide difficulty target int >= 1
+POOL_TARGET = 32                        # Pool-wide difficulty target int >= 1
 
 # Variable Difficulty Enable
-VARIABLE_DIFF = True		# Master variable difficulty enable
+VARIABLE_DIFF = True                # Master variable difficulty enable
 
 # Variable diff tuning variables
-#VARDIFF will start at the POOL_TARGET. It can go as low as the VDIFF_MIN and as high as min(VDIFF_MAX or the coin daemon's difficulty)
-USE_COINDAEMON_DIFF = False   # Set the maximum difficulty to the coin daemon's difficulty.
-DIFF_UPDATE_FREQUENCY = 86400 # Update the COINDAEMON difficulty once a day for the VARDIFF maximum
-VDIFF_MIN_TARGET = 15		#  Minimum Target difficulty 
-VDIFF_MAX_TARGET = 1000		# Maximum Target difficulty 
-VDIFF_TARGET_TIME = 30		# Target time per share (i.e. try to get 1 share per this many seconds)
-VDIFF_RETARGET_TIME = 120		# Check to see if we should retarget this often
-VDIFF_VARIANCE_PERCENT = 20	# Allow average time to very this % from target without retarget
+#VARDIFF will start at the POOL_TARGET. It can go as low as the VDIFF_MIN and as high as min(VDIFF_MAX or Liteconin's difficulty)
+USE_LITECOIN_DIFF = False   # Set the maximum difficulty to the litecoin difficulty. 
+DIFF_UPDATE_FREQUENCY = 86400 # Update the litecoin difficulty once a day for the VARDIFF maximum
+VDIFF_MIN_TARGET = 16                #  Minimum Target difficulty 
+VDIFF_MAX_TARGET = 1024                # Maximum Target difficulty 
+VDIFF_TARGET_TIME = 15                # Target time per share (i.e. try to get 1 share per this many seconds)
+VDIFF_RETARGET_TIME = 120                # Check to see if we should retarget this often
+VDIFF_VARIANCE_PERCENT = 30        # Allow average time to very this % from target without retarget
+VDIFF_RETARGET_DELAY = 25   # Wait this many seconds before applying new variable difficulty target
+VDIFF_RETARGET_REJECT_TIME = 60   # Wait this many seconds before rejecting old difficulty shares
+
+# Allow external setting of worker difficulty, checks pool_worker table datarow[6] position for target difficulty
+# if present or else defaults to pool target, over rides all other difficulty settings, no checks are made
+#for min or max limits this sould be done by your front end software
+ALLOW_EXTERNAL_DIFFICULTY = False 
+
 #### Advanced Option ##### 
 # For backwards compatibility, we send the scrypt hash to the solutions column in the shares table 
 # For block confirmation, we have an option to send the block hash in 
@@ -158,3 +181,18 @@ GW_ENABLE = True    # Enable the Proxy
 GW_PORT = 3333      # Getwork Proxy Port
 GW_DISABLE_MIDSTATE = False  # Disable midstate's (Faster but breaks some clients)
 GW_SEND_REAL_TARGET = True  # Propigate >1 difficulty to Clients (breaks some clients)
+
+# ******************** Worker Ban Options *********************
+ENABLE_WORKER_BANNING = True # enable/disable temporary worker banning 
+WORKER_CACHE_TIME = 600    # How long the worker stats cache is good before we check and refresh
+WORKER_BAN_TIME = 300    # How long we temporarily ban worker
+INVALID_SHARES_PERCENT = 50    # Allow average invalid shares vary this % before we ban
+ 
+# ******************** E-Mail Notification Settings *********************
+NOTIFY_EMAIL_TO = ''    # Where to send Start/Found block notifications
+NOTIFY_EMAIL_TO_DEADMINER = ''  # Where to send dead miner notifications
+NOTIFY_EMAIL_FROM = 'root@localhost'  # Sender address
+NOTIFY_EMAIL_SERVER = 'localhost'  # E-Mail Sender
+NOTIFY_EMAIL_USERNAME = ''    # E-Mail server SMTP Logon
+NOTIFY_EMAIL_PASSWORD = ''
+NOTIFY_EMAIL_USETLS = True

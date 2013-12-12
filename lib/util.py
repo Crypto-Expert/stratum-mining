@@ -3,6 +3,8 @@
 import struct
 import StringIO
 import binascii
+import settings
+import bitcoin_rpc
 from hashlib import sha256
 
 def deser_string(f):
@@ -171,7 +173,7 @@ def address_to_pubkeyhash(addr):
         addr = b58decode(addr, 25)
     except:
         return None
-    
+	    
     if addr is None:
         return None
     
@@ -209,9 +211,15 @@ def ser_number(n):
     s.append(n)
     return bytes(s)
 
-def script_to_address(addr):
-    d = address_to_pubkeyhash(addr)
-    if not d:
-        raise ValueError('invalid address')
-    (ver, pubkeyhash) = d
-    return b'\x76\xa9\x14' + pubkeyhash + b'\x88\xac'
+if settings.COINDAEMON_Reward == 'POW':
+   def script_to_address(addr):
+      d = address_to_pubkeyhash(addr)
+      if not d:
+         raise ValueError('invalid address')
+      (ver, pubkeyhash) = d
+      return b'\x76\xa9\x14' + pubkeyhash + b'\x88\xac'
+else:
+   def script_to_pubkey(key):
+      if len(key) == 66: key = binascii.unhexlify(key)
+      if len(key) != 33: raise Exception('invalid pubkey passed to script_to_pubkey')
+      return b'\x21' + key + b'\xac'

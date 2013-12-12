@@ -51,10 +51,20 @@ class MiningService(GenericService):
         
         if Interfaces.worker_manager.authorize(worker_name, worker_password):
             session['authorized'][worker_name] = worker_password
+            is_ext_diff = False
+            if settings.ALLOW_EXTERNAL_DIFFICULTY:
+                (is_ext_diff, session['difficulty']) = Interfaces.worker_manager.get_user_difficulty(worker_name)
+                self.connection_ref().rpc('mining.set_difficulty', [session['difficulty'], ], is_notification=True)
+            else:
+                session['difficulty'] = settings.POOL_TARGET
+            # worker_log = (valid, invalid, is_banned, diff, is_ext_diff, timestamp)
+            Interfaces.worker_manager.worker_log['authorized'][worker_name] = (0, 0, False, session['difficulty'], is_ext_diff, Interfaces.timestamper.time())            
             return True
         else:
             if worker_name in session['authorized']:
                 del session['authorized'][worker_name]
+            if worker_name in Interfaces.worker_manager.worker_log['authorized']:
+                del Interfaces.worker_manager.worker_log['authorized'][worker_name]
             return False
         
     def subscribe(self, *args):
@@ -68,7 +78,6 @@ class MiningService(GenericService):
         session = self.connection_ref().get_session()
         session['extranonce1'] = extranonce1
         session['difficulty'] = settings.POOL_TARGET  # Following protocol specs, default diff is 1
-
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
         
     def submit(self, worker_name, job_id, extranonce2, ntime, nonce):
@@ -88,26 +97,62 @@ class MiningService(GenericService):
             raise SubmitException("Connection is not subscribed for mining")
         
         difficulty = session['difficulty']
+        s_difficulty = difficulty
         submit_time = Interfaces.timestamper.time()
         ip = self.connection_ref()._get_ip()
-    
-        Interfaces.share_limiter.submit(self.connection_ref, job_id, difficulty, submit_time, worker_name)
+        (valid, invalid, is_banned, diff, is_ext_diff, last_ts) = Interfaces.worker_manager.worker_log['authorized'][worker_name]
+        percent = float(float(invalid) / (float(valid) if valid else 1) * 100)
+
+        if is_banned and submit_time - last_ts > settings.WORKER_BAN_TIME:
+            if percent > settings.INVALID_SHARES_PERCENT:
+                log.debug("Worker invalid percent: %0.2f %s STILL BANNED!" % (percent, worker_name))
+            else: 
+                is_banned = False
+                log.debug("Clearing ban for worker: %s UNBANNED" % worker_name)
+            (valid, invalid, is_banned, last_ts) = (0, 0, is_banned, Interfaces.timestamper.time())
+
+        if submit_time - last_ts > settings.WORKER_CACHE_TIME and not is_banned:
+            if percent > settings.INVALID_SHARES_PERCENT and settings.ENABLE_WORKER_BANNING:
+                is_banned = True
+                log.debug("Worker invalid percent: %0.2f %s BANNED!" % (percent, worker_name))
+            else:
+                log.debug("Clearing worker stats for: %s" % worker_name)
+            (valid, invalid, is_banned, last_ts) = (0, 0, is_banned, Interfaces.timestamper.time())
+
+        if 'prev_ts' in session and (submit_time - session['prev_ts']) < settings.VDIFF_RETARGET_DELAY \
+        and not is_ext_diff:
+            difficulty = session['prev_diff'] or session['difficulty'] or settings.POOL_TARGET
+            diff = difficulty
+        log.debug("%s (%d, %d, %s, %s, %d) %0.2f%% diff(%f)" % (worker_name, valid, invalid, is_banned, is_ext_diff, last_ts, percent, diff))
+        if not is_ext_diff:    
+            Interfaces.share_limiter.submit(self.connection_ref, job_id, difficulty, submit_time, worker_name)
             
         # This checks if submitted share meet all requirements
         # and it is valid proof of work.
         try:
             (block_header, block_hash, share_diff, on_submit) = Interfaces.template_registry.submit_share(job_id,
-                worker_name, session, extranonce1_bin, extranonce2, ntime, nonce, difficulty)
+                worker_name, session, extranonce1_bin, extranonce2, ntime, nonce, s_difficulty, submit_time)
         except SubmitException as e:
             # block_header and block_hash are None when submitted data are corrupted
+            invalid += 1
+            Interfaces.worker_manager.worker_log['authorized'][worker_name] = (valid, invalid, is_banned, diff, is_ext_diff, last_ts)
+
+            if is_banned:
+                raise SubmitException("Worker is temporarily banned")
+ 
             Interfaces.share_manager.on_submit_share(worker_name, False, False, difficulty,
-                submit_time, False, ip, e[0], 0)    
+                submit_time, False, ip, e[0], 0)   
             raise
-            
-             
+
+        valid += 1
+        Interfaces.worker_manager.worker_log['authorized'][worker_name] = (valid, invalid, is_banned, diff, is_ext_diff, last_ts)
+
+        if is_banned:
+            raise SubmitException("Worker is temporarily banned")
+ 
         Interfaces.share_manager.on_submit_share(worker_name, block_header,
             block_hash, difficulty, submit_time, True, ip, '', share_diff)
-        
+
         if on_submit != None:
             # Pool performs submitblock() to litecoind. Let's hook
             # to result and report it to share manager

@@ -19,9 +19,26 @@ import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
 	print("########################################### Loading LTC Scrypt Module #########################################################")
 	import ltc_scrypt
+elif settings.COINDAEMON_ALGO == 'quark':
+        print("########################################### Loading Quark Module #########################################################")
+        import quark_hash
 else: 
 	print("########################################### NOT Loading LTC Scrypt Module ######################################################")
 	pass
+
+if settings.COINDAEMON_Reward == 'POS':
+        print("########################################### Loading POS Support #########################################################")
+        pass
+else:
+        print("########################################### NOT Loading POS Support ######################################################")
+        pass
+
+if settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+        print("########################################### Loading SHA256 Transaction Message Support #########################################################")
+        pass
+else:
+        print("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
+        pass
 
 import lib.logger
 log = lib.logger.get_logger('halfnode')
@@ -138,25 +155,74 @@ class CTxOut(object):
 
 class CTransaction(object):
     def __init__(self):
-        self.nVersion = 1
-        self.vin = []
-        self.vout = []
-        self.nLockTime = 0
-        self.sha256 = None
+	if settings.COINDAEMON_Reward == 'POW':
+        	self.nVersion = 1
+        	self.vin = []
+        	self.vout = []
+        	self.nLockTime = 0
+        	self.sha256 = None
+	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+		self.nVersion = 1
+		self.nTime = 0
+		self.vin = []
+		self.vout = []
+		self.nLockTime = 0
+		self.sha256 = None
+		self.strTxComment = ""
+	else: 
+		self.nVersion = 1
+ 		self.nTime = 0
+    		self.vin = []
+         	self.vout = []
+          	self.nLockTime = 0
+          	self.sha256 = None
     def deserialize(self, f):
-        self.nVersion = struct.unpack("<i", f.read(4))[0]
-        self.vin = deser_vector(f, CTxIn)
-        self.vout = deser_vector(f, CTxOut)
-        self.nLockTime = struct.unpack("<I", f.read(4))[0]
-        self.sha256 = None
+        if settings.COINDAEMON_Reward == 'POW':
+	        self.nVersion = struct.unpack("<i", f.read(4))[0]
+	        self.vin = deser_vector(f, CTxIn)
+	        self.vout = deser_vector(f, CTxOut)
+	        self.nLockTime = struct.unpack("<I", f.read(4))[0]
+	        self.sha256 = None
+    	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+		self.nVersion = struct.unpack("<i", f.read(4))[0]
+                self.nTime = struct.unpack("<i", f.read(4))[0]
+                self.vin = deser_vector(f, CTxIn)
+                self.vout = deser_vector(f, CTxOut)
+                self.nLockTime = struct.unpack("<I", f.read(4))[0]
+                self.sha256 = None
+		self.strTxComment = deser_string(f)
+	else:
+		self.nVersion = struct.unpack("<i", f.read(4))[0]
+	        self.nTime = struct.unpack("<i", f.read(4))[0]
+	        self.vin = deser_vector(f, CTxIn)
+	        self.vout = deser_vector(f, CTxOut)
+	        self.nLockTime = struct.unpack("<I", f.read(4))[0]
+	        self.sha256 = None
     def serialize(self):
-        r = ""
-        r += struct.pack("<i", self.nVersion)
-        r += ser_vector(self.vin)
-        r += ser_vector(self.vout)
-        r += struct.pack("<I", self.nLockTime)
-        return r
-    
+        if settings.COINDAEMON_Reward == 'POW':
+		r = ""
+	        r += struct.pack("<i", self.nVersion)
+	        r += ser_vector(self.vin)
+	        r += ser_vector(self.vout)
+	        r += struct.pack("<I", self.nLockTime)
+        	return r
+	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+		r = ""
+                r += struct.pack("<i", self.nVersion)
+                r += struct.pack("<i", self.nTime)
+                r += ser_vector(self.vin)
+                r += ser_vector(self.vout)
+                r += struct.pack("<I", self.nLockTime)
+		r += ser_string(self.strTxComment)
+                return r
+	else:
+		r = ""
+	        r += struct.pack("<i", self.nVersion)
+	        r += struct.pack("<i", self.nTime)
+	        r += ser_vector(self.vin)
+	        r += ser_vector(self.vout)
+	        r += struct.pack("<I", self.nLockTime)
+	        return r    
     def calc_sha256(self):
         if self.sha256 is None:
             self.sha256 = uint256_from_str(SHA256.new(SHA256.new(self.serialize()).digest()).digest())
@@ -183,7 +249,13 @@ class CBlock(object):
         self.sha256 = None
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	        self.scrypt = None
+        elif settings.COINDAEMON_ALGO == 'quark':
+                self.quark = None
 	else: pass
+	if settings.COINDAEMON_Reward == 'POS':
+		self.signature = b""
+	else: pass
+
     def deserialize(self, f):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
         self.hashPrevBlock = deser_uint256(f)
@@ -192,6 +264,9 @@ class CBlock(object):
         self.nBits = struct.unpack("<I", f.read(4))[0]
         self.nNonce = struct.unpack("<I", f.read(4))[0]
         self.vtx = deser_vector(f, CTransaction)
+	if settings.COINDAEMON_Reward == 'POS':
+		self.signature = deser_string(f)
+	else: pass
     def serialize(self):
         r = []
         r.append(struct.pack("<i", self.nVersion))
@@ -201,6 +276,9 @@ class CBlock(object):
         r.append(struct.pack("<I", self.nBits))
         r.append(struct.pack("<I", self.nNonce))
         r.append(ser_vector(self.vtx))
+	if settings.COINDAEMON_Reward == 'POS':
+		r.append(ser_string(self.signature))
+	else: pass
         return ''.join(r)
 
     if settings.COINDAEMON_ALGO == 'scrypt':
@@ -215,6 +293,18 @@ class CBlock(object):
                r.append(struct.pack("<I", self.nNonce))
                self.scrypt = uint256_from_str(ltc_scrypt.getPoWHash(''.join(r)))
            return self.scrypt
+    elif settings.COINDAEMON_ALGO == 'quark':
+         def calc_quark(self):
+             if self.quark is None:
+                r = []
+                r.append(struct.pack("<i", self.nVersion))
+                r.append(ser_uint256(self.hashPrevBlock))
+                r.append(ser_uint256(self.hashMerkleRoot))
+                r.append(struct.pack("<I", self.nTime))
+                r.append(struct.pack("<I", self.nBits))
+                r.append(struct.pack("<I", self.nNonce))
+                self.quark = uint256_from_str(quark_hash.getPoWHash(''.join(r)))
+             return self.quark
     else:
        def calc_sha256(self):
            if self.sha256 is None:
@@ -232,12 +322,17 @@ class CBlock(object):
     def is_valid(self):
 	if settings.COINDAEMON_ALGO == 'scrypt':
 	   self.calc_scrypt()
+	elif settings.COINDAEMON_ALGO == 'quark':
+           self.calc_quark()
         else:
 	   self.calc_sha256()
         target = uint256_from_compact(self.nBits)
         if settings.COINDAEMON_ALGO == 'scrypt':
 	   if self.scrypt > target:
 	   	return false
+        elif settings.COINDAEMON_ALGO == 'quark':
+	   if self.quark > target:
+                return false
 	else:
 	   if self.sha256 > target:
            	return False

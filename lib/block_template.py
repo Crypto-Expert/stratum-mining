@@ -19,6 +19,7 @@ class BlockTemplate(halfnode.CBlock):
     coinbase_transaction_class = CoinbaseTransaction
     
     def __init__(self, timestamper, coinbaser, job_id):
+   	print("Hit Block_template.py")
         super(BlockTemplate, self).__init__()
         
         self.job_id = job_id 
@@ -46,10 +47,13 @@ class BlockTemplate(halfnode.CBlock):
         #txhashes = [None] + [ binascii.unhexlify(t['hash']) for t in data['transactions'] ]
         txhashes = [None] + [ util.ser_uint256(int(t['hash'], 16)) for t in data['transactions'] ]
         mt = merkletree.MerkleTree(txhashes)
+	if settings.COINDAEMON_Reward == 'POW':
+           coinbase = self.coinbase_transaction_class(self.timestamper, self.coinbaser, data['coinbasevalue'], data['coinbaseaux']['flags'], data['height'], 
+			settings.COINBASE_EXTRAS)
+	else:
+	    coinbase = self.coinbase_transaction_class(self.timestamper, self.coinbaser, data['coinbasevalue'], data['coinbaseaux']['flags'], data['height'],
+                        settings.COINBASE_EXTRAS, data['curtime'])
 
-        coinbase = self.coinbase_transaction_class(self.timestamper, self.coinbaser, data['coinbasevalue'],
-                        data['coinbaseaux']['flags'], data['height'], settings.COINBASE_EXTRAS)
-        
         self.height = data['height']
         self.nVersion = data['version']
         self.hashPrevBlock = int(data['previousblockhash'], 16)
