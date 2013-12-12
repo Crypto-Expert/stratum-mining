@@ -48,7 +48,7 @@ class DBInterface():
                 log.debug("DB_Mysql_Vardiff INIT")
                 import DB_Mysql_Vardiff
                 return DB_Mysql_Vardiff.DB_Mysql_Vardiff()
-            else:  
+             else:  
                 log.debug('DB_Mysql INIT')
                 import DB_Mysql
                 return DB_Mysql.DB_Mysql()
