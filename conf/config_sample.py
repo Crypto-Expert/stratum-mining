@@ -158,8 +158,6 @@ VDIFF_MAX_TARGET = 1024                # Maximum Target difficulty
 VDIFF_TARGET_TIME = 15                # Target time per share (i.e. try to get 1 share per this many seconds)
 VDIFF_RETARGET_TIME = 120                # Check to see if we should retarget this often
 VDIFF_VARIANCE_PERCENT = 30        # Allow average time to very this % from target without retarget
-VDIFF_RETARGET_DELAY = 25   # Wait this many seconds before applying new variable difficulty target
-VDIFF_RETARGET_REJECT_TIME = 60   # Wait this many seconds before rejecting old difficulty shares
 
 # Allow external setting of worker difficulty, checks pool_worker table datarow[6] position for target difficulty
 # if present or else defaults to pool target, over rides all other difficulty settings, no checks are made

@@ -19,6 +19,8 @@ class WorkerManagerInterface(object):
     def __init__(self):
         self.worker_log = {}
         self.worker_log.setdefault('authorized', {})
+        self.job_log = {}
+        self.job_log.setdefault('None', {})
         return
         
     def authorize(self, worker_name, worker_password):
@@ -32,6 +34,22 @@ class WorkerManagerInterface(object):
             return (True, wd[6])
         else:
             return (False, settings.POOL_TARGET)
+
+    def register_work(self, worker_name, job_id, difficulty):
+	    now = Interfaces.timestamper.time()
+	    work_id = WorkIdGenerator.get_new_id()
+	    self.job_log.setdefault(worker_name, {})[work_id] = (job_id, difficulty, now)
+	    return work_id
+
+class WorkIdGenerator(object):
+    counter = 1000
+    
+    @classmethod
+    def get_new_id(cls):
+        cls.counter += 1
+        if cls.counter % 0xffff == 0:
+            cls.counter = 1
+        return "%x" % cls.counter
 
 class ShareLimiterInterface(object):
     '''Implement difficulty adjustments here'''

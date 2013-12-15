@@ -167,10 +167,13 @@ class BasicShareLimiter(object):
 
         self.worker_stats[worker_name]['buffer'].clear()
         session = connection_ref().get_session()
+
+        (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, _) = \
+            Interfaces.template_registry.get_last_broadcast_args()
+        work_id = Interfaces.worker_manager.register_work(worker_name, job_id, new_diff)
         
-        session['prev_diff'] = session['difficulty']
-        session['prev_jobid'] = job_id
         session['difficulty'] = new_diff
         connection_ref().rpc('mining.set_difficulty', [new_diff, ], is_notification=True)
+        connection_ref().rpc('mining.notify', [work_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, False, ], is_notification=True)
         dbi.update_worker_diff(worker_name, new_diff)
 

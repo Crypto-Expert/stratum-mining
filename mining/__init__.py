@@ -5,6 +5,8 @@ from twisted.internet.error import ConnectionRefusedError
 import time
 import simplejson as json
 from twisted.internet import reactor
+import threading
+from mining.work_log_pruner import WorkLogPruner
 
 @defer.inlineCallbacks
 def setup(on_startup):
@@ -86,6 +88,10 @@ def setup(on_startup):
     # This is just failsafe solution when -blocknotify
     # mechanism is not working properly    
     BlockUpdater(registry, bitcoin_rpc)
+
+    prune_thr = threading.Thread(target=WorkLogPruner, args=(Interfaces.worker_manager.job_log,))
+    prune_thr.daemon = True
+    prune_thr.start()
     
     log.info("MINING SERVICE IS READY")
     on_startup.callback(True)
