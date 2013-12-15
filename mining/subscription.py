@@ -21,9 +21,18 @@ class MiningSubscription(Subscription):
         
         (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, _) = \
             Interfaces.template_registry.get_last_broadcast_args()
-        
+
         # Push new job to subscribed clients
-        cls.emit(job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, clean_jobs)
+        for subscription in Pubsub.iterate_subscribers(cls.event):
+            session = subscription.connection_ref().get_session()
+            session.setdefault('authorized', {})
+            if session['authorized'].keys():
+                worker_name = session['authorized'].keys()[0]
+                difficulty = session['difficulty']
+                work_id = Interfaces.worker_manager.register_work(worker_name, job_id, difficulty)             
+                subscription.emit_single(work_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, clean_jobs)
+            else:
+                subscription.emit_single(job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, clean_jobs)
         
         cnt = Pubsub.get_subscription_count(cls.event)
         log.info("BROADCASTED to %d connections in %.03f sec" % (cnt, (Interfaces.timestamper.time() - start)))

@@ -80,7 +80,7 @@ class MiningService(GenericService):
         session['difficulty'] = settings.POOL_TARGET  # Following protocol specs, default diff is 1
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
         
-    def submit(self, worker_name, job_id, extranonce2, ntime, nonce):
+    def submit(self, worker_name, work_id, extranonce2, ntime, nonce):
         '''Try to solve block candidate using given parameters.'''
         
         session = self.connection_ref().get_session()
@@ -96,8 +96,16 @@ class MiningService(GenericService):
         if not extranonce1_bin:
             raise SubmitException("Connection is not subscribed for mining")
         
+        # Get current block job_id
         difficulty = session['difficulty']
-        s_difficulty = difficulty
+        if worker_name in Interfaces.worker_manager.job_log and work_id in Interfaces.worker_manager.job_log[worker_name]:
+            (job_id, difficulty, job_ts) = Interfaces.worker_manager.job_log[worker_name][work_id]
+        else:
+            job_ts = Interfaces.timestamper.time()
+            Interfaces.worker_manager.job_log.setdefault(worker_name, {})[work_id] = (work_id, difficulty, job_ts)
+            job_id = work_id
+        #log.debug("worker_job_log: %s" % repr(Interfaces.worker_manager.job_log))
+
         submit_time = Interfaces.timestamper.time()
         ip = self.connection_ref()._get_ip()
         (valid, invalid, is_banned, diff, is_ext_diff, last_ts) = Interfaces.worker_manager.worker_log['authorized'][worker_name]
@@ -119,11 +127,7 @@ class MiningService(GenericService):
                 log.debug("Clearing worker stats for: %s" % worker_name)
             (valid, invalid, is_banned, last_ts) = (0, 0, is_banned, Interfaces.timestamper.time())
 
-        if 'prev_ts' in session and (submit_time - session['prev_ts']) < settings.VDIFF_RETARGET_DELAY \
-        and not is_ext_diff:
-            difficulty = session['prev_diff'] or session['difficulty'] or settings.POOL_TARGET
-            diff = difficulty
-        log.debug("%s (%d, %d, %s, %s, %d) %0.2f%% diff(%f)" % (worker_name, valid, invalid, is_banned, is_ext_diff, last_ts, percent, diff))
+        log.debug("%s (%d, %d, %s, %s, %d) %0.2f%% work_id(%s) job_id(%s) diff(%f)" % (worker_name, valid, invalid, is_banned, is_ext_diff, last_ts, percent, work_id, job_id, difficulty))
         if not is_ext_diff:    
             Interfaces.share_limiter.submit(self.connection_ref, job_id, difficulty, submit_time, worker_name)
             
@@ -131,11 +135,11 @@ class MiningService(GenericService):
         # and it is valid proof of work.
         try:
             (block_header, block_hash, share_diff, on_submit) = Interfaces.template_registry.submit_share(job_id,
-                worker_name, session, extranonce1_bin, extranonce2, ntime, nonce, s_difficulty, submit_time)
+                worker_name, session, extranonce1_bin, extranonce2, ntime, nonce, difficulty)
         except SubmitException as e:
             # block_header and block_hash are None when submitted data are corrupted
             invalid += 1
-            Interfaces.worker_manager.worker_log['authorized'][worker_name] = (valid, invalid, is_banned, diff, is_ext_diff, last_ts)
+            Interfaces.worker_manager.worker_log['authorized'][worker_name] = (valid, invalid, is_banned, difficulty, is_ext_diff, last_ts)
 
             if is_banned:
                 raise SubmitException("Worker is temporarily banned")
@@ -145,7 +149,7 @@ class MiningService(GenericService):
             raise
 
         valid += 1
-        Interfaces.worker_manager.worker_log['authorized'][worker_name] = (valid, invalid, is_banned, diff, is_ext_diff, last_ts)
+        Interfaces.worker_manager.worker_log['authorized'][worker_name] = (valid, invalid, is_banned, difficulty, is_ext_diff, last_ts)
 
         if is_banned:
             raise SubmitException("Worker is temporarily banned")
