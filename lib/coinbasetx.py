@@ -35,7 +35,9 @@ if settings.COINDAEMON_Reward == 'POW':
         tx_out = halfnode.CTxOut()
         tx_out.nValue = value
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
-        
+
+        if settings.COINDAEMON_SHA256_TX == 'yes':
+            self.strTxComment = ""
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -48,7 +50,7 @@ if settings.COINDAEMON_Reward == 'POW':
         
         (part1, part2) = self.vin[0]._scriptSig_template
         self.vin[0].scriptSig = part1 + extranonce + part2
-elif settings.COINDAEMON_Reward == 'POS' and  settings.COINDAEMON_SHA256_TX == 'yes':
+elif settings.COINDAEMON_Reward == 'POS':
    class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
@@ -81,8 +83,9 @@ elif settings.COINDAEMON_Reward == 'POS' and  settings.COINDAEMON_SHA256_TX == '
         tx_out.nValue = value
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
        
-	self.nTime = ntime 
-	self.strTxComment = "Mined By AhmedBodi's CryptoExpert Pools"
+        self.nTime = ntime 
+        if settings.COINDAEMON_SHA256_TX == 'yes':
+            self.strTxComment = ""
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -128,7 +131,7 @@ else:
         tx_out.nValue = value
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
        
-	self.nTime = ntime 
+        self.nTime = ntime 
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         

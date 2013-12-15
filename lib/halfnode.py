@@ -33,7 +33,7 @@ else:
         print("########################################### NOT Loading POS Support ######################################################")
         pass
 
-if settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
+if settings.COINDAEMON_SHA256_TX == 'yes':
         print("########################################### Loading SHA256 Transaction Message Support #########################################################")
         pass
 else:
@@ -155,74 +155,61 @@ class CTxOut(object):
 
 class CTransaction(object):
     def __init__(self):
-	if settings.COINDAEMON_Reward == 'POW':
-        	self.nVersion = 1
-        	self.vin = []
-        	self.vout = []
-        	self.nLockTime = 0
-        	self.sha256 = None
-	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
-		self.nVersion = 1
-		self.nTime = 0
-		self.vin = []
-		self.vout = []
-		self.nLockTime = 0
-		self.sha256 = None
-		self.strTxComment = ""
-	else: 
-		self.nVersion = 1
- 		self.nTime = 0
-    		self.vin = []
-         	self.vout = []
-          	self.nLockTime = 0
-          	self.sha256 = None
+        if settings.COINDAEMON_Reward == 'POW':
+            self.nVersion = 1
+            if settings.COINDAEMON_SHA256_TX == 'yes':
+                self.nVersion = 2
+            self.vin = []
+            self.vout = []
+            self.nLockTime = 0
+            self.sha256 = None
+        elif settings.COINDAEMON_Reward == 'POS':
+            self.nVersion = 1
+            if settings.COINDAEMON_SHA256_TX == 'yes':
+                self.nVersion = 2
+            self.nTime = 0
+            self.vin = []
+            self.vout = []
+            self.nLockTime = 0
+            self.sha256 = None
+        if settings.COINDAEMON_SHA256_TX == 'yes': 
+            self.strTxComment = ""
+
     def deserialize(self, f):
         if settings.COINDAEMON_Reward == 'POW':
-	        self.nVersion = struct.unpack("<i", f.read(4))[0]
-	        self.vin = deser_vector(f, CTxIn)
-	        self.vout = deser_vector(f, CTxOut)
-	        self.nLockTime = struct.unpack("<I", f.read(4))[0]
-	        self.sha256 = None
-    	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
-		self.nVersion = struct.unpack("<i", f.read(4))[0]
-                self.nTime = struct.unpack("<i", f.read(4))[0]
-                self.vin = deser_vector(f, CTxIn)
-                self.vout = deser_vector(f, CTxOut)
-                self.nLockTime = struct.unpack("<I", f.read(4))[0]
-                self.sha256 = None
-		self.strTxComment = deser_string(f)
-	else:
-		self.nVersion = struct.unpack("<i", f.read(4))[0]
-	        self.nTime = struct.unpack("<i", f.read(4))[0]
-	        self.vin = deser_vector(f, CTxIn)
-	        self.vout = deser_vector(f, CTxOut)
-	        self.nLockTime = struct.unpack("<I", f.read(4))[0]
-	        self.sha256 = None
+            self.nVersion = struct.unpack("<i", f.read(4))[0]
+            self.vin = deser_vector(f, CTxIn)
+            self.vout = deser_vector(f, CTxOut)
+            self.nLockTime = struct.unpack("<I", f.read(4))[0]
+            self.sha256 = None
+        elif settings.COINDAEMON_Reward == 'POS':
+            self.nVersion = struct.unpack("<i", f.read(4))[0]
+            self.nTime = struct.unpack("<i", f.read(4))[0]
+            self.vin = deser_vector(f, CTxIn)
+            self.vout = deser_vector(f, CTxOut)
+            self.nLockTime = struct.unpack("<I", f.read(4))[0]
+            self.sha256 = None
+        if settings.COINDAEMON_SHA256_TX == 'yes':
+            self.strTxComment = deser_string(f)
+
     def serialize(self):
         if settings.COINDAEMON_Reward == 'POW':
-		r = ""
-	        r += struct.pack("<i", self.nVersion)
-	        r += ser_vector(self.vin)
-	        r += ser_vector(self.vout)
-	        r += struct.pack("<I", self.nLockTime)
-        	return r
-	elif settings.COINDAEMON_Reward == 'POS' and settings.COINDAEMON_SHA256_TX == 'yes':
-		r = ""
-                r += struct.pack("<i", self.nVersion)
-                r += struct.pack("<i", self.nTime)
-                r += ser_vector(self.vin)
-                r += ser_vector(self.vout)
-                r += struct.pack("<I", self.nLockTime)
-		r += ser_string(self.strTxComment)
-                return r
-	else:
-		r = ""
-	        r += struct.pack("<i", self.nVersion)
-	        r += struct.pack("<i", self.nTime)
-	        r += ser_vector(self.vin)
-	        r += ser_vector(self.vout)
-	        r += struct.pack("<I", self.nLockTime)
-	        return r    
+            r = ""
+            r += struct.pack("<i", self.nVersion)
+            r += ser_vector(self.vin)
+            r += ser_vector(self.vout)
+            r += struct.pack("<I", self.nLockTime)
+        elif settings.COINDAEMON_Reward == 'POS':
+            r = ""
+            r += struct.pack("<i", self.nVersion)
+            r += struct.pack("<i", self.nTime)
+            r += ser_vector(self.vin)
+            r += ser_vector(self.vout)
+            r += struct.pack("<I", self.nLockTime)
+        if settings.COINDAEMON_SHA256_TX == 'yes':
+            r += ser_string(self.strTxComment)
+        return r
+ 
     def calc_sha256(self):
         if self.sha256 is None:
             self.sha256 = uint256_from_str(SHA256.new(SHA256.new(self.serialize()).digest()).digest())
