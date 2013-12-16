@@ -35,6 +35,9 @@ class DB_None():
     
     def update_pool_info(self,pi):
 	log.debug("Update Pool Info")
+	
+    def clear_worker_diff(self):
+    	log.debug("Clear Worker Diff")
 
     def get_pool_stats(self):
 	log.debug("Get Pool Stats")
