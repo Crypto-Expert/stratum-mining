@@ -11,16 +11,17 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 
 * Stratum Mining Pool 
 * Solved Block Confirmation
-* Vardiff support
+* Job Based Vardiff support
 * Solution Block Hash Support
 * *NEW* SHA256 and Scrypt Algo Support 
 * Log Rotation
 * Initial low difficulty share confirmation
 * Multiple *coind* wallets
 * On the fly addition of new *coind* wallets
-* MySQL database support
+* MySQL/PostGres/SQLite database support
 * Adjustable database commit parameters
 * Bypass password check for workers
+* Proof Of Work and Proof of Stake Coin Support
 
 #Donations 
 * BTC:  18uj5SzQaYVAPX96JZt1VE4K43m5VeYekP
@@ -42,10 +43,21 @@ Other coins have been known to work with this implementation. I have tested with
 
 * Orbitcoin.
 * FireFlyCoin.
+* ByteCoin
+* DigitalCoin
+* Worldcoin
+* Argentum
+* Netcoin
+* FlorinCoin
+* CHNCoin
+* Cubits v3
+* OpenSourceCoin
+* TekCoin
+* Frank
 
 #Installation
 
-The installation of this *stratum-mining* can be found in the INSTALL.md file. 
+The installation of this *stratum-mining* can be found in the Repo Wiki. 
 
 #Contact
 I am available in the #MPOS, #crypto-expert, #digitalcoin, #bytecoin and #worldcoin channels on freenode. Although i am willing to provide support through IRC please file issues on the repo 
