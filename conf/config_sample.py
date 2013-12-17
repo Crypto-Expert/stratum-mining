@@ -72,7 +72,7 @@ ENABLE_EXAMPLE_SERVICE = False
 HOSTNAME = 'localhost'
 
 # Port used for Socket transport. Use 'None' for disabling the transport.
-LISTEN_SOCKET_TRANSPORT = 3313
+LISTEN_SOCKET_TRANSPORT = 3333
 # Port used for HTTP Poll transport. Use 'None' for disabling the transport
 LISTEN_HTTP_TRANSPORT = None
 # Port used for HTTPS Poll transport
@@ -176,7 +176,7 @@ SOLUTION_BLOCK_HASH = True # If enabled, enter the block hash. If false enter th
 # It will also auto-redirect new clients to the stratum interface
 # so you can point ALL clients to: http://<yourserver>:<GW_PORT>
 GW_ENABLE = True    # Enable the Proxy
-GW_PORT = 3333      # Getwork Proxy Port
+GW_PORT = 8332      # Getwork Proxy Port
 GW_DISABLE_MIDSTATE = False  # Disable midstate's (Faster but breaks some clients)
 GW_SEND_REAL_TARGET = True  # Propigate >1 difficulty to Clients (breaks some clients)
 
