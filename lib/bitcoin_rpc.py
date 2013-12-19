@@ -44,7 +44,7 @@ class BitcoinRPC(object):
         # Try submitblock if that fails, go to getblocktemplate
         try:
 	    log.info("Submitting Block with Submit Block ")
-	    log.info("Block Hash: %s" [block_hex,])
+	    log.info([block_hex,])
             resp = (yield self._call('submitblock', [block_hex,]))
         except Exception:
             try: 
