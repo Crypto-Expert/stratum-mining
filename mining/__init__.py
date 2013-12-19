@@ -50,8 +50,9 @@ def setup(on_startup):
 
 
         except ConnectionRefusedError, e:
-            log.error("Connection refused while trying to connect to litecoin (are your LITECOIN_TRUSTED_* settings correct?)")
+            log.error("Connection refused while trying to connect to litecoin (are your COIND_* settings correct?)")
             reactor.stop()
+            break
 
         except Exception, e:
             if isinstance(e[2], str):
