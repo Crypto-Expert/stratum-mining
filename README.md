@@ -28,8 +28,8 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 * BTE:  8UJLskr8eDYATvYzmaCBw3vbRmeNweT3rW
 * DGC:  D6tdmDCUkZEUaUyLx4dhZH992yTEJSL1tU
 * LTC:  LVDbDHPUF13YZQeJE6AtxDwiF2RyNBsmXh
-* WDC: WeVFgZQsKSKXGak7NJPp9SrcUexghzTPGJ
-
+* WDC:  WeVFgZQsKSKXGak7NJPp9SrcUexghzTPGJ
+* Doge: DLtBRYtNCzfiZfcpUeEr8KPvy5k1aR7jca
 #Requirements
 *stratum-mining* is built in python. I have been testing it with 2.7.3, but it should work with other versions. The requirements for running the software are below.
 
@@ -53,7 +53,7 @@ Other coins have been known to work with this implementation. I have tested with
 * Cubits v3
 * OpenSourceCoin
 * TekCoin
-* Frank
+* Franko
 
 #Installation
 
