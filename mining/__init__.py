@@ -42,6 +42,7 @@ def setup(on_startup):
         try:
             result = (yield bitcoin_rpc.getblocktemplate())
             if isinstance(result, dict):
+                print(result)
                 # litecoind implements version 1 of getblocktemplate
                 if result['version'] >= 1:
                     break
@@ -55,7 +56,9 @@ def setup(on_startup):
             break
 
         except Exception, e:
+            print(e)
             if isinstance(e[2], str):
+                print(e[2])
                 if isinstance(json.loads(e[2])['error']['message'], str):
                     error = json.loads(e[2])['error']['message']
                     if error == "Method not found":
