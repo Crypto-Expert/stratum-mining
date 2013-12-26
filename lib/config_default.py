@@ -127,8 +127,8 @@ SIGNING_ID = None
 
 # *********************** IRC / PEER CONFIGURATION *************
 
-IRC_NICK =  "stratum%s" # Skip IRC registration
-#IRC_NICK = "stratum" # Use nickname of your choice
+#IRC_NICK =  "stratum%s" # Skip IRC registration
+IRC_NICK = "stratum" # Use nickname of your choice
 
 # Which hostname / external IP expose in IRC room
 # This should be official HOSTNAME for normal operation.
