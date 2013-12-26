@@ -132,12 +132,12 @@ IRC_NICK =  "stratum%s" # Skip IRC registration
 
 # Which hostname / external IP expose in IRC room
 # This should be official HOSTNAME for normal operation.
-IRC_HOSTNAME = HOSTNAME
+#IRC_HOSTNAME = HOSTNAME
 
 # Don't change this unless you're creating private Stratum cloud.
-IRC_SERVER = 'irc.freenode.net'
-IRC_ROOM = '#stratum-mining-nodes'
-IRC_PORT = 6667
+#IRC_SERVER = 'irc.freenode.net'
+#IRC_ROOM = '#stratum-mining-nodes'
+#IRC_PORT = 6667
 
 # Hardcoded list of Stratum nodes for clients to switch when this node is not available.
 PEERS = [
