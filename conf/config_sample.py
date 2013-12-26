@@ -81,7 +81,7 @@ PASSWORD_SALT = 'some_crazy_string'
 # ******************** Database  *********************
 
 DATABASE_DRIVER = 'mysql'        # Options: none, sqlite, postgresql or mysql
-
+DATABASE_EXTEND = False          # SQLite and PGSQL Only!
 # SQLite
 DB_SQLITE_FILE = 'pooldb.sqlite'
 # Postgresql
