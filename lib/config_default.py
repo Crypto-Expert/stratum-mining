@@ -44,29 +44,11 @@ THREAD_POOL_SIZE = 300
 
 # Do you want to expose "example" service in server?
 # Useful for learning the server,you probably want to disable
-# this on production
 ENABLE_EXAMPLE_SERVICE = False
-
-# ******************** TRANSPORTS *********************
-
-# Hostname or external IP to expose
-HOSTNAME = 'localhost'
-
-# Port used for Socket transport. Use 'None' for disabling the transport.
-LISTEN_SOCKET_TRANSPORT = 3333
-
-# Port used for HTTP Poll transport. Use 'None' for disabling the transport
 LISTEN_HTTP_TRANSPORT = None
-
-# Port used for HTTPS Poll transport
 LISTEN_HTTPS_TRANSPORT = None
-
-# Port used for WebSocket transport, 'None' for disabling WS
 LISTEN_WS_TRANSPORT = None
-
-# Port used for secure WebSocket, 'None' for disabling WSS
 LISTEN_WSS_TRANSPORT = None
-
 # ******************** SSL SETTINGS ******************
 
 # Private key and certification file for SSL protected transports
