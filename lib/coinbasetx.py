@@ -36,8 +36,8 @@ if settings.COINDAEMON_Reward == 'POW':
         tx_out.nValue = value
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
 
-        if settings.COINDAEMON_SHA256_TX == 'yes':
-            self.strTxComment = ""
+        if settings.COINDAEMON_TX_MSG == 'yes':
+            self.strTxComment = settings.Tx_Message
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -84,8 +84,8 @@ elif settings.COINDAEMON_Reward == 'POS':
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
        
         self.nTime = ntime 
-        if settings.COINDAEMON_SHA256_TX == 'yes':
-            self.strTxComment = ""
+        if settings.COINDAEMON_TX_MSG == 'yes':
+            self.strTxComment = settings.Tx_Message
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
