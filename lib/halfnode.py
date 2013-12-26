@@ -33,8 +33,9 @@ else:
         print("########################################### NOT Loading POS Support ######################################################")
         pass
 
-if settings.COINDAEMON_SHA256_TX == 'yes':
+if settings.COINDAEMON_TX_MSG == 'yes':
         print("########################################### Loading SHA256 Transaction Message Support #########################################################")
+      	print(settings.Tx_Message)
         pass
 else:
         print("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
@@ -157,7 +158,7 @@ class CTransaction(object):
     def __init__(self):
         if settings.COINDAEMON_Reward == 'POW':
             self.nVersion = 1
-            if settings.COINDAEMON_SHA256_TX == 'yes':
+            if settings.COINDAEMON_TX_MSG == 'yes':
                 self.nVersion = 2
             self.vin = []
             self.vout = []
@@ -165,15 +166,15 @@ class CTransaction(object):
             self.sha256 = None
         elif settings.COINDAEMON_Reward == 'POS':
             self.nVersion = 1
-            if settings.COINDAEMON_SHA256_TX == 'yes':
+            if settings.COINDAEMON_TX_MSG == 'yes':
                 self.nVersion = 2
             self.nTime = 0
             self.vin = []
             self.vout = []
             self.nLockTime = 0
             self.sha256 = None
-        if settings.COINDAEMON_SHA256_TX == 'yes': 
-            self.strTxComment = ""
+        if settings.COINDAEMON_TX_MSG == 'yes': 
+            self.strTxComment = settings.Tx_Message
 
     def deserialize(self, f):
         if settings.COINDAEMON_Reward == 'POW':
@@ -189,7 +190,7 @@ class CTransaction(object):
             self.vout = deser_vector(f, CTxOut)
             self.nLockTime = struct.unpack("<I", f.read(4))[0]
             self.sha256 = None
-        if settings.COINDAEMON_SHA256_TX == 'yes':
+        if settings.COINDAEMON_TX_MSG == 'yes':
             self.strTxComment = deser_string(f)
 
     def serialize(self):
@@ -206,7 +207,7 @@ class CTransaction(object):
             r += ser_vector(self.vin)
             r += ser_vector(self.vout)
             r += struct.pack("<I", self.nLockTime)
-        if settings.COINDAEMON_SHA256_TX == 'yes':
+        if settings.COINDAEMON_TX_MSG == 'yes':
             r += ser_string(self.strTxComment)
         return r
  
