@@ -23,10 +23,13 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 # If the option does not meet either of these criteria stratum defaults to scrypt
 # Until AutoReward Selecting Code has been implemented the below options are used to select the type of coin
 # For Reward type there is POW and POS. please ensure you choose the currect type.
-# For SHA256 PoS Coins which support TX Messages please enter yes in the TX selection
+# For Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
-COINDAEMON_Reward = 'POW'
-COINDAEMON_SHA256_TX = 'no'
+COINDAEMON_Reard = 'POW'
+COINDAEMON_TX_MSG = 'no'
+
+# If you want a TX message in the block if the coin supports it, enter it below
+Tx_Message = 'http://github.com/ahmedbodi/stratum-mining'
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
@@ -58,37 +61,26 @@ LOGFILE = None		# eg. 'stratum.log'
 LOG_ROTATION = True
 LOG_SIZE = 10485760 # Rotate every 10M
 LOG_RETENTION = 10 # Keep 10 Logs
+
 # How many threads use for synchronous methods (services).
 # 30 is enough for small installation, for real usage
 # it should be slightly more, say 100-300.
 THREAD_POOL_SIZE = 300
-
-# Disable the example service
-ENABLE_EXAMPLE_SERVICE = False
 
 # ******************** TRANSPORTS *********************
 
 # Hostname or external IP to expose
 HOSTNAME = 'localhost'
 
-# Port used for Socket transport. Use 'None' for disabling the transport.
+# Port used for Stratum Port
 LISTEN_SOCKET_TRANSPORT = 3333
-# Port used for HTTP Poll transport. Use 'None' for disabling the transport
-LISTEN_HTTP_TRANSPORT = None
-# Port used for HTTPS Poll transport
-LISTEN_HTTPS_TRANSPORT = None
-# Port used for WebSocket transport, 'None' for disabling WS
-LISTEN_WS_TRANSPORT = None
-# Port used for secure WebSocket, 'None' for disabling WSS
-LISTEN_WSS_TRANSPORT = None
 
-
-# Salt used when hashing passwords
+# Salt used for Block Notify Password
 PASSWORD_SALT = 'some_crazy_string'
 
 # ******************** Database  *********************
 
-DATABASE_DRIVER = 'sqlite'        # Options: none, sqlite, postgresql or mysql
+DATABASE_DRIVER = 'mysql'        # Options: none, sqlite, postgresql or mysql
 
 # SQLite
 DB_SQLITE_FILE = 'pooldb.sqlite'
@@ -111,18 +103,16 @@ DB_MYSQL_PASS = '**empty**'
 DB_LOADER_CHECKTIME = 15	# How often we check to see if we should run the loader
 DB_LOADER_REC_MIN = 10		# Min Records before the bulk loader fires
 DB_LOADER_REC_MAX = 50		# Max Records the bulk loader will commit at a time
-
 DB_LOADER_FORCE_TIME = 300      # How often the cache should be flushed into the DB regardless of size.
-
 DB_STATS_AVG_TIME = 300		# When using the DATABASE_EXTEND option, average speed over X sec
-				#	Note: this is also how often it updates
+				# Note: this is also how often it updates
 DB_USERCACHE_TIME = 600		# How long the usercache is good for before we refresh
 
 # ******************** Pool Settings *********************
 
 # User Auth Options
 USERS_AUTOADD = False		# Automatically add users to db when they connect.
-                            # This basically disables User Auth for the pool.
+                                # This basically disables User Auth for the pool.
 USERS_CHECK_PASSWORD = False	# Check the workers password? (Many pools don't)
 
 # Transaction Settings
@@ -151,7 +141,7 @@ VARIABLE_DIFF = True                # Master variable difficulty enable
 
 # Variable diff tuning variables
 #VARDIFF will start at the POOL_TARGET. It can go as low as the VDIFF_MIN and as high as min(VDIFF_MAX or Liteconin's difficulty)
-USE_LITECOIN_DIFF = False   # Set the maximum difficulty to the litecoin difficulty. 
+USE_COINDAEMON_DIFF = False   # Set the maximum difficulty to the litecoin difficulty. 
 DIFF_UPDATE_FREQUENCY = 86400 # Update the litecoin difficulty once a day for the VARDIFF maximum
 VDIFF_MIN_TARGET = 16                #  Minimum Target difficulty 
 VDIFF_MAX_TARGET = 1024                # Maximum Target difficulty 
@@ -170,15 +160,6 @@ ALLOW_EXTERNAL_DIFFICULTY = False
 # Please make sure your front end is compatible with the block hash in the solutions table. 
 # For People using the MPOS frontend enabling this is recommended. It allows the frontend to compare the block hash to the coin daemon reducing the liklihood of missing share error's for blocks
 SOLUTION_BLOCK_HASH = True # If enabled, enter the block hash. If false enter the scrypt/sha hash into the shares table 
-
-# ******************** Getwork Proxy Settings *********************
-# This enables a copy of slush's getwork proxy for old clients
-# It will also auto-redirect new clients to the stratum interface
-# so you can point ALL clients to: http://<yourserver>:<GW_PORT>
-GW_ENABLE = True    # Enable the Proxy
-GW_PORT = 8332      # Getwork Proxy Port
-GW_DISABLE_MIDSTATE = False  # Disable midstate's (Faster but breaks some clients)
-GW_SEND_REAL_TARGET = True  # Propigate >1 difficulty to Clients (breaks some clients)
 
 # ******************** Worker Ban Options *********************
 ENABLE_WORKER_BANNING = True # enable/disable temporary worker banning 
