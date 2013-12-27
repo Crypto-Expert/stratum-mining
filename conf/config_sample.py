@@ -25,7 +25,7 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 # For Reward type there is POW and POS. please ensure you choose the currect type.
 # For Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
-COINDAEMON_Reard = 'POW'
+COINDAEMON_Reward = 'POW'
 COINDAEMON_TX_MSG = 'no'
 
 # If you want a TX message in the block if the coin supports it, enter it below
