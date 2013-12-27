@@ -72,8 +72,19 @@ THREAD_POOL_SIZE = 300
 # Hostname or external IP to expose
 HOSTNAME = 'localhost'
 
-# Port used for Stratum Port
+# Disable the example service
+ENABLE_EXAMPLE_SERVICE = False
+
+# Port used for Socket transport. Use 'None' for disabling the transport.
 LISTEN_SOCKET_TRANSPORT = 3333
+# Port used for HTTP Poll transport. Use 'None' for disabling the transport
+LISTEN_HTTP_TRANSPORT = None
+# Port used for HTTPS Poll transport
+LISTEN_HTTPS_TRANSPORT = None
+# Port used for WebSocket transport, 'None' for disabling WS
+LISTEN_WS_TRANSPORT = None
+# Port used for secure WebSocket, 'None' for disabling WSS
+LISTEN_WSS_TRANSPORT = None
 
 # Salt used for Block Notify Password
 PASSWORD_SALT = 'some_crazy_string'
@@ -175,28 +186,3 @@ NOTIFY_EMAIL_SERVER = 'localhost'  # E-Mail Sender
 NOTIFY_EMAIL_USERNAME = ''    # E-Mail server SMTP Logon
 NOTIFY_EMAIL_PASSWORD = ''
 NOTIFY_EMAIL_USETLS = True
-
-
-# Disable the example service
-ENABLE_EXAMPLE_SERVICE = False
-
-# Port used for Socket transport. Use 'None' for disabling the transport.
-LISTEN_SOCKET_TRANSPORT = 3333
-# Port used for HTTP Poll transport. Use 'None' for disabling the transport
-LISTEN_HTTP_TRANSPORT = None
-# Port used for HTTPS Poll transport
-LISTEN_HTTPS_TRANSPORT = None
-# Port used for WebSocket transport, 'None' for disabling WS
-LISTEN_WS_TRANSPORT = None
-# Port used for secure WebSocket, 'None' for disabling WSS
-LISTEN_WSS_TRANSPORT = None
-
-# ******************** Getwork Proxy Settings *********************
-# This enables a copy of slush's getwork proxy for old clients
-# It will also auto-redirect new clients to the stratum interface
-# so you can point ALL clients to: http://<yourserver>:<GW_PORT>
-GW_ENABLE = False    # Enable the Proxy
-GW_PORT = 8332      # Getwork Proxy Port
-GW_DISABLE_MIDSTATE = False  # Disable midstate's (Faster but breaks some clients)
-GW_SEND_REAL_TARGET = True  # Propigate >1 difficulty to Clients (breaks some clients)
-
