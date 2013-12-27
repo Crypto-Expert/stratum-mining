@@ -186,3 +186,7 @@ NOTIFY_EMAIL_SERVER = 'localhost'  # E-Mail Sender
 NOTIFY_EMAIL_USERNAME = ''    # E-Mail server SMTP Logon
 NOTIFY_EMAIL_PASSWORD = ''
 NOTIFY_EMAIL_USETLS = True
+
+#Pass scrypt hash to submit block check.
+#Use if submit block is returning errors and marking submitted blocks invaild upstream, but the submitted blocks are being a accepted by the coin daemon into the block chain.
+BLOCK_CHECK_SCRYPT_HASH = False
