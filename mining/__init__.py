@@ -45,12 +45,23 @@ def setup(on_startup):
                 # litecoind implements version 1 of getblocktemplate
                 if result['version'] >= 1:
                     break
+                    while True:
+                        try:
+                            result = (yield bitcoin_rpc.getinfo())
+                            if isinstance(result,dict):
+                                if 'stake' in result and settings.COINDAEMON_Reward = 'POS':
+                                    break
+                                elif 'stake' is not in result and settings.COINDAEMON_Reward = 'POW':
+                                    break
+                                else:
+                                    log.error("Wrong Algo Selected, Switch to POS")
+                                    reactor.stop()
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 
 
         except ConnectionRefusedError, e:
-            log.error("Connection refused while trying to connect to litecoin (are your COIND_* settings correct?)")
+            log.error("Connection refused while trying to connect to the coind (are your COIND_* settings correct?)")
             reactor.stop()
             break
 
