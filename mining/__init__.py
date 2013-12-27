@@ -48,9 +48,8 @@ def setup(on_startup):
                    if isinstance(result,dict):
                       if 'stake' in result and settings.COINDAEMON_Reward == 'POS':
                          break
-                      #elif 'stake' is not in result and settings.COINDAEMON_Reward == 'POW':
-                      elif result.has_key('stake') and settings.COINDAEMON_Reward == 'POW':
-                           break
+                      elif 'stake' not in result and settings.COINDAEMON_Reward == 'POW':
+			 break
                       else:
                           log.error("Wrong Algo Selected, Switch to appropriate POS/POW in config.py!")
                           reactor.stop()
