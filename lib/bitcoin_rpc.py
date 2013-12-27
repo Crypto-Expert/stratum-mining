@@ -48,7 +48,8 @@ class BitcoinRPC(object):
             resp = (yield self._call('submitblock', [block_hex,]))
         except Exception:
             try: 
-	        log.exception("Submit Block call failed, trying GetBlockTemplate")
+            	log.exception("Submit Block Failed, does the coind have submitblock?")
+	        log.exception("Trying GetBlockTemplate")
                 resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
             except Exception as e:
                 log.exception("Both SubmitBlock and GetBlockTemplate failed. Problem Submitting block %s" % str(e))
