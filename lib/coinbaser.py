@@ -38,6 +38,7 @@ class SimpleCoinbaser(object):
 	   log.debug("PubKey = %s " % result['pubkey'])
 	   log.debug("Is Compressed = %s " % result['iscompressed'])
 	   log.debug("Account = %s " % result['account'])
+	   self.address = result['address']
            if result['isvalid'] and result['ismine']:
               self.is_valid = True
       	      log.info("Wallet address '%s' is valid" % self.address)
@@ -64,6 +65,7 @@ class SimpleCoinbaser(object):
            log.debug("PubKey = %s " % result['pubkey'])
            log.debug("Is Compressed = %s " % result['iscompressed'])
            log.debug("Account = %s " % result['account'])
+           self.pubkey = result['pubkey']
            if result['isvalid'] and result['ismine']:
               self.is_valid = True
               log.info("Wallet address '%s' is valid" % self.address)
