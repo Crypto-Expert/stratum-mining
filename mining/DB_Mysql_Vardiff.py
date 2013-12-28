@@ -29,7 +29,8 @@ class DB_Mysql_Vardiff(DB_Mysql.DB_Mysql):
         checkin_times = {}
         total_shares = 0
         best_diff = 0
-        
+        log.debug(data)
+	
         for k, v in enumerate(data):
             # for database compatibility we are converting our_worker to Y/N format
             if v[5]:
