@@ -7,6 +7,10 @@ import merkletree
 import halfnode
 from coinbasetx import CoinbaseTransaction
 
+import lib.logger
+log = lib.logger.get_logger('block_template')
+
+
 # Remove dependency to settings, coinbase extras should be
 # provided from coinbaser
 import settings
@@ -19,7 +23,7 @@ class BlockTemplate(halfnode.CBlock):
     coinbase_transaction_class = CoinbaseTransaction
     
     def __init__(self, timestamper, coinbaser, job_id):
-   	print("Hit Block_template.py")
+   	log.debug("Got To  Block_template.py")
         super(BlockTemplate, self).__init__()
         
         self.job_id = job_id 

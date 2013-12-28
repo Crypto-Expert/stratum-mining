@@ -14,35 +14,36 @@ from Crypto.Hash import SHA256
 
 from twisted.internet.protocol import Protocol
 from util import *
-
 import settings
-if settings.COINDAEMON_ALGO == 'scrypt':
-	print("########################################### Loading LTC Scrypt Module #########################################################")
-	import ltc_scrypt
-elif settings.COINDAEMON_ALGO == 'quark':
-        print("########################################### Loading Quark Module #########################################################")
-        import quark_hash
-else: 
-	print("########################################### NOT Loading LTC Scrypt Module ######################################################")
-	pass
-
-if settings.COINDAEMON_Reward == 'POS':
-        print("########################################### Loading POS Support #########################################################")
-        pass
-else:
-        print("########################################### NOT Loading POS Support ######################################################")
-        pass
-
-if settings.COINDAEMON_TX_MSG == 'yes':
-        print("########################################### Loading SHA256 Transaction Message Support #########################################################")
-      	print(settings.Tx_Message)
-        pass
-else:
-        print("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
-        pass
 
 import lib.logger
 log = lib.logger.get_logger('halfnode')
+log.debug("Got to Halfnode")
+
+if settings.COINDAEMON_ALGO == 'scrypt':
+	log.debug("########################################### Loading LTC Scrypt #########################################################")
+	import ltc_scrypt
+elif settings.COINDAEMON_ALGO == 'quark':
+        log.debug("########################################### Loading Quark Support #########################################################")
+        import quark_hash
+else: 
+	log.debug("########################################### Loading SHA256 Support ######################################################")
+	pass
+
+if settings.COINDAEMON_Reward == 'POS':
+        log.debug("########################################### Loading POS Support #########################################################")
+        pass
+else:
+        log.debug("########################################### Loading POW Support ######################################################")
+        pass
+
+if settings.COINDAEMON_TX_MSG == 'yes':
+        log.debug("########################################### Loading Transaction Message Support #########################################################")
+      	log.info(settings.Tx_Message)
+        pass
+else:
+        pass
+
 
 MY_VERSION = 31402
 MY_SUBVERSION = ".4"

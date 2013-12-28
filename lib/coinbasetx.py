@@ -3,6 +3,10 @@ import halfnode
 import struct
 import util
 import settings
+import lib.logger
+log = lib.logger.get_logger('coinbasetx')
+
+
 if settings.COINDAEMON_Reward == 'POW':
   class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
@@ -15,7 +19,7 @@ if settings.COINDAEMON_Reward == 'POW':
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data):
         super(CoinbaseTransaction, self).__init__()
-        
+        log.debug("Got to CoinBaseTX")
         #self.extranonce = 0
         
         if len(self.extranonce_placeholder) != self.extranonce_size:
@@ -62,7 +66,7 @@ elif settings.COINDAEMON_Reward == 'POS':
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data, ntime):
         super(CoinbaseTransaction, self).__init__()
-        
+        log.debug("Got to CoinBaseTX")
         #self.extranonce = 0
         
         if len(self.extranonce_placeholder) != self.extranonce_size:
@@ -110,7 +114,7 @@ else:
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data, ntime):
         super(CoinbaseTransaction, self).__init__()
-        
+        log.debug("Got to CoinBaseTX")
         #self.extranonce = 0
         
         if len(self.extranonce_placeholder) != self.extranonce_size:

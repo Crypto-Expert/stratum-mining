@@ -46,7 +46,7 @@ class TemplateRegistry(object):
         self.extranonce_counter = ExtranonceCounter(instance_id)
         self.extranonce2_size = block_template_class.coinbase_transaction_class.extranonce_size \
                 - self.extranonce_counter.get_size()
-                 
+        log.debug("Got to Template Registry")
         self.coinbaser = coinbaser
         self.block_template_class = block_template_class
         self.bitcoin_rpc = bitcoin_rpc
@@ -63,11 +63,13 @@ class TemplateRegistry(object):
     def get_new_extranonce1(self):
         '''Generates unique extranonce1 (e.g. for newly
         subscribed connection.'''
+	log.debug("Getting Unique Extronance")
         return self.extranonce_counter.get_new_bin()
     
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
+	log.debug("Getting arguments needed for mining.notify")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -135,7 +137,6 @@ class TemplateRegistry(object):
         start = Interfaces.timestamper.time()
                 
         template = self.block_template_class(Interfaces.timestamper, self.coinbaser, JobIdGenerator.get_new_id())
-	print("hit template registry")
 	log.info(template.fill_from_rpc(data))
         self.add_template(template,data['height'])
 
@@ -275,11 +276,15 @@ class TemplateRegistry(object):
             
             if not job.is_valid():
                 # Should not happen
-                log.error("Final job validation failed!")
+                log.info("Final job validation failed!")
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-            on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
+	    if settings.BLOCK_CHECK_SCRYPT_HASH:
+                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
+            else:
+                on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
+                
             if on_submit:
                 self.update_block()
 

@@ -221,5 +221,5 @@ if settings.COINDAEMON_Reward == 'POW':
 else:
    def script_to_pubkey(key):
       if len(key) == 66: key = binascii.unhexlify(key)
-      if len(key) != 33: raise Exception('invalid pubkey passed to script_to_pubkey')
+      if len(key) != 33: raise Exception('Invalid Address')
       return b'\x21' + key + b'\xac'

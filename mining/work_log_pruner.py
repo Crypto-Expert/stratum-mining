@@ -12,7 +12,7 @@ def _WorkLogPruner_I(wl):
 			if now > userwork[wli][2] + 120:
 				del userwork[wli]
 				pruned += 1
-	log.debug('Pruned %d jobs' % (pruned,))
+	log.info('Pruned %d jobs' % (pruned,))
 
 def WorkLogPruner(wl):
 	while True:

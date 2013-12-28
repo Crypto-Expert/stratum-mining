@@ -81,11 +81,11 @@ class DB_Mysql():
                 """
                 INSERT INTO `shares`
                 (time, rem_host, username, our_result, 
-                  upstream_result, reason, solution)
+                  upstream_result, reason, solution, difficulty)
                 VALUES 
                 (FROM_UNIXTIME(%(time)s), %(host)s, 
                   %(uname)s, 
-                  %(lres)s, 'N', %(reason)s, %(solution)s)
+                  %(lres)s, 'N', %(reason)s, %(solution)s, %(difficulty)s)
                 """,
                 {
                     "time": v[4], 
@@ -93,7 +93,8 @@ class DB_Mysql():
                     "uname": v[0], 
                     "lres": v[5], 
                     "reason": v[9],
-                    "solution": v[2]
+                    "solution": v[2],
+       		    "difficulty": v[3]
                 }
             )
 
@@ -344,5 +345,5 @@ class DB_Mysql():
         data = self.dbc.fetchone()
         
         if data[0] <= 0:
-           raise Exception("There is no shares table. Have you imported the schema?")
+           raise Exception("There is no shares table. Have you imported the MPOS schema?")
  

@@ -103,11 +103,11 @@ class BasicShareLimiter(object):
         # Set up and log our check
         self.worker_stats[worker_name]['last_rtc'] = ts
         avg = self.worker_stats[worker_name]['buffer'].avg()
-        log.info("Checking Retarget for %s (%i) avg. %i target %i+-%i" % (worker_name, current_difficulty, avg,
+        log.debug("Checking Retarget for %s (%i) avg. %i target %i+-%i" % (worker_name, current_difficulty, avg,
                 self.target, self.variance))
         
         if avg < 1:
-            log.info("Reseting avg = 1 since it's SOOO low")
+            log.warning("Reseting avg = 1 since it's SOOO low")
             avg = 1
 
         # Figure out our Delta-Diff
@@ -163,7 +163,7 @@ class BasicShareLimiter(object):
             new_diff = current_difficulty * ddiff
         else:
             new_diff = current_difficulty + ddiff
-        log.info("Retarget for %s %i old: %i new: %i" % (worker_name, ddiff, current_difficulty, new_diff))
+        log.debug("Retarget for %s %i old: %i new: %i" % (worker_name, ddiff, current_difficulty, new_diff))
 
         self.worker_stats[worker_name]['buffer'].clear()
         session = connection_ref().get_session()
@@ -174,6 +174,8 @@ class BasicShareLimiter(object):
         
         session['difficulty'] = new_diff
         connection_ref().rpc('mining.set_difficulty', [new_diff, ], is_notification=True)
+	log.debug("Notified of New Difficulty")
         connection_ref().rpc('mining.notify', [work_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, False, ], is_notification=True)
-        dbi.update_worker_diff(worker_name, new_diff)
+        log.debug("Sent new work")
+	dbi.update_worker_diff(worker_name, new_diff)
 
