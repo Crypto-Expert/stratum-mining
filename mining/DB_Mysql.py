@@ -12,7 +12,7 @@ class DB_Mysql():
         
         required_settings = ['PASSWORD_SALT', 'DB_MYSQL_HOST', 
                              'DB_MYSQL_USER', 'DB_MYSQL_PASS', 
-                             'DB_MYSQL_DBNAME']
+                             'DB_MYSQL_DBNAME', 'DB_MYSQL_PORT']
         
         for setting_name in required_settings:
             if not hasattr(settings, setting_name):
@@ -26,7 +26,8 @@ class DB_Mysql():
             getattr(settings, 'DB_MYSQL_HOST'), 
             getattr(settings, 'DB_MYSQL_USER'),
             getattr(settings, 'DB_MYSQL_PASS'), 
-            getattr(settings, 'DB_MYSQL_DBNAME')
+            getattr(settings, 'DB_MYSQL_DBNAME'),
+            getattr(settings, 'DB_MYSQL_PORT')
         )
         self.dbc = self.dbh.cursor()
         self.dbh.autocommit(True)
@@ -69,7 +70,7 @@ class DB_Mysql():
         checkin_times = {}
         total_shares = 0
         best_diff = 0
-	log.debug(data)
+        log.debug(data)
         
         for k, v in enumerate(data):
             # for database compatibility we are converting our_worker to Y/N format
@@ -95,7 +96,7 @@ class DB_Mysql():
                     "lres": v[5], 
                     "reason": v[9],
                     "solution": v[2],
-       		    "difficulty": v[3]
+                           "difficulty": v[3]
                 }
             )
 
@@ -347,4 +348,3 @@ class DB_Mysql():
         
         if data[0] <= 0:
            raise Exception("There is no shares table. Have you imported the MPOS schema?")
- 
