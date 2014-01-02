@@ -46,6 +46,9 @@ Tx_Message = 'http://github.com/ahmedbodi/stratum-mining'
 
 # ******************** GENERAL SETTINGS ***************
 
+# Set process name of twistd, much more comfortable if you run multiple processes on one machine
+STRATUM_MINING_PROCESS_NAME= 'twistd-stratum-mining'
+
 # Enable some verbose debug (logging requests and responses).
 DEBUG = False
 
