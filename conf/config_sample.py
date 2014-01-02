@@ -109,6 +109,7 @@ DB_MYSQL_HOST = 'localhost'
 DB_MYSQL_DBNAME = 'pooldb'
 DB_MYSQL_USER = 'pooldb'
 DB_MYSQL_PASS = '**empty**'
+DB_MYSQL_PORT = 3306		# Default port for MySQL
 
 
 # ******************** Adv. DB Settings *********************
