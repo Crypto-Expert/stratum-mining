@@ -16,32 +16,34 @@ from twisted.internet.protocol import Protocol
 from util import *
 
 import settings
+import lib.logger
+log = lib.logger.get_logger('halfnode')
+log.debug("Got to Halfnode")
+
 if settings.COINDAEMON_ALGO == 'scrypt':
-	print("########################################### Loading LTC Scrypt Module #########################################################")
+	log.debug("########################################### Loading LTC Scrypt Module #########################################################")
 	import ltc_scrypt
 elif settings.COINDAEMON_ALGO == 'quark':
-        print("########################################### Loading Quark Module #########################################################")
+        log.debug("########################################### Loading Quark Module #########################################################")
         import quark_hash
 else: 
-	print("########################################### NOT Loading LTC Scrypt Module ######################################################")
+	log.debug("########################################### NOT Loading LTC Scrypt Module ######################################################")
 	pass
 
 if settings.COINDAEMON_Reward == 'POS':
-        print("########################################### Loading POS Support #########################################################")
+        log.debug("########################################### Loading POS Support #########################################################")
         pass
 else:
-        print("########################################### NOT Loading POS Support ######################################################")
+        log.debug("########################################### NOT Loading POS Support ######################################################")
         pass
 
-if settings.COINDAEMON_SHA256_TX == 'yes':
-        print("########################################### Loading SHA256 Transaction Message Support #########################################################")
+if settings.COINDAEMON_TX == 'yes':
+        log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")
         pass
 else:
-        print("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
+        log.debug("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
         pass
 
-import lib.logger
-log = lib.logger.get_logger('halfnode')
 
 MY_VERSION = 31402
 MY_SUBVERSION = ".4"
@@ -157,7 +159,7 @@ class CTransaction(object):
     def __init__(self):
         if settings.COINDAEMON_Reward == 'POW':
             self.nVersion = 1
-            if settings.COINDAEMON_SHA256_TX == 'yes':
+            if settings.COINDAEMON_TX == 'yes':
                 self.nVersion = 2
             self.vin = []
             self.vout = []
@@ -165,14 +167,14 @@ class CTransaction(object):
             self.sha256 = None
         elif settings.COINDAEMON_Reward == 'POS':
             self.nVersion = 1
-            if settings.COINDAEMON_SHA256_TX == 'yes':
+            if settings.COINDAEMON_TX == 'yes':
                 self.nVersion = 2
             self.nTime = 0
             self.vin = []
             self.vout = []
             self.nLockTime = 0
             self.sha256 = None
-        if settings.COINDAEMON_SHA256_TX == 'yes': 
+        if settings.COINDAEMON_TX == 'yes': 
             self.strTxComment = ""
 
     def deserialize(self, f):
@@ -189,7 +191,7 @@ class CTransaction(object):
             self.vout = deser_vector(f, CTxOut)
             self.nLockTime = struct.unpack("<I", f.read(4))[0]
             self.sha256 = None
-        if settings.COINDAEMON_SHA256_TX == 'yes':
+        if settings.COINDAEMON_TX == 'yes':
             self.strTxComment = deser_string(f)
 
     def serialize(self):
@@ -206,7 +208,7 @@ class CTransaction(object):
             r += ser_vector(self.vin)
             r += ser_vector(self.vout)
             r += struct.pack("<I", self.nLockTime)
-        if settings.COINDAEMON_SHA256_TX == 'yes':
+        if settings.COINDAEMON_TX == 'yes':
             r += ser_string(self.strTxComment)
         return r
  

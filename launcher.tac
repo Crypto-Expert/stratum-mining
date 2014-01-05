@@ -6,6 +6,7 @@ import os, sys
 sys.path = [os.path.join(os.getcwd(), 'conf'),os.path.join(os.getcwd(), 'externals', 'stratum-mining-proxy'),] + sys.path
 
 from twisted.internet import defer
+from twisted.application.service import Application, IProcess
 
 # Run listening when mining service is ready
 on_startup = defer.Deferred()
@@ -14,6 +15,7 @@ import stratum
 import lib.settings as settings
 # Bootstrap Stratum framework
 application = stratum.setup(on_startup)
+IProcess(application).processName = settings.STRATUM_MINING_PROCESS_NAME
 
 # Load mining service into stratum framework
 import mining
@@ -35,6 +37,3 @@ Interfaces.set_timestamper(TimestamperInterface())
 
 mining.setup(on_startup)
 
-if settings.GW_ENABLE == True :
-    from lib.getwork_proxy import GetworkProxy
-    GetworkProxy(on_startup)

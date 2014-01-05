@@ -1,5 +1,7 @@
 import struct
-
+import lib.logger
+log = lib.logger.get_logger('extronance')
+ 
 class ExtranonceCounter(object):
     '''Implementation of a counter producing
        unique extranonce across all pool instances.
@@ -7,7 +9,8 @@ class ExtranonceCounter(object):
        but it can be changed at any time without breaking anything.'''       
 
     def __init__(self, instance_id):
-        if instance_id < 0 or instance_id > 31:
+      log.debug("Got to Extronance Counter")
+      if instance_id < 0 or instance_id > 31:
             raise Exception("Current ExtranonceCounter implementation needs an instance_id in <0, 31>.")
         
         # Last 5 most-significant bits represents instance_id

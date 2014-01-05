@@ -14,6 +14,7 @@ log = lib.logger.get_logger('bitcoin_rpc')
 class BitcoinRPC(object):
     
     def __init__(self, host, port, username, password):
+	log.debug("Got to Bitcoin RPC")
         self.bitcoin_url = 'http://%s:%d' % (host, port)
         self.credentials = base64.b64encode("%s:%s" % (username, password))
         self.headers = {
@@ -40,11 +41,11 @@ class BitcoinRPC(object):
             }))
 
     @defer.inlineCallbacks
-    def submitblock(self, block_hex, block_hash_hex):
+    def submitblock(self, block_hex, hash_hex):
         # Try submitblock if that fails, go to getblocktemplate
         try:
-	    log.info("Submitting Block with Submit Block ")
-	    log.info([block_hex,])
+	    log.debug("Submitting Block with Submit Block ")
+	    log.debug([block_hex,])
             resp = (yield self._call('submitblock', [block_hex,]))
         except Exception:
             try: 
@@ -52,11 +53,12 @@ class BitcoinRPC(object):
                 resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
             except Exception as e:
                 log.exception("Both SubmitBlock and GetBlockTemplate failed. Problem Submitting block %s" % str(e))
-                raise
+                log.exception("Try Enabling TX Messages in config.py")
+		raise
  
         if json.loads(resp)['result'] == None:
             # make sure the block was created. 
-            defer.returnValue((yield self.blockexists(block_hash_hex)))
+            defer.returnValue((yield self.blockexists(hash_hex)))
         else:
             defer.returnValue(False)
 
@@ -90,12 +92,12 @@ class BitcoinRPC(object):
         defer.returnValue(json.loads(resp)['result'])
 
     @defer.inlineCallbacks
-    def blockexists(self, block_hash_hex):
-        resp = (yield self._call('getblock', [block_hash_hex,]))
-        if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == block_hash_hex:
-            log.debug("Block Confirmed: %s" % block_hash_hex)
+    def blockexists(self, hash_hex):
+        resp = (yield self._call('getblock', [hash_hex,]))
+        if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == hash_hex:
+            log.debug("Block Confirmed: %s" % hash_hex)
             defer.returnValue(True)
         else:
-            log.info("Cannot find block for %s" % block_hash_hex)
+            log.info("Cannot find block for %s" % hash_hex)
             defer.returnValue(False)
             

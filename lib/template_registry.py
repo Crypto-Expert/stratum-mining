@@ -15,7 +15,7 @@ from lib.exceptions import SubmitException
 
 import lib.logger
 log = lib.logger.get_logger('template_registry')
-
+log.debug("Got to Template Registry")
 from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
 import lib.settings as settings
@@ -63,11 +63,13 @@ class TemplateRegistry(object):
     def get_new_extranonce1(self):
         '''Generates unique extranonce1 (e.g. for newly
         subscribed connection.'''
+	log.debug("Getting New Extronance")
         return self.extranonce_counter.get_new_bin()
     
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
+	log.debug("Getting Laat Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -135,7 +137,6 @@ class TemplateRegistry(object):
         start = Interfaces.timestamper.time()
                 
         template = self.block_template_class(Interfaces.timestamper, self.coinbaser, JobIdGenerator.get_new_id())
-	print("hit template registry")
 	log.info(template.fill_from_rpc(data))
         self.add_template(template,data['height'])
 
@@ -275,11 +276,16 @@ class TemplateRegistry(object):
             
             if not job.is_valid():
                 # Should not happen
-                log.error("Final job validation failed!")
+                log.exception("Final job validation failed!")
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-            on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
+            on_submit = self.bitcoin_rpc.
+	    if settings.BLOCK_CHECK_SCRYPT_HASH:
+                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
+            else:
+                on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
+               
             if on_submit:
                 self.update_block()
 

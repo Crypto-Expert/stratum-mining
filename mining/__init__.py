@@ -42,36 +42,47 @@ def setup(on_startup):
         try:
             result = (yield bitcoin_rpc.getblocktemplate())
             if isinstance(result, dict):
-                print(result)
                 # litecoind implements version 1 of getblocktemplate
                 if result['version'] >= 1:
-                    break
+		   result = (yield bitcoin_rpc.getinfo())
+                   if isinstance(result,dict):
+                      if 'stake' in result and settings.COINDAEMON_Reward == 'POS':
+			 log.info("CoinD looks to be a POS Coin, Config for POS looks correct")
+                         break
+                      elif 'stake' not in result and settings.COINDAEMON_Reward == 'POW':
+			 log.info("CoinD looks to be a POW Coin, Config looks to be correct")
+			 break
+                      else:
+                          log.error("Wrong Algo Selected, Switch to appropriate POS/POW in config.py!")
+                          reactor.stop()
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 
 
         except ConnectionRefusedError, e:
-            log.error("Connection refused while trying to connect to litecoin (are your COIND_* settings correct?)")
+            log.error("Connection refused while trying to connect to the coind (are your COIND_* settings correct?)")
             reactor.stop()
             break
 
         except Exception, e:
-            print(e)
             if isinstance(e[2], str):
-                print(e[2])
-                if isinstance(json.loads(e[2])['error']['message'], str):
-                    error = json.loads(e[2])['error']['message']
-                    if error == "Method not found":
-                        log.error("Litecoind does not support getblocktemplate!!! (time to upgrade.)")
-                        reactor.stop()
-                    elif error == "Litecoind is downloading blocks...":
-                        log.error("Litecoind downloading blockchain... will check back in 30 sec")
-                        time.sleep(29)
-                    else:
-                        log.error("Litecoind Error: %s", error)
+		try:
+                   if isinstance(json.loads(e[2])['error']['message'], str):
+	              error = json.loads(e[2])['error']['message']
+                   if error == "Method not found":
+                      log.error("CoinD does not support getblocktemplate!!! (time to upgrade.)")
+                      reactor.stop()
+                   elif "downloading blocks" in error:
+                       log.error("CoinD downloading blockchain... will check back in 30 sec")
+                       time.sleep(29)
+                   else:
+                       log.error("Coind Error: %s", error)
+	        except ValueError:
+		        log.error("Failed Connect(HTTP 500 or Invalid JSON), Check Username and Password!")
+		        reactor.stop()
         time.sleep(1)  # If we didn't get a result or the connect failed
         
-    log.info('Connected to litecoind - Ready to GO!')
+    log.info('Connected to the coind - Begining to load Address and Module Checks!')
 
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))

@@ -31,7 +31,7 @@ class DBInterface():
         signal.signal(signal.SIGINT, self.signal_handler)
 
     def signal_handler(self, signal, frame):
-        print "SIGINT Detected, shutting down"
+        log.warning("SIGINT Detected, shutting down")
         self.do_import(self.dbi, True)
         reactor.stop()
 

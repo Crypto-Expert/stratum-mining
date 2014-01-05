@@ -3,6 +3,9 @@ import halfnode
 import struct
 import util
 import settings
+import lib.logger
+log = lib.logger.get_logger('coinbasetx')
+
 if settings.COINDAEMON_Reward == 'POW':
   class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
@@ -15,7 +18,7 @@ if settings.COINDAEMON_Reward == 'POW':
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data):
         super(CoinbaseTransaction, self).__init__()
-        
+      	log.debug("Got to CoinBaseTX")  
         #self.extranonce = 0
         
         if len(self.extranonce_placeholder) != self.extranonce_size:
@@ -36,8 +39,8 @@ if settings.COINDAEMON_Reward == 'POW':
         tx_out.nValue = value
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
 
-        if settings.COINDAEMON_SHA256_TX == 'yes':
-            self.strTxComment = ""
+        if settings.COINDAEMON_TX == 'yes':
+            self.strTxComment = "http://github.com/ahmedbodi/stratum-mining"
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -62,7 +65,7 @@ elif settings.COINDAEMON_Reward == 'POS':
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data, ntime):
         super(CoinbaseTransaction, self).__init__()
-        
+        log.debug("Got to CoinBaseTX")
         #self.extranonce = 0
         
         if len(self.extranonce_placeholder) != self.extranonce_size:
@@ -85,7 +88,7 @@ elif settings.COINDAEMON_Reward == 'POS':
        
         self.nTime = ntime 
         if settings.COINDAEMON_SHA256_TX == 'yes':
-            self.strTxComment = ""
+            self.strTxComment = "http://github.com/ahmedbodi/stratum-mining"
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -110,7 +113,7 @@ else:
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data, ntime):
         super(CoinbaseTransaction, self).__init__()
-        
+	log.debug("Got to CoinBaseTX")        
         #self.extranonce = 0
         
         if len(self.extranonce_placeholder) != self.extranonce_size:

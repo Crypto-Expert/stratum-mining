@@ -12,7 +12,7 @@ class DB_Mysql():
         
         required_settings = ['PASSWORD_SALT', 'DB_MYSQL_HOST', 
                              'DB_MYSQL_USER', 'DB_MYSQL_PASS', 
-                             'DB_MYSQL_DBNAME']
+                             'DB_MYSQL_DBNAME', 'DB_MYSQL_PORT']
         
         for setting_name in required_settings:
             if not hasattr(settings, setting_name):
@@ -26,7 +26,8 @@ class DB_Mysql():
             getattr(settings, 'DB_MYSQL_HOST'), 
             getattr(settings, 'DB_MYSQL_USER'),
             getattr(settings, 'DB_MYSQL_PASS'), 
-            getattr(settings, 'DB_MYSQL_DBNAME')
+            getattr(settings, 'DB_MYSQL_DBNAME'),
+	    getattr(settings, 'DB_MYSQL_PORT')
         )
         self.dbc = self.dbh.cursor()
         self.dbh.autocommit(True)
@@ -69,8 +70,10 @@ class DB_Mysql():
         checkin_times = {}
         total_shares = 0
         best_diff = 0
+	lof.debug(data)
         
         for k, v in enumerate(data):
+	    log.debug(v)
             # for database compatibility we are converting our_worker to Y/N format
             if v[5]:
                 v[5] = 'Y'
@@ -81,19 +84,21 @@ class DB_Mysql():
                 """
                 INSERT INTO `shares`
                 (time, rem_host, username, our_result, 
-                  upstream_result, reason, solution)
+                  upstream_result, reason, solution, difficulty)
                 VALUES 
                 (FROM_UNIXTIME(%(time)s), %(host)s, 
                   %(uname)s, 
-                  %(lres)s, 'N', %(reason)s, %(solution)s)
+                  %(lres)s, %(result)s, %(reason)s, %(solution)s, %(difficulty)s )
                 """,
                 {
-                    "time": v[4], 
-                    "host": v[6], 
-                    "uname": v[0], 
-                    "lres": v[5], 
-                    "reason": v[9],
-                    "solution": v[2]
+                    "time": data[4], 
+                    "host": data[6], 
+                    "uname": data[0], 
+                    "lres": data[5], 
+		    "result": data[5],
+                    "reason": data[9],
+                    "solution": data[2],
+		    "difficulty": data[3]
                 }
             )
 
@@ -343,5 +348,5 @@ class DB_Mysql():
         data = self.dbc.fetchone()
         
         if data[0] <= 0:
-           raise Exception("There is no shares table. Have you imported the schema?")
+           raise Exception("There is no shares table. Have you imported the MPOS schema?")
  

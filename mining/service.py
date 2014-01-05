@@ -7,7 +7,7 @@ from stratum.pubsub import Pubsub
 from interfaces import Interfaces
 from subscription import MiningSubscription
 from lib.exceptions import SubmitException
-
+import json
 import lib.logger
 log = lib.logger.get_logger('mining')
                 
@@ -21,7 +21,37 @@ class MiningService(GenericService):
     service_type = 'mining'
     service_vendor = 'stratum'
     is_default = True
-    
+    event = 'mining.notify'
+
+    @admin
+    def get_server_stats(self):
+        serialized = '' 
+        for subscription in Pubsub.iterate_subscribers(self.event):
+            try:
+                if subscription != None:
+                    session = subscription.connection_ref().get_session()
+                    session.setdefault('authorized', {})
+                    if session['authorized'].keys():
+                        worker_name = session['authorized'].keys()[0]
+                        difficulty = session['difficulty']
+                        ip = subscription.connection_ref()._get_ip()
+                        serialized += json.dumps({'worker_name': worker_name, 'ip': ip, 'difficulty': difficulty})
+                    else:
+                        pass
+            except Exception as e:
+                log.exception("Error getting subscriptions %s" % str(e))
+                pass
+
+        log.debug("Server stats request: %s" % serialized)
+        return '%s' % serialized
+
+    @admin
+    def refresh_config(self):
+        settings.setup()
+        log.info("Updated Config")
+        return True
+        
+ 
     @admin
     def update_block(self):
         '''Connect this RPC call to 'litecoind -blocknotify' for 

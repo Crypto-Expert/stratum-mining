@@ -26,7 +26,7 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 # For SHA256 PoS Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
 COINDAEMON_Reward = 'POW'
-COINDAEMON_SHA256_TX = 'no'
+COINDAEMON_TX = 'no'
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
@@ -42,6 +42,8 @@ COINDAEMON_SHA256_TX = 'no'
 #COINDAEMON_TRUSTED_PASSWORD_2 = 'somepassword'
 
 # ******************** GENERAL SETTINGS ***************
+# Set process name of twistd, much more comfortable if you run multiple processes on one machine
+STRATUM_MINING_PROCESS_NAME= 'twistd-stratum-mining'
 
 # Enable some verbose debug (logging requests and responses).
 DEBUG = False
@@ -51,7 +53,7 @@ LOGDIR = 'log/'
 
 # Main application log file.
 LOGFILE = None		# eg. 'stratum.log'
-
+LOGLEVEL = 'DEBUG'
 # Logging Rotation can be enabled with the following settings
 # It if not enabled here, you can set up logrotate to rotate the files. 
 # For built in log rotation set LOG_ROTATION = True and configrue the variables
@@ -89,6 +91,7 @@ PASSWORD_SALT = 'some_crazy_string'
 # ******************** Database  *********************
 
 DATABASE_DRIVER = 'sqlite'        # Options: none, sqlite, postgresql or mysql
+DATABASE_EXTEND = False
 
 # SQLite
 DB_SQLITE_FILE = 'pooldb.sqlite'
@@ -103,7 +106,7 @@ DB_MYSQL_HOST = 'localhost'
 DB_MYSQL_DBNAME = 'pooldb'
 DB_MYSQL_USER = 'pooldb'
 DB_MYSQL_PASS = '**empty**'
-
+DB_MYSQL_PORT = 3306
 
 # ******************** Adv. DB Settings *********************
 #  Don't change these unless you know what you are doing
@@ -151,7 +154,7 @@ VARIABLE_DIFF = True                # Master variable difficulty enable
 
 # Variable diff tuning variables
 #VARDIFF will start at the POOL_TARGET. It can go as low as the VDIFF_MIN and as high as min(VDIFF_MAX or Liteconin's difficulty)
-USE_LITECOIN_DIFF = False   # Set the maximum difficulty to the litecoin difficulty. 
+USE_COINDAEMON_DIFF = False   # Set the maximum difficulty to the litecoin difficulty. 
 DIFF_UPDATE_FREQUENCY = 86400 # Update the litecoin difficulty once a day for the VARDIFF maximum
 VDIFF_MIN_TARGET = 16                #  Minimum Target difficulty 
 VDIFF_MAX_TARGET = 1024                # Maximum Target difficulty 
@@ -185,7 +188,11 @@ ENABLE_WORKER_BANNING = True # enable/disable temporary worker banning
 WORKER_CACHE_TIME = 600    # How long the worker stats cache is good before we check and refresh
 WORKER_BAN_TIME = 300    # How long we temporarily ban worker
 INVALID_SHARES_PERCENT = 50    # Allow average invalid shares vary this % before we ban
- 
+
+#Pass scrypt hash to submit block check.
+#Use if submit block is returning errors and marking submitted blocks invaild upstream, but the submitted blocks are being a accepted by the coin daemon into the block chain.
+BLOCK_CHECK_SCRYPT_HASH = False
+
 # ******************** E-Mail Notification Settings *********************
 NOTIFY_EMAIL_TO = ''    # Where to send Start/Found block notifications
 NOTIFY_EMAIL_TO_DEADMINER = ''  # Where to send dead miner notifications
