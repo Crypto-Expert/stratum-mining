@@ -12,7 +12,7 @@ class DB_Mysql():
         
         required_settings = ['PASSWORD_SALT', 'DB_MYSQL_HOST', 
                              'DB_MYSQL_USER', 'DB_MYSQL_PASS', 
-                             'DB_MYSQL_DBNAME', 'DB_MYSQL_PORT']
+                             'DB_MYSQL_DBNAME']
         
         for setting_name in required_settings:
             if not hasattr(settings, setting_name):
@@ -26,8 +26,7 @@ class DB_Mysql():
             getattr(settings, 'DB_MYSQL_HOST'), 
             getattr(settings, 'DB_MYSQL_USER'),
             getattr(settings, 'DB_MYSQL_PASS'), 
-            getattr(settings, 'DB_MYSQL_DBNAME'),
-            getattr(settings, 'DB_MYSQL_PORT')
+            getattr(settings, 'DB_MYSQL_DBNAME')
         )
         self.dbc = self.dbh.cursor()
         self.dbh.autocommit(True)
@@ -148,11 +147,11 @@ class DB_Mysql():
                 """
                 INSERT INTO `shares`
                 (time, rem_host, username, our_result, 
-                  upstream_result, reason, solution, difficulty)
+                  upstream_result, reason, solution)
                 VALUES 
                 (FROM_UNIXTIME(%(time)s), %(host)s, 
                   %(uname)s, 
-                  %(lres)s, %(result)s, %(reason)s, %(solution)s, %(difficulty)s)
+                  %(lres)s, %(result)s, %(reason)s, %(solution)s)
                 """,
                 {
                     "time": v[4], 
@@ -161,13 +160,11 @@ class DB_Mysql():
                     "lres": v[5], 
                     "result": v[5], 
                     "reason": v[9],
-                    "solution": v[2],
-                    "difficulty": v[3]
+                    "solution": v[2]
                 }
             )
 
             self.dbh.commit()
-
 
         
     def list_users(self):
@@ -347,4 +344,6 @@ class DB_Mysql():
         data = self.dbc.fetchone()
         
         if data[0] <= 0:
-           raise Exception("There is no shares table. Have you imported the MPOS schema?")
+           raise Exception("There is no shares table. Have you imported the schema?")
+ 
+
