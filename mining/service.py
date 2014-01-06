@@ -46,13 +46,6 @@ class MiningService(GenericService):
         return '%s' % serialized
 
     @admin
-    def refresh_config(self):
-        settings.setup()
-        log.info("Updated Config")
-        return True
-        
- 
-    @admin
     def update_block(self):
         '''Connect this RPC call to 'litecoind -blocknotify' for 
         instant notification about new block on the network.
