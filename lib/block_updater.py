@@ -17,8 +17,8 @@ class BlockUpdater(object):
     '''
     
     def __init__(self, registry, bitcoin_rpc):
-	log.debug("Got to Block Updater")
-        self.bitcoin_rpc = bitcoin_rpc
+        log.debug("Got To Block Updater")
+	self.bitcoin_rpc = bitcoin_rpc
         self.registry = registry
         self.clock = None
         self.schedule()

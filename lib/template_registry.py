@@ -15,7 +15,7 @@ from lib.exceptions import SubmitException
 
 import lib.logger
 log = lib.logger.get_logger('template_registry')
-
+log.debug("Got to Template Registry")
 from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
 import lib.settings as settings
@@ -69,7 +69,7 @@ class TemplateRegistry(object):
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
-	log.debug("Getting arguments needed for mining.notify")
+	log.debug("Getting Laat Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -268,23 +268,25 @@ class TemplateRegistry(object):
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
             # Reverse the header and get the potential block hash (for scrypt only) 
-            block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-            block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
-           
+	    if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
+		if settings.COINDAEMON_Reward == 'POW':
+		   block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+		   block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
+            else:
+		   block_hash_hex = hash_bin[::-1].encode('hex_codec')
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
             
             if not job.is_valid():
                 # Should not happen
-                log.info("Final job validation failed!")
+		log.exception("FINAL JOB VALIDATION FAILED!(Try enabling/disabling tx messages)")
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-            if settings.BLOCK_CHECK_SCRYPT_HASH:
+	    if settings.BLOCK_CHECK_SCRYPT_HASH:
                 on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
             else:
                 on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
-                
             if on_submit:
                 self.update_block()
 

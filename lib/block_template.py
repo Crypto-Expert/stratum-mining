@@ -6,6 +6,8 @@ import util
 import merkletree
 import halfnode
 from coinbasetx import CoinbaseTransaction
+import lib.logger
+log = lib.logger.get_logger('block_template')
 
 import lib.logger
 log = lib.logger.get_logger('block_template')
@@ -24,6 +26,7 @@ class BlockTemplate(halfnode.CBlock):
     
     def __init__(self, timestamper, coinbaser, job_id):
    	log.debug("Got To  Block_template.py")
+   	log.debug("Got To Block_template.py")
         super(BlockTemplate, self).__init__()
         
         self.job_id = job_id 

@@ -8,7 +8,6 @@ from interfaces import Interfaces
 from subscription import MiningSubscription
 from lib.exceptions import SubmitException
 import json
-
 import lib.logger
 log = lib.logger.get_logger('mining')
                 
@@ -45,7 +44,7 @@ class MiningService(GenericService):
 
         log.debug("Server stats request: %s" % serialized)
         return '%s' % serialized
-    
+
     @admin
     def update_block(self):
         '''Connect this RPC call to 'litecoind -blocknotify' for 
