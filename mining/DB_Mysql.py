@@ -88,17 +88,16 @@ class DB_Mysql():
                 VALUES 
                 (FROM_UNIXTIME(%(time)s), %(host)s, 
                   %(uname)s, 
-                  %(lres)s, %(result)s, %(reason)s, %(solution)s, %(difficulty)s )
+                   %(lres)s, 'N', %(reason)s, %(solution)s, %(difficulty)s
                 """,
                 {
-                    "time": data[4], 
-                    "host": data[6], 
-                    "uname": data[0], 
-                    "lres": data[5], 
-		    "result": data[5],
-                    "reason": data[9],
-                    "solution": data[2],
-		    "difficulty": data[3]
+                    "time": v[4], 
+                    "host": v[6], 
+                    "uname": v[0], 
+                    "lres": v[5], 
+                    "reason": v[9],
+                    "solution": v[2],
+                    "difficulty": v[3]
                 }
             )
 
