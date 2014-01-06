@@ -27,7 +27,7 @@ class DB_Mysql():
             getattr(settings, 'DB_MYSQL_USER'),
             getattr(settings, 'DB_MYSQL_PASS'), 
             getattr(settings, 'DB_MYSQL_DBNAME'),
-            getarrt(settings, 'DB_MYSQL_PORT')
+            getattr(settings, 'DB_MYSQL_PORT')
         )
         self.dbc = self.dbh.cursor()
         self.dbh.autocommit(True)
