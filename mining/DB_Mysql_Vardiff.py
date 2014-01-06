@@ -53,7 +53,7 @@ class DB_Mysql_Vardiff(DB_Mysql.DB_Mysql):
                     "host": v[6], 
                     "uname": v[0], 
                     "lres": v[5], 
-		    "result": data[5],
+		    "result": v[5],
                     "reason": v[9],
                     "solution": v[2],
                     "difficulty": v[3]
@@ -92,29 +92,4 @@ class DB_Mysql_Vardiff(DB_Mysql.DB_Mysql):
         self.dbh.commit()
 
 
-    def get_workers_stats(self):
-        self.execute(
-            """
-            SELECT `username`, `speed`, `last_checkin`, `total_shares`,
-              `total_rejects`, `total_found`, `alive`, `difficulty`
-            FROM `pool_worker`
-            WHERE `id` > 0
-            """
-        )
-        
-        ret = {}
-        
-        for data in self.dbc.fetchall():
-            ret[data[0]] = {
-                "username": data[0],
-                "speed": int(data[1]),
-                "last_checkin": time.mktime(data[2].timetuple()),
-                "total_shares": int(data[3]),
-                "total_rejects": int(data[4]),
-                "total_found": int(data[5]),
-                "alive": True if data[6] is 1 else False,
-                "difficulty": float(data[7])
-            }
-            
-        return ret
-
+    
