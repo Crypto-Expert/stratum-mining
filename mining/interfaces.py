@@ -105,12 +105,6 @@ class Interfaces(object):
     share_limiter = None
     timestamper = None
     template_registry = None
-    lib.settings = None
-
-    @classmethod
-    def set_settings(cls, settings):
-	lib.settings.setup()
-	cls.settings = lib.settings
 
     @classmethod
     def set_worker_manager(cls, manager):
