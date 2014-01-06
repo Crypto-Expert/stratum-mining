@@ -70,10 +70,8 @@ class DB_Mysql():
         checkin_times = {}
         total_shares = 0
         best_diff = 0
-        log.debug(data)
         
         for k, v in enumerate(data):
-	    log.debug(v)
             # for database compatibility we are converting our_worker to Y/N format
             if v[5]:
                 v[5] = 'Y'
@@ -88,7 +86,7 @@ class DB_Mysql():
                 VALUES 
                 (FROM_UNIXTIME(%(time)s), %(host)s, 
                   %(uname)s, 
-                   %(lres)s, 'N', %(reason)s, %(solution)s, %(difficulty)s
+                  %(lres)s, 'N', %(reason)s, %(solution)s, %(difficulty)s)
                 """,
                 {
                     "time": v[4], 
@@ -157,18 +155,19 @@ class DB_Mysql():
                   %(lres)s, %(result)s, %(reason)s, %(solution)s, %(difficulty)s)
                 """,
                 {
-                    "time": data[4], 
-                    "host": data[6], 
-                    "uname": data[0], 
-                    "lres": data[5], 
-                    "result": data[5], 
-                    "reason": data[9],
-                    "solution": data[2],
-                    "difficulty": data[3]
+                    "time": v[4], 
+                    "host": v[6], 
+                    "uname": v[0], 
+                    "lres": v[5], 
+                    "result": v[5], 
+                    "reason": v[9],
+                    "solution": v[2],
+                    "difficulty": v[3]
                 }
             )
 
             self.dbh.commit()
+
 
         
     def list_users(self):
