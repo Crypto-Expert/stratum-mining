@@ -268,13 +268,12 @@ class TemplateRegistry(object):
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
             # Reverse the header and get the potential block hash (for scrypt only) 
-	    if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
-	       if settings.COINDAEMON_Reward == 'POW':
-		   block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-		   block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
-               else:
-		   block_hash_hex = hash_bin[::-1].encode('hex_codec')
-	    else:  block_hash_hex = hash_bin[::-1].encode('hex_codec')
+	    #if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
+	    #   if settings.COINDAEMON_Reward == 'POW':
+	    block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+	    block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
+            #else:   block_hash_hex = hash_bin[::-1].encode('hex_codec')
+	    #else:  block_hash_hex = hash_bin[::-1].encode('hex_codec')
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
             
