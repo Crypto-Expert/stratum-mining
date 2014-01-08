@@ -183,10 +183,6 @@ WORKER_CACHE_TIME = 600    # How long the worker stats cache is good before we c
 WORKER_BAN_TIME = 300    # How long we temporarily ban worker
 INVALID_SHARES_PERCENT = 50    # Allow average invalid shares vary this % before we ban
 
-#Pass scrypt hash to submit block check.
-#Use if submit block is returning errors and marking submitted blocks invaild upstream, but the submitted blocks are being a accepted by the coin daemon into the block chain.
-BLOCK_CHECK_SCRYPT_HASH = False
-
 # ******************** E-Mail Notification Settings *********************
 NOTIFY_EMAIL_TO = ''    # Where to send Start/Found block notifications
 NOTIFY_EMAIL_TO_DEADMINER = ''  # Where to send dead miner notifications
