@@ -25,13 +25,16 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 * Transaction Messaging Support
 
 #Donations 
-* BTC:  18uj5SzQaYVAPX96JZt1VE4K43m5VeYekP
+* BTC:  18Xg4qP6RUvpeajanKPt5PDvvcqvU2pP6d
 * BTE:  8UJLskr8eDYATvYzmaCBw3vbRmeNweT3rW
-* DGC:  D6tdmDCUkZEUaUyLx4dhZH992yTEJSL1tU
-* LTC:  LVDbDHPUF13YZQeJE6AtxDwiF2RyNBsmXh
+* DGC:  DSBb5KmGWYKMJjxk3rETtvpk9sPqgCCYAw
+* LTC:  Lg4kXMqPsmMHrGr81LLe8oHpbsMiWiuMSB
 * WDC:  WeVFgZQsKSKXGak7NJPp9SrcUexghzTPGJ
 * Doge: DLtBRYtNCzfiZfcpUeEr8KPvy5k1aR7jca
-* 
+* SRC:  sMP2wHN5H2ik7FQDPjhSzFZUWux75BYZGe
+* ARG:  AQvXPWVqGzcpH2j2XSRG7X5R9nA3y9D9aQ
+
+
 
 #Requirements
 *stratum-mining* is built in python. I have been testing it with 2.7.3, but it should work with other versions. The requirements for running the software are below.
