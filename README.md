@@ -61,7 +61,7 @@ Other coins have been known to work with this implementation. I have tested with
 * Franko
 * Quark
 * Securecoin
-* 
+
 #Installation
 
 The installation of this *stratum-mining* can be found in the Repo Wiki. 
