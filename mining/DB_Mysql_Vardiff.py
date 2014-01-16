@@ -59,6 +59,72 @@ class DB_Mysql_Vardiff(DB_Mysql.DB_Mysql):
             )
 
             self.dbh.commit()
+    
+    def found_block(self, data):
+        # for database compatibility we are converting our_worker to Y/N format
+        if data[5]:
+            data[5] = 'Y'
+        else:
+            data[5] = 'N'
+
+        # Check for the share in the database before updating it
+        # Note: We can't use DUPLICATE KEY because solution is not a key
+
+        self.execute(
+            """
+            Select `id` from `shares`
+            WHERE `solution` = %(solution)s
+            LIMIT 1
+            """,
+            {
+                "solution": data[2]
+            }
+        )
+
+        shareid = self.dbc.fetchone()
+
+        if shareid[0] > 0:
+            # Note: difficulty = -1 here
+            self.execute(
+                """
+                UPDATE `shares`
+                SET `upstream_result` = %(result)s
+                WHERE `solution` = %(solution)s
+                AND `id` = %(id)s
+                LIMIT 1
+                """,
+                {
+                    "result": data[5], 
+                    "solution": data[2],
+                    "id": shareid[0]
+                }
+            )
+            
+            self.dbh.commit()
+        else:
+            self.execute(
+                """
+                INSERT INTO `shares`
+                (time, rem_host, username, our_result, 
+                  upstream_result, reason, solution)
+                VALUES 
+                (FROM_UNIXTIME(%(time)s), %(host)s, 
+                  %(uname)s, 
+                  %(lres)s, %(result)s, %(reason)s, %(solution)s)
+                """,
+                {
+                    "time": v[4], 
+                    "host": v[6], 
+                    "uname": v[0], 
+                    "lres": v[5], 
+                    "result": v[5], 
+                    "reason": v[9],
+                    "solution": v[2]
+                }
+            )
+
+            self.dbh.commit()
+
 
     def update_worker_diff(self, username, diff):
         log.debug("Setting difficulty for %s to %s", username, diff)
