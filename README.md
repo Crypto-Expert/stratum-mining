@@ -1,6 +1,5 @@
-
-
-#Description
+https://www.codeship.io/projects/b3003a70-61a3-0131-231e-26f75a0c690d/status
+#Descriptionhttps://www.codeship.io/projects/b3003a70-61a3-0131-231e-26f75a0c690d/status
 Stratum-mining is a pooled mining protocol. It is a replacement for *getwork* based pooling servers by allowing clients to generate work. The stratum protocol is described [here](http://mining.bitcoin.cz/stratum-mining) in full detail.
 
 This is a implementation of stratum-mining for scrypt based coins. It is compatible with *MPOS* as it complies with the standards of *pushpool*. The end goal is to build on these standards to come up with a more stable solution.
