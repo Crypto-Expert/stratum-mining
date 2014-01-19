@@ -44,17 +44,14 @@ def setup(on_startup):
             if isinstance(result, dict):
                 # litecoind implements version 1 of getblocktemplate
                 if result['version'] >= 1:
-		   result = (yield bitcoin_rpc.getinfo())
+		   result = (yield bitcoin_rpc.getdifficulty())
                    if isinstance(result,dict):
-                      if 'stake' in result:  # and settings.COINDAEMON_Reward == 'POS':
+                      if 'proof-of-stake' in result:  # and settings.COINDAEMON_Reward == 'POS':
 			 settings.COINDAEMON_Reward = 'POS'
                          break
-                      elif 'stake' not in result: # and settings.COINDAEMON_Reward == 'POW':
+                      elif 'proof-of-stake' not in result: # and settings.COINDAEMON_Reward == 'POW':
 			 settings.COINDAEMON_Reward = 'POW'
 			 break
-#                      else:
-#                          log.error("Wrong Algo Selected, Switch to appropriate POS/POW in config.py!")
-#                          reactor.stop()
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 
