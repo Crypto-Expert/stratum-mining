@@ -46,15 +46,15 @@ def setup(on_startup):
                 if result['version'] >= 1:
 		   result = (yield bitcoin_rpc.getinfo())
                    if isinstance(result,dict):
-                      if 'stake' in result and settings.COINDAEMON_Reward == 'POS':
-			 log.info("CoinD looks to be a POS Coin, Config for POS looks correct")
+                      if 'stake' in result:  # and settings.COINDAEMON_Reward == 'POS':
+			 settings.COINDAEMON_Reward = 'POS'
                          break
-                      elif 'stake' not in result and settings.COINDAEMON_Reward == 'POW':
-			 log.info("CoinD looks to be a POW Coin, Config looks to be correct")
+                      elif 'stake' not in result: # and settings.COINDAEMON_Reward == 'POW':
+			 settings.COINDAEMON_Reward = 'POW'
 			 break
-                      else:
-                          log.error("Wrong Algo Selected, Switch to appropriate POS/POW in config.py!")
-                          reactor.stop()
+#                      else:
+#                          log.error("Wrong Algo Selected, Switch to appropriate POS/POW in config.py!")
+#                          reactor.stop()
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 

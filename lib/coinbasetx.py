@@ -6,8 +6,8 @@ import settings
 import lib.logger
 log = lib.logger.get_logger('coinbasetx')
 
-if settings.COINDAEMON_Reward == 'POW':
-  class CoinbaseTransaction(halfnode.CTransaction):
+#if settings.COINDAEMON_Reward == 'POW':
+  class CoinbaseTransactionPOW(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
@@ -17,7 +17,7 @@ if settings.COINDAEMON_Reward == 'POW':
     extranonce_size = struct.calcsize(extranonce_type)
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data):
-        super(CoinbaseTransaction, self).__init__()
+        super(CoinbaseTransactionPOW, self).__init__()
       	log.debug("Got to CoinBaseTX")  
         #self.extranonce = 0
         
@@ -45,7 +45,7 @@ if settings.COINDAEMON_Reward == 'POW':
         self.vout.append(tx_out)
         
         # Two parts of serialized coinbase, just put part1 + extranonce + part2 to have final serialized tx
-        self._serialized = super(CoinbaseTransaction, self).serialize().split(self.extranonce_placeholder)
+        self._serialized = super(CoinbaseTransactionPOW, self).serialize().split(self.extranonce_placeholder)
 
     def set_extranonce(self, extranonce):
         if len(extranonce) != self.extranonce_size:
@@ -53,8 +53,8 @@ if settings.COINDAEMON_Reward == 'POW':
         
         (part1, part2) = self.vin[0]._scriptSig_template
         self.vin[0].scriptSig = part1 + extranonce + part2
-elif settings.COINDAEMON_Reward == 'POS':
-   class CoinbaseTransaction(halfnode.CTransaction):
+#elif settings.COINDAEMON_Reward == 'POS':
+   class CoinbaseTransactionPOS(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
@@ -64,7 +64,7 @@ elif settings.COINDAEMON_Reward == 'POS':
     extranonce_size = struct.calcsize(extranonce_type)
 
     def __init__(self, timestamper, coinbaser, value, flags, height, data, ntime):
-        super(CoinbaseTransaction, self).__init__()
+        super(CoinbaseTransactionPOS, self).__init__()
         log.debug("Got to CoinBaseTX")
         #self.extranonce = 0
         
@@ -93,7 +93,7 @@ elif settings.COINDAEMON_Reward == 'POS':
         self.vout.append(tx_out)
         
         # Two parts of serialized coinbase, just put part1 + extranonce + part2 to have final serialized tx
-        self._serialized = super(CoinbaseTransaction, self).serialize().split(self.extranonce_placeholder)
+        self._serialized = super(CoinbaseTransactionPOS, self).serialize().split(self.extranonce_placeholder)
 
     def set_extranonce(self, extranonce):
         if len(extranonce) != self.extranonce_size:
@@ -101,7 +101,7 @@ elif settings.COINDAEMON_Reward == 'POS':
         
         (part1, part2) = self.vin[0]._scriptSig_template
         self.vin[0].scriptSig = part1 + extranonce + part2
-else:
+#else:
    class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
