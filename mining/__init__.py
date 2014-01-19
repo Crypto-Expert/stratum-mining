@@ -46,14 +46,14 @@ def setup(on_startup):
                 if result['version'] >= 1:
                     result = (yield bitcoin_rpc.getdifficulty())
                     if isinstance(result,dict):
-                        if 'proof-of-stake' in result:  # and settings.COINDAEMON_Reward == 'POS':
+                        if 'proof-of-stake' in result: 
                             settings.COINDAEMON_Reward = 'POS'
                             log.info("Coin detected as POS")
-                            break
-                        elif 'proof-of-stake' not in result: # and settings.COINDAEMON_Reward == 'POW':
-                            settings.COINDAEMON_Reward = 'POW'
-                            log.info("Coin detected as POW")
-                            break
+                            break;
+                    else:
+                        settings.COINDAEMON_Reward = 'POW'
+                        log.info("Coin detected as POW")
+                        break;
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 
