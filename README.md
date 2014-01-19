@@ -1,3 +1,4 @@
+[ ![Codeship Status for ahmedbodi/php-mpos](https://www.codeship.io/projects/b3003a70-61a3-0131-231e-26f75a0c690d/status?branch=master)](https://www.codeship.io/projects/12274)
 #Description
 Stratum-mining is a pooled mining protocol. It is a replacement for *getwork* based pooling servers by allowing clients to generate work. The stratum protocol is described [here](http://mining.bitcoin.cz/stratum-mining) in full detail.
 
@@ -33,7 +34,7 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 * Doge: DLtBRYtNCzfiZfcpUeEr8KPvy5k1aR7jca
 * SRC:  sMP2wHN5H2ik7FQDPjhSzFZUWux75BYZGe
 * ARG:  AQvXPWVqGzcpH2j2XSRG7X5R9nA3y9D9aQ
-
+* CryptsyTradeKey: ec13d183e304326ebd41258d6ae7188e303866fe
 
 
 #Requirements
@@ -61,6 +62,7 @@ Other coins have been known to work with this implementation. I have tested with
 * Franko
 * Quark
 * Securecoin
+
 #Installation
 
 The installation of this *stratum-mining* can be found in the Repo Wiki. 
@@ -68,16 +70,10 @@ The installation of this *stratum-mining* can be found in the Repo Wiki.
 #Contact
 I am available in the #MPOS, #crypto-expert, #digitalcoin, and #worldcoin channels on freenode. 
 Although i am willing to provide support through IRC please file issues on the repo.
-<<<<<<< HEAD
 Issues as a direct result of stratum will be helped with as much as possible
 However issues related to a coin daemon's setup and other non stratum issues, 
 Please research and attempt to debug first.
 
-=======
-issues as a direct result of stratum will be helped with as much as possible
-However issues related to a coin daemon's setup and other non stratum issues, 
-Please research and attempt to debug first.
-  
 #Credits
 
 * Original version by Slush0 (original stratum code)
