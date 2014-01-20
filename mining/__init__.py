@@ -40,6 +40,24 @@ def setup(on_startup):
     log.info("Connecting to litecoind...")
     while True:
         try:
+            result = (yield bitcoin_rpc.check_submitblock())
+            if result == True:
+                log.info("Found submitblock")
+            elif result == False:
+                log.info("Did not find submitblock")
+            else:
+                log.info("unknown submitblock result")
+
+        except ConnectionRefusedError, e:
+            log.error("Connection refused while trying to connect to the coind (are your COIND_* settings correct?)")
+            reactor.stop()
+            break
+
+        except Exception, e:
+            log.debug(str(e))
+
+
+        try:
             result = (yield bitcoin_rpc.getblocktemplate())
             if isinstance(result, dict):
                 # litecoind implements version 1 of getblocktemplate
@@ -49,11 +67,11 @@ def setup(on_startup):
                         if 'proof-of-stake' in result: 
                             settings.COINDAEMON_Reward = 'POS'
                             log.info("Coin detected as POS")
-                            break;
+                            break
                     else:
                         settings.COINDAEMON_Reward = 'POW'
                         log.info("Coin detected as POW")
-                        break;
+                        break
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 
