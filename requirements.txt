@@ -1,7 +1,7 @@
 # This File is used to create a list of requirements needed for testing stratum-mining or to create a clone install
 BeautifulSoup==3.2.1
 #Brlapi==0.5.7
-GnuPGInterface==0.3.2
+#GnuPGInterface==0.3.2
 MySQL-python==1.2.3
 PAM==0.4.2
 Pyste==0.9.10
