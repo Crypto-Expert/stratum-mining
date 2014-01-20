@@ -39,7 +39,7 @@ pyserial==2.5
 #python-debianbts==1.11
 python-memcached==1.48
 pyxdg==0.19
-reportbug==6.4.4
+#reportbug==6.4.4
 simplejson==2.5.2
 #stratum==0.2.13
 #uTidylib==0.2
