@@ -5,6 +5,8 @@ import struct
 import util
 import merkletree
 import halfnode
+from coinbasetx import CoinbaseTransactionPOW
+from coinbasetx import CoinbaseTransactionPOS
 from coinbasetx import CoinbaseTransaction
 import lib.logger
 log = lib.logger.get_logger('block_template')
@@ -55,10 +57,10 @@ class BlockTemplate(halfnode.CBlock):
         txhashes = [None] + [ util.ser_uint256(int(t['hash'], 16)) for t in data['transactions'] ]
         mt = merkletree.MerkleTree(txhashes)
 	if settings.COINDAEMON_Reward == 'POW':
-           coinbase = self.coinbase_transaction_class(self.timestamper, self.coinbaser, data['coinbasevalue'], data['coinbaseaux']['flags'], data['height'], 
+           coinbase = CoinbaseTransactionPOW(self.timestamper, self.coinbaser, data['coinbasevalue'], data['coinbaseaux']['flags'], data['height'],
 			settings.COINBASE_EXTRAS)
 	else:
-	    coinbase = self.coinbase_transaction_class(self.timestamper, self.coinbaser, data['coinbasevalue'], data['coinbaseaux']['flags'], data['height'],
+	    coinbase = CoinbaseTransactionPOS(self.timestamper, self.coinbaser, data['coinbasevalue'], data['coinbaseaux']['flags'], data['height'],
                         settings.COINBASE_EXTRAS, data['curtime'])
 
         self.height = data['height']

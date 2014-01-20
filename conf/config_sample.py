@@ -21,11 +21,8 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 # The available options are:
 # scrypt, sha256d, scrypt-jane and quark
 # If the option does not meet either of these criteria stratum defaults to scrypt
-# Until AutoReward Selecting Code has been implemented the below options are used to select the type of coin
-# For Reward type there is POW and POS. please ensure you choose the currect type.
 # For Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
-COINDAEMON_Reward = 'POW'
 COINDAEMON_TX = 'no'
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
@@ -191,3 +188,11 @@ NOTIFY_EMAIL_SERVER = 'localhost'  # E-Mail Sender
 NOTIFY_EMAIL_USERNAME = ''    # E-Mail server SMTP Logon
 NOTIFY_EMAIL_PASSWORD = ''
 NOTIFY_EMAIL_USETLS = True
+
+#### Memcache ####
+# Memcahce is a requirement. Enter the settings below
+MEMCACHE_HOST = "localhost" # hostname or IP that runs memcached
+MEMCACHE_PORT = 11211 # Port
+MEMCACHE_TIMEOUT = 900 # Key timeout
+MEMCACHE_PREFIX = "stratum_" # Prefix for keys
+
