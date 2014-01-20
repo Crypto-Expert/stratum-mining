@@ -4,6 +4,7 @@ from datetime import datetime
 import Queue
 import signal
 import Cache
+from sets import Set
 
 import lib.settings as settings
 
@@ -154,6 +155,13 @@ class DBInterface():
         if username == "":
             log.info("Rejected worker for blank username")
             return False
+        allowed_chars = Set('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-.')
+        if Set(username).issubset(allowed_chars) != True:
+            log.info("Username contains bad arguments")
+            return False
+        if username.count('.') > 1:
+            log.info("Username contains multiple . ")
+            return False
         
         # Force username and password to be strings
         username = str(username)
@@ -166,9 +174,11 @@ class DBInterface():
             self.cache.set(username, password)
             return True
         elif settings.USERS_AUTOADD == True:
-            self.insert_user(username, password)
-            self.cache.set(username, password)
-            return True
+			if self.dbi.get_uid(username) != False:
+				uid = self.dbi.get_uid(username)
+				self.dbi.insert_worker(uid, username, password)
+                self.cache.set(username, password)
+				return True
         
         log.info("Authentication for %s failed" % username)
         return False
