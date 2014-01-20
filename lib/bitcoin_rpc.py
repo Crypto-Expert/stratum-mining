@@ -39,7 +39,24 @@ class BitcoinRPC(object):
                 'params': params,
                 'id': '1',
             }))
-
+    
+    @defer.inlineCallbacks
+    def check_submitblock(self):
+        try:
+            log.info("Checking for submitblock")
+            resp = (yield self._call('submitblock', []))
+            defer.returnValue(None)
+        except Exception, e:
+            if (str(e) == "404 Not Found"):
+                log.debug("No submitblock detected.")
+                defer.returnValue(False)
+            elif (str(e) == "500 Internal Server Error"):
+                log.debug("submitblock detected.")
+                defer.returnValue(True)
+            else:
+                log.debug("unknown submitblock check result.")
+                defer.returnValue(None)
+    
     @defer.inlineCallbacks
     def submitblock(self, block_hex, hash_hex):
         # Try submitblock if that fails, go to getblocktemplate

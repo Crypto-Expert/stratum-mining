@@ -89,6 +89,12 @@ class BitcoinRPCManager(object):
                 return self.conns[self.curr_conn]._call(method,params)
             except:
                 self.next_connection()
+        def check_submitblock(self):
+            while True:
+               try:
+                  return self.conns[self.curr_conn].check_submitblock()
+            except:
+                  self.next_connection()
 
     def submitblock(self, block_hex, hash_hex):
         while True:
