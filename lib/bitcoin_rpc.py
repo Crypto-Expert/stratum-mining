@@ -22,7 +22,7 @@ class BitcoinRPC(object):
             'Authorization': 'Basic %s' % self.credentials,
         }
         client.HTTPClientFactory.noisy = False
-        
+	self.has_submitblock = False        
     def _call_raw(self, data):
         client.Headers
         return client.getPage(
@@ -45,40 +45,74 @@ class BitcoinRPC(object):
         try:
             log.info("Checking for submitblock")
             resp = (yield self._call('submitblock', []))
-            defer.returnValue(None)
+	    self.has_submitblock = Trie
         except Exception, e:
             if (str(e) == "404 Not Found"):
                 log.debug("No submitblock detected.")
-                defer.returnValue(False)
+		self.has_submitblock = False
             elif (str(e) == "500 Internal Server Error"):
                 log.debug("submitblock detected.")
-                defer.returnValue(True)
+		self.has_submitblock = True
             else:
                 log.debug("unknown submitblock check result.")
-                defer.returnValue(None)
+		self.has_submitblock = True
+		 self.has_submitblock = True
+        finally:
+              defer.returnValue(self.has_submitblock)
+
     
     @defer.inlineCallbacks
     def submitblock(self, block_hex, hash_hex):
-        # Try submitblock if that fails, go to getblocktemplate
-        try:
-            log.debug("Submitting Block with Submit Block ")
-            log.debug([block_hex,])
-            resp = (yield self._call('submitblock', [block_hex,]))
-        except Exception:
-            try: 
-                log.exception("Submit Block Failed, does the coind have submitblock?")
-                log.exception("Trying GetBlockTemplate")
-                resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
-            except Exception as e:
-                log.exception("Both SubmitBlock and GetBlockTemplate failed. Problem Submitting block %s" % str(e))
-                log.exception("Try Enabling TX Messages in config.py!")
-                raise
- 
-        if json.loads(resp)['result'] == None:
-            # make sure the block was created. 
-            defer.returnValue((yield self.blockexists(hash_hex)))
-        else:
-            defer.returnValue(False)
+    #try 5 times? 500 Internal Server Error could mean random error or that TX messages setting is wrong
+        attempts = 0
+        while True:
+            attempts += 1
+            if self.has_submitblock == True:
+                try:
+                    log.debug("Submitting Block with submitblock: attempt #"+str(attempt))
+                    log.debug([block_hex,])
+                    resp = (yield self._call('submitblock', [block_hex,]))
+                    break
+                except Exception as e:
+                    if attempts > 5:
+                        log.exception("submitblock failed. Problem Submitting block %s" % str(e))
+                        log.exception("Try Enabling TX Messages in config.py!")
+                        raise
+                    else:
+                        continue
+            elif self.has_submitblock == False:
+                try:
+                    log.debug("Submitting Block with getblocktemplate submit: attempt #"+str(attempt))
+                    log.debug([block_hex,])
+                    resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
+                    break
+                except Exception as e:
+                    if attempts > 5:
+                        log.exception("getblocktemplate submit failed. Problem Submitting block %s" % str(e))
+                        log.exception("Try Enabling TX Messages in config.py!")
+                        raise
+                    else:
+                        continue
+            else:  # self.has_submitblock = None; unable to detect submitblock, try both
+                try:
+                    log.debug("Submitting Block with submitblock")
+                    log.debug([block_hex,])
+                    resp = (yield self._call('submitblock', [block_hex,]))
+                    break
+                except Exception as e:
+                    try:
+                        log.exception("submitblock Failed, does the coind have submitblock?")
+                        log.exception("Trying GetBlockTemplate")
+                        resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
+                        break
+                    except Exception as e:
+                        if attempts > 5:
+                            log.exception("submitblock failed. Problem Submitting block %s" % str(e))
+                            log.exception("Try Enabling TX Messages in config.py!")
+                            raise
+                        else:
+                            continue
+
 
     @defer.inlineCallbacks
     def getinfo(self):
