@@ -46,7 +46,7 @@ class BitcoinRPC(object):
             log.info("Checking for submitblock")
             resp = (yield self._call('submitblock', []))
 	    self.has_submitblock = Trie
-        except Exception, e:
+        except Exception as e:
             if (str(e) == "404 Not Found"):
                 log.debug("No submitblock detected.")
 		self.has_submitblock = False
