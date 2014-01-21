@@ -49,7 +49,7 @@ class BitcoinRPC(object):
             log.debug("unknown submitblock check result.")
             self.has_submitblock = None
 
-        except Exception, e:
+        except Exception as e:
             if (str(e) == "404 Not Found"):
                 log.debug("No submitblock detected.")
                 self.has_submitblock = False
