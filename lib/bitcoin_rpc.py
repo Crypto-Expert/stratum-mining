@@ -70,7 +70,7 @@ class BitcoinRPC(object):
             attempts += 1
             if self.has_submitblock == True:
                 try:
-                    log.debug("Submitting Block with submitblock: attempt #"+str(attempt))
+                    log.debug("Submitting Block with submitblock: attempt #"+str(attempts))
                     log.debug([block_hex,])
                     resp = (yield self._call('submitblock', [block_hex,]))
                     break
@@ -83,7 +83,7 @@ class BitcoinRPC(object):
                         continue
             elif self.has_submitblock == False:
                 try:
-                    log.debug("Submitting Block with getblocktemplate submit: attempt #"+str(attempt))
+                    log.debug("Submitting Block with getblocktemplate submit: attempt #"+str(attempts))
                     log.debug([block_hex,])
                     resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
                     break
