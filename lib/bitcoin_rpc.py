@@ -116,7 +116,8 @@ class BitcoinRPC(object):
                             continue
 
         if json.loads(resp)['result'] == None:
-            # make sure the block was created. 
+            # make sure the block was created.
+            log.info("CHECKING FOR BLOCK AFTER SUBMITBLOCK")
             defer.returnValue((yield self.blockexists(hash_hex)))
         else:
             defer.returnValue(False)
