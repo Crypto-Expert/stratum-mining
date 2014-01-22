@@ -63,7 +63,7 @@ class BitcoinRPC(object):
             defer.returnValue(self.has_submitblock)
 
     @defer.inlineCallbacks
-    def submitblock(self, block_hex, hash_hex):
+    def submitblock(self, block_hex, hash_hex, scrypt_hex):
     #try 5 times? 500 Internal Server Error could mean random error or that TX messages setting is wrong
         attempts = 0
         while True:
@@ -118,7 +118,7 @@ class BitcoinRPC(object):
         if json.loads(resp)['result'] == None:
             # make sure the block was created.
             log.info("CHECKING FOR BLOCK AFTER SUBMITBLOCK")
-            defer.returnValue((yield self.blockexists(hash_hex, block_hex)))
+            defer.returnValue((yield self.blockexists(hash_hex, scrypt_hex)))
         else:
             defer.returnValue(False)
 
@@ -152,8 +152,8 @@ class BitcoinRPC(object):
         defer.returnValue(json.loads(resp)['result'])
 
     @defer.inlineCallbacks
-    def blockexists(self, hash_hex, block_hex):
-        # try both hash_hex and block_hex to find block
+    def blockexists(self, hash_hex, scrypt_hex):
+        # try both hash_hex and scrypt_hex to find block
         try:
             resp = (yield self._call('getblock', [hash_hex,]))
             if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == hash_hex:
@@ -165,16 +165,16 @@ class BitcoinRPC(object):
 
         except Exception as e:
             try:
-                resp = (yield self._call('getblock', [block_hex,]))
-                if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == block_hex:
-                    log.debug("Block Confirmed: %s" % block_hex)
+                resp = (yield self._call('getblock', [scrypt_hex,]))
+                if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == scrypt_hex:
+                    log.debug("Block Confirmed: %s" % scrypt_hex)
                     defer.returnValue(True)
                 else:
-                    log.info("Cannot find block for %s" % block_hex)
+                    log.info("Cannot find block for %s" % scrypt_hex)
                     defer.returnValue(False)
 
             except Exception as e:
-                log.info("Cannot find block for hash_hex %s or block_hex %s" % hash_hex, block_hex)
+                log.info("Cannot find block for hash_hex %s or scrypt_hex %s" % hash_hex, scrypt_hex)
                 defer.returnValue(False)
 
 

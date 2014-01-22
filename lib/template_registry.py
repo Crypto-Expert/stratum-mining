@@ -283,10 +283,12 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-	    if settings.BLOCK_CHECK_SCRYPT_HASH:
-                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
-            else:
-                on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
+#	    if settings.BLOCK_CHECK_SCRYPT_HASH:
+#                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
+#            else:
+            #just try both serialized hash and scrypt hash when checking for block creation
+            on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
+
             if on_submit:
                 self.update_block()
 
