@@ -118,7 +118,7 @@ class BitcoinRPC(object):
         if json.loads(resp)['result'] == None:
             # make sure the block was created.
             log.info("CHECKING FOR BLOCK AFTER SUBMITBLOCK")
-            defer.returnValue((yield self.blockexists(hash_hex)))
+            defer.returnValue((yield self.blockexists(hash_hex, block_hex)))
         else:
             defer.returnValue(False)
 
@@ -152,11 +152,10 @@ class BitcoinRPC(object):
         defer.returnValue(json.loads(resp)['result'])
 
     @defer.inlineCallbacks
-    def blockexists(self, hash_hex):
-        log.debug("IN BLOCKEXISTS hash hex: %s", hash_hex)
+    def blockexists(self, hash_hex, block_hex):
+        # try both hash_hex and block_hex to find block
         try:
             resp = (yield self._call('getblock', [hash_hex,]))
-            log.debug("GETBLOCK RESULT: %s", resp)
             if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == hash_hex:
                 log.debug("Block Confirmed: %s" % hash_hex)
                 defer.returnValue(True)
@@ -165,5 +164,18 @@ class BitcoinRPC(object):
                 defer.returnValue(False)
 
         except Exception as e:
-                log.info("Cannot find block for %s" % hash_hex)
-                defer.returnValue(False)
+            try:
+                resp = (yield self._call('getblock', [block_hex,]))
+                if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == block_hex:
+                    log.debug("Block Confirmed: %s" % block_hex)
+                    defer.returnValue(True)
+                else:
+                    log.info("Cannot find block for %s" % block_hex)
+                    defer.returnValue(False)
+
+        except Exception as e:
+            log.info("Cannot find block for hash_hex %s or block_hex %s" % hash_hex, block_hex)
+            defer.returnValue(False)
+
+
+
