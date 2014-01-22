@@ -76,7 +76,7 @@ class BitcoinRPC(object):
                     log.debug("SUBMITBLOCK RESULT: %s", resp)
                     break
                 except Exception as e:
-                    if attempts > 5:
+                    if attempts > 4:
                         log.exception("submitblock failed. Problem Submitting block %s" % str(e))
                         log.exception("Try Enabling TX Messages in config.py!")
                         raise
@@ -89,7 +89,7 @@ class BitcoinRPC(object):
                     resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
                     break
                 except Exception as e:
-                    if attempts > 5:
+                    if attempts > 4:
                         log.exception("getblocktemplate submit failed. Problem Submitting block %s" % str(e))
                         log.exception("Try Enabling TX Messages in config.py!")
                         raise
@@ -108,7 +108,7 @@ class BitcoinRPC(object):
                         resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
                         break
                     except Exception as e:
-                        if attempts > 5:
+                        if attempts > 4:
                             log.exception("submitblock failed. Problem Submitting block %s" % str(e))
                             log.exception("Try Enabling TX Messages in config.py!")
                             raise
