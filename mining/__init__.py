@@ -126,6 +126,10 @@ def setup(on_startup):
     prune_thr.start()
     
     log.info("MINING SERVICE IS READY")
+
+    hash_hex = "00000000a6f9d7a5d6600cc0d17e1b48e39b457c3edbbb42452a5284e4b4ce24"
+    Interfaces.template_registry.bitcoin_rpc.conns[0].blockexists(hash_hex)
+
     on_startup.callback(True)
 
 
