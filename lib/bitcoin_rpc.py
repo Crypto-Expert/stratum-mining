@@ -63,7 +63,7 @@ class BitcoinRPC(object):
     
     @defer.inlineCallbacks
     def submitblock(self, block_hex, hash_hex):
-    #try 5 times? 500 Internal Server Error could mean random error or that TX messages setting is wrong
+  #try 5 times? 500 Internal Server Error could mean random error or that TX messages setting is wrong
         attempts = 0
         while True:
             attempts += 1
@@ -75,7 +75,7 @@ class BitcoinRPC(object):
                     log.debug("SUBMITBLOCK RESULT: %s", resp)
                     break
                 except Exception as e:
-                    if attempts > 5:
+                    if attempts > 4:
                         log.exception("submitblock failed. Problem Submitting block %s" % str(e))
                         log.exception("Try Enabling TX Messages in config.py!")
                         raise
@@ -88,7 +88,7 @@ class BitcoinRPC(object):
                     resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
                     break
                 except Exception as e:
-                    if attempts > 5:
+                    if attempts > 4:
                         log.exception("getblocktemplate submit failed. Problem Submitting block %s" % str(e))
                         log.exception("Try Enabling TX Messages in config.py!")
                         raise
@@ -107,13 +107,19 @@ class BitcoinRPC(object):
                         resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
                         break
                     except Exception as e:
-                        if attempts > 5:
+                        if attempts > 4:
                             log.exception("submitblock failed. Problem Submitting block %s" % str(e))
                             log.exception("Try Enabling TX Messages in config.py!")
                             raise
                         else:
                             continue
 
+        if json.loads(resp)['result'] == None:
+            # make sure the block was created.
+            log.info("CHECKING FOR BLOCK AFTER SUBMITBLOCK")
+            defer.returnValue((yield self.blockexists(hash_hex, scrypt_hex)))
+        else:
+            defer.returnValue(False)
 
     @defer.inlineCallbacks
     def getinfo(self):
