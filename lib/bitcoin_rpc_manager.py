@@ -93,7 +93,7 @@ class BitcoinRPCManager(object):
             while True:
                try:
                   return self.conns[self.curr_conn].check_submitblock()
-            except:
+               except:
                   self.next_connection()
 
     def submitblock(self, block_hex, hash_hex):
