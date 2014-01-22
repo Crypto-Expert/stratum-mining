@@ -72,6 +72,7 @@ class BitcoinRPC(object):
                     log.debug("Submitting Block with submitblock: attempt #"+str(attempts))
                     log.debug([block_hex,])
                     resp = (yield self._call('submitblock', [block_hex,]))
+                    log.debug("SUBMITBLOCK RESULT: %s", resp)
                     break
                 except Exception as e:
                     if attempts > 5:
