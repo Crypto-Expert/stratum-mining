@@ -283,9 +283,6 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-#	    if settings.BLOCK_CHECK_SCRYPT_HASH:
-#                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
-#            else:
             #just try both serialized hash and scrypt hash when checking for block creation
             on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
 
@@ -296,6 +293,7 @@ class TemplateRegistry(object):
                 return (header_hex, block_hash_hex, share_diff, on_submit)
             else:
                 return (header_hex, scrypt_hash_hex, share_diff, on_submit)
+
         
         if settings.SOLUTION_BLOCK_HASH:
         # Reverse the header and get the potential block hash (for scrypt only) only do this if we want to send in the block hash to the shares table
