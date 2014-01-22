@@ -174,7 +174,7 @@ class BitcoinRPC(object):
                     defer.returnValue(False)
 
             except Exception as e:
-                log.info("Cannot find block for hash_hex %s or scrypt_hex %s" % hash_hex, scrypt_hex)
+                log.info("Cannot find block for hash_hex %s or scrypt_hex %s" % (hash_hex, scrypt_hex))
                 defer.returnValue(False)
 
 
