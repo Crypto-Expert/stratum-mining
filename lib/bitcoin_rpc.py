@@ -153,12 +153,19 @@ class BitcoinRPC(object):
 
     @defer.inlineCallbacks
     def blockexists(self, hash_hex, scrypt_hex):
+        valid_hash = None
+        blockheight = None
         # try both hash_hex and scrypt_hex to find block
         try:
             resp = (yield self._call('getblock', [hash_hex,]))
-            if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == hash_hex:
-                log.debug("Block Confirmed: %s" % hash_hex)
-                defer.returnValue(True)
+            result = json.loads(resp)['result']
+            if "hash" in result and result['hash'] == hash_hex:
+                log.debug("Block found: %s" % hash_hex)
+                valid_hash = hash_hex
+                if "height" in result:
+                    blockheight = result['height']
+                else:
+                    defer.returnValue(True)
             else:
                 log.info("Cannot find block for %s" % hash_hex)
                 defer.returnValue(False)
@@ -166,9 +173,14 @@ class BitcoinRPC(object):
         except Exception as e:
             try:
                 resp = (yield self._call('getblock', [scrypt_hex,]))
-                if "hash" in json.loads(resp)['result'] and json.loads(resp)['result']['hash'] == scrypt_hex:
-                    log.debug("Block Confirmed: %s" % scrypt_hex)
-                    defer.returnValue(True)
+                result = json.loads(resp)['result']
+                if "hash" in result and result['hash'] == scrypt_hex:
+                    valid_hash = scrypt_hex
+                    log.debug("Block found: %s" % scrypt_hex)
+                    if "height" in result:
+                        blockheight = result['height']
+                    else:
+                        defer.returnValue(True)
                 else:
                     log.info("Cannot find block for %s" % scrypt_hex)
                     defer.returnValue(False)
@@ -177,5 +189,14 @@ class BitcoinRPC(object):
                 log.info("Cannot find block for hash_hex %s or scrypt_hex %s" % (hash_hex, scrypt_hex))
                 defer.returnValue(False)
 
+        #after we've found the block, check the block with that height in the blockchain to see if hashes match
+        try:
+            hash = (yield self._call('getblockhash', [blockheight,]))
+            if hash == valid_hash:
+                log.debug("Block confirmed: hash of block matches hash of blockheight")
+            else:
+                log.debug("Block invisible: hash of block does not match hash of blockheight")
 
-
+        except Exception as e:
+            # cannot get blockhash from height; block was created, so return true
+            defer.returnValue(True)
