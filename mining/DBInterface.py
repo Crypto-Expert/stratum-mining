@@ -3,6 +3,8 @@ import time
 from datetime import datetime
 import Queue
 import signal
+import Cache
+from sets import Set
 
 import lib.settings as settings
 
@@ -19,8 +21,7 @@ class DBInterface():
         self.q = Queue.Queue()
         self.queueclock = None
 
-        self.usercache = {}
-        self.clearusercache()
+        self.cache = Cache.Cache()
 
         self.nextStatsUpdate = 0
 
@@ -66,11 +67,6 @@ class DBInterface():
             import DB_None
             return DB_None.DB_None()
 	    
-
-    def clearusercache(self):
-        log.debug("DBInterface.clearusercache called")
-        self.usercache = {}
-        self.usercacheclock = reactor.callLater(settings.DB_USERCACHE_TIME , self.clearusercache)
 
     def scheduleImport(self):
         # This schedule's the Import
@@ -159,24 +155,30 @@ class DBInterface():
         if username == "":
             log.info("Rejected worker for blank username")
             return False
+        allowed_chars = Set('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-.')
+        if Set(username).issubset(allowed_chars) != True:
+            log.info("Username contains bad arguments")
+            return False
+        if username.count('.') > 1:
+            log.info("Username contains multiple . ")
+            return False
         
         # Force username and password to be strings
         username = str(username)
         password = str(password)
-        wid = username + ":-:" + password
-
-        if wid in self.usercache:
+        if not settings.USERS_CHECK_PASSWORD and self.user_exists(username): 
             return True
-        elif not settings.USERS_CHECK_PASSWORD and self.user_exists(username): 
-            self.usercache[wid] = 1
+        elif self.cache.get(username) == password:
             return True
         elif self.dbi.check_password(username, password):
-            self.usercache[wid] = 1
+            self.cache.set(username, password)
             return True
         elif settings.USERS_AUTOADD == True:
-            self.insert_user(username, password)
-            self.usercache[wid] = 1
-            return True
+		if self.dbi.get_uid(username) != False:
+		    uid = self.dbi.get_uid(username)
+		    self.dbi.insert_worker(uid, username, password)
+		    self.cache.set(username, password)
+		    return True
         
         log.info("Authentication for %s failed" % username)
         return False
@@ -188,6 +190,8 @@ class DBInterface():
         return self.dbi.get_user(id)
 
     def user_exists(self, username):
+    	if self.cache.get(username) is not None:
+             return True
         user = self.dbi.get_user(username)
         return user is not None 
 
@@ -195,11 +199,13 @@ class DBInterface():
         return self.dbi.insert_user(username, password)
 
     def delete_user(self, username):
+    	self.mc.delete(username)
         self.usercache = {}
         return self.dbi.delete_user(username)
         
     def update_user(self, username, password):
-        self.usercache = {}
+        self.mc.delete(username)
+        self.mc.set(username, password)
         return self.dbi.update_user(username, password)
 
     def update_worker_diff(self, username, diff):

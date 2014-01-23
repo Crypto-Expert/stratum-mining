@@ -188,3 +188,11 @@ NOTIFY_EMAIL_SERVER = 'localhost'  # E-Mail Sender
 NOTIFY_EMAIL_USERNAME = ''    # E-Mail server SMTP Logon
 NOTIFY_EMAIL_PASSWORD = ''
 NOTIFY_EMAIL_USETLS = True
+
+#### Memcache ####
+# Memcahce is a requirement. Enter the settings below
+MEMCACHE_HOST = "localhost" # hostname or IP that runs memcached
+MEMCACHE_PORT = 11211 # Port
+MEMCACHE_TIMEOUT = 900 # Key timeout
+MEMCACHE_PREFIX = "stratum_" # Prefix for keys
+
