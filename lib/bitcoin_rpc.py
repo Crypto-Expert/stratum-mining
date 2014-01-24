@@ -197,8 +197,10 @@ class BitcoinRPC(object):
             log.debug("hash of block of height %s: %s", blockheight, hash)
             if hash == valid_hash:
                 log.debug("Block confirmed: hash of block matches hash of blockheight")
+                defer.returnValue(True)
             else:
                 log.debug("Block invisible: hash of block does not match hash of blockheight")
+                defer.returnValue(False)
 
         except Exception as e:
             # cannot get blockhash from height; block was created, so return true
