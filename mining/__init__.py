@@ -65,20 +65,20 @@ def setup(on_startup):
 
         except Exception, e:
             if isinstance(e[2], str):
-		try:
-                   if isinstance(json.loads(e[2])['error']['message'], str):
-	              error = json.loads(e[2])['error']['message']
-                   if error == "Method not found":
-                      log.error("CoinD does not support getblocktemplate!!! (time to upgrade.)")
-                      reactor.stop()
-                   elif "downloading blocks" in error:
-                       log.error("CoinD downloading blockchain... will check back in 30 sec")
-                       time.sleep(29)
-                   else:
-                       log.error("Coind Error: %s", error)
-	        except ValueError:
-		        log.error("Failed Connect(HTTP 500 or Invalid JSON), Check Username and Password!")
-		        reactor.stop()
+                try:
+                    if isinstance(json.loads(e[2])['error']['message'], str):
+                        error = json.loads(e[2])['error']['message']
+                    if error == "Method not found":
+                        log.error("CoinD does not support getblocktemplate!!! (time to upgrade.)")
+                        reactor.stop()
+                    elif "downloading blocks" in error:
+                        log.error("CoinD downloading blockchain... will check back in 30 sec")
+                        time.sleep(29)
+                    else:
+                        log.error("Coind Error: %s", error)
+                except ValueError:
+                    log.error("Failed Connect(HTTP 500 or Invalid JSON), Check Username and Password!")
+                    reactor.stop()
         time.sleep(1)  # If we didn't get a result or the connect failed
         
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
