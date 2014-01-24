@@ -235,14 +235,14 @@ class CBlock(object):
         self.nNonce = 0
         self.vtx = []
         self.sha256 = None
-	if settings.COINDAEMON_ALGO == 'scrypt':
-	        self.scrypt = None
+        if settings.COINDAEMON_ALGO == 'scrypt':
+            self.scrypt = None
         elif settings.COINDAEMON_ALGO == 'quark':
-                self.quark = None
-	else: pass
-	if settings.COINDAEMON_Reward == 'POS':
-		self.signature = b""
-	else: pass
+            self.quark = None
+        else: pass
+        if settings.COINDAEMON_Reward == 'POS':
+            self.signature = b""
+        else: pass
 
     def deserialize(self, f):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
@@ -252,9 +252,10 @@ class CBlock(object):
         self.nBits = struct.unpack("<I", f.read(4))[0]
         self.nNonce = struct.unpack("<I", f.read(4))[0]
         self.vtx = deser_vector(f, CTransaction)
-	if settings.COINDAEMON_Reward == 'POS':
-		self.signature = deser_string(f)
-	else: pass
+        if settings.COINDAEMON_Reward == 'POS':
+            self.signature = deser_string(f)
+        else: pass
+
     def serialize(self):
         r = []
         r.append(struct.pack("<i", self.nVersion))
@@ -264,9 +265,9 @@ class CBlock(object):
         r.append(struct.pack("<I", self.nBits))
         r.append(struct.pack("<I", self.nNonce))
         r.append(ser_vector(self.vtx))
-	if settings.COINDAEMON_Reward == 'POS':
-		r.append(ser_string(self.signature))
-	else: pass
+        if settings.COINDAEMON_Reward == 'POS':
+            r.append(ser_string(self.signature))
+        else: pass
         return ''.join(r)
 
     if settings.COINDAEMON_ALGO == 'scrypt':
@@ -308,22 +309,25 @@ class CBlock(object):
 
 
     def is_valid(self):
-	if settings.COINDAEMON_ALGO == 'scrypt':
-	   self.calc_scrypt()
-	elif settings.COINDAEMON_ALGO == 'quark':
-           self.calc_quark()
-        else:
-	   self.calc_sha256()
-        target = uint256_from_compact(self.nBits)
         if settings.COINDAEMON_ALGO == 'scrypt':
-	   if self.scrypt > target:
-	   	return false
+            self.calc_scrypt()
         elif settings.COINDAEMON_ALGO == 'quark':
-	   if self.quark > target:
-                return false
-	else:
-	   if self.sha256 > target:
-           	return False
+            self.calc_quark()
+        else:
+            self.calc_sha256()
+
+        target = uint256_from_compact(self.nBits)
+
+        if settings.COINDAEMON_ALGO == 'scrypt':
+            if self.scrypt > target:
+                return False
+        elif settings.COINDAEMON_ALGO == 'quark':
+            if self.quark > target:
+                return False
+        else:
+           if self.sha256 > target:
+                return False
+
         hashes = []
         for tx in self.vtx:
             tx.sha256 = None
