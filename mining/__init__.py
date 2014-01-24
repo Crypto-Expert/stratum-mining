@@ -115,7 +115,7 @@ def setup(on_startup):
     # Template registry is the main interface between Stratum service
     # and pool core logic
     Interfaces.set_template_registry(registry)
-    
+
     # Set up polling mechanism for detecting new block on the network
     # This is just failsafe solution when -blocknotify
     # mechanism is not working properly    

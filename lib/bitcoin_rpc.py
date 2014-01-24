@@ -186,12 +186,15 @@ class BitcoinRPC(object):
                     defer.returnValue(False)
 
             except Exception as e:
-                log.info("Cannot find block for hash_hex %s or scrypt_hex %s" % (hash_hex, scrypt_hex))
+                log.info("Cannot find block for hash_hex %s or scrypt_hex %s" % hash_hex, scrypt_hex)
                 defer.returnValue(False)
 
         #after we've found the block, check the block with that height in the blockchain to see if hashes match
         try:
-            hash = (yield self._call('getblockhash', [blockheight,]))
+            log.debug("checking block hash against hash of block height: %s", blockheight)
+            resp = (yield self._call('getblockhash', [blockheight,]))
+            hash = json.loads(resp)['result']
+            log.debug("hash of block of height %s: %s", blockheight, hash)
             if hash == valid_hash:
                 log.debug("Block confirmed: hash of block matches hash of blockheight")
             else:
