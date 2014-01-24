@@ -155,13 +155,13 @@ class DB_Mysql():
                   %(lres)s, %(result)s, %(reason)s, %(solution)s)
                 """,
                 {
-                    "time": v[4], 
-                    "host": v[6], 
-                    "uname": v[0], 
-                    "lres": v[5], 
-                    "result": v[5], 
-                    "reason": v[9],
-                    "solution": v[2]
+                    "time": data[4],
+                    "host": data[6],
+                    "uname": data[0],
+                    "lres": data[5],
+                    "result": data[5],
+                    "reason": data[9],
+                    "solution": data[2]
                 }
             )
 
@@ -204,7 +204,7 @@ class DB_Mysql():
         
         user = self.dbc.fetchone()
         return user
-		
+
     def get_uid(self, id_or_username):
         log.debug("Finding user id of %s", id_or_username)
         uname = id_or_username.split(".", 1)[0]

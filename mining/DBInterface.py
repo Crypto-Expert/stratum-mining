@@ -66,13 +66,13 @@ class DBInterface():
             log.debug('DB_None INIT')
             import DB_None
             return DB_None.DB_None()
-	    
 
     def scheduleImport(self):
         # This schedule's the Import
         if settings.DATABASE_DRIVER == "sqlite":
-        	use_thread = False
-	else:   use_thread = True
+            use_thread = False
+        else:
+            use_thread = True
         
         if use_thread:
             self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import_thread)
@@ -174,11 +174,11 @@ class DBInterface():
             self.cache.set(username, password)
             return True
         elif settings.USERS_AUTOADD == True:
-		if self.dbi.get_uid(username) != False:
-		    uid = self.dbi.get_uid(username)
-		    self.dbi.insert_worker(uid, username, password)
-		    self.cache.set(username, password)
-		    return True
+            if self.dbi.get_uid(username) != False:
+                uid = self.dbi.get_uid(username)
+                self.dbi.insert_worker(uid, username, password)
+                self.cache.set(username, password)
+                return True
         
         log.info("Authentication for %s failed" % username)
         return False
@@ -190,8 +190,8 @@ class DBInterface():
         return self.dbi.get_user(id)
 
     def user_exists(self, username):
-    	if self.cache.get(username) is not None:
-             return True
+        if self.cache.get(username) is not None:
+            return True
         user = self.dbi.get_user(username)
         return user is not None 
 
@@ -199,7 +199,7 @@ class DBInterface():
         return self.dbi.insert_user(username, password)
 
     def delete_user(self, username):
-    	self.mc.delete(username)
+        self.mc.delete(username)
         self.usercache = {}
         return self.dbi.delete_user(username)
         

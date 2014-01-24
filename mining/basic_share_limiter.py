@@ -126,9 +126,9 @@ class BasicShareLimiter(object):
             else:
                 if ddiff > -1:
                     ddiff = -1
-	        # Don't drop below POOL_TARGET
-	        if (ddiff + current_difficulty) < settings.POOL_TARGET:
-		    ddiff = settings.VDIFF_MIN_TARGET - current_difficulty
+                # Don't drop below POOL_TARGET
+                if (ddiff + current_difficulty) < settings.POOL_TARGET:
+                    ddiff = settings.VDIFF_MIN_TARGET - current_difficulty
         elif avg < self.tmin:
             # For fractional 0.1 ddiff's just up by 1
             if settings.VDIFF_X2_TYPE:
@@ -174,8 +174,8 @@ class BasicShareLimiter(object):
         
         session['difficulty'] = new_diff
         connection_ref().rpc('mining.set_difficulty', [new_diff, ], is_notification=True)
-	log.debug("Notified of New Difficulty")
+        log.debug("Notified of New Difficulty")
         connection_ref().rpc('mining.notify', [work_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, False, ], is_notification=True)
         log.debug("Sent new work")
-	dbi.update_worker_diff(worker_name, new_diff)
+        dbi.update_worker_diff(worker_name, new_diff)
 

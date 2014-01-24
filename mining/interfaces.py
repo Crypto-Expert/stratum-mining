@@ -36,10 +36,10 @@ class WorkerManagerInterface(object):
         return (False, settings.POOL_TARGET)
 
     def register_work(self, worker_name, job_id, difficulty):
-	    now = Interfaces.timestamper.time()
-	    work_id = WorkIdGenerator.get_new_id()
-	    self.job_log.setdefault(worker_name, {})[work_id] = (job_id, difficulty, now)
-	    return work_id
+        now = Interfaces.timestamper.time()
+        work_id = WorkIdGenerator.get_new_id()
+        self.job_log.setdefault(worker_name, {})[work_id] = (job_id, difficulty, now)
+        return work_id
 
 class WorkIdGenerator(object):
     counter = 1000

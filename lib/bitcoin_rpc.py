@@ -14,14 +14,14 @@ log = lib.logger.get_logger('bitcoin_rpc')
 class BitcoinRPC(object):
     
     def __init__(self, host, port, username, password):
-	log.debug("Got to Bitcoin RPC")
+        log.debug("Got to Bitcoin RPC")
         self.bitcoin_url = 'http://%s:%d' % (host, port)
         self.credentials = base64.b64encode("%s:%s" % (username, password))
         self.headers = {
             'Content-Type': 'text/json',
             'Authorization': 'Basic %s' % self.credentials,
         }
-	client.HTTPClientFactory.noisy = False
+        client.HTTPClientFactory.noisy = False
         
     def _call_raw(self, data):
         client.Headers
@@ -44,17 +44,17 @@ class BitcoinRPC(object):
     def submitblock(self, block_hex, hash_hex):
         # Try submitblock if that fails, go to getblocktemplate
         try:
-	    log.debug("Submitting Block with Submit Block ")
-	    log.debug([block_hex,])
+            log.debug("Submitting Block with Submit Block ")
+            log.debug([block_hex,])
             resp = (yield self._call('submitblock', [block_hex,]))
         except Exception:
             try: 
-            	log.exception("Submit Block Failed, does the coind have submitblock?")
-	        log.exception("Trying GetBlockTemplate")
+                log.exception("Submit Block Failed, does the coind have submitblock?")
+                log.exception("Trying GetBlockTemplate")
                 resp = (yield self._call('getblocktemplate', [{'mode': 'submit', 'data': block_hex}]))
             except Exception as e:
                 log.exception("Both SubmitBlock and GetBlockTemplate failed. Problem Submitting block %s" % str(e))
-		log.exception("Try Enabling TX Messages in config.py!")
+                log.exception("Try Enabling TX Messages in config.py!")
                 raise
  
         if json.loads(resp)['result'] == None:
@@ -85,8 +85,8 @@ class BitcoinRPC(object):
     @defer.inlineCallbacks
     def validateaddress(self, address):
         resp = (yield self._call('validateaddress', [address,]))
-	defer.returnValue(json.loads(resp)['result'])
-	
+        defer.returnValue(json.loads(resp)['result'])
+
     @defer.inlineCallbacks
     def getdifficulty(self):
         resp = (yield self._call('getdifficulty', []))
@@ -101,4 +101,3 @@ class BitcoinRPC(object):
         else:
             log.info("Cannot find block for %s" % hash_hex)
             defer.returnValue(False)
-            

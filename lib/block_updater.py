@@ -18,7 +18,7 @@ class BlockUpdater(object):
     
     def __init__(self, registry, bitcoin_rpc):
         log.debug("Got To Block Updater")
-	self.bitcoin_rpc = bitcoin_rpc
+        self.bitcoin_rpc = bitcoin_rpc
         self.registry = registry
         self.clock = None
         self.schedule()
@@ -46,7 +46,7 @@ class BlockUpdater(object):
                 current_prevhash = None
                 
             log.info("Checking for new block.")
-	    prevhash = util.reverse_hash((yield self.bitcoin_rpc.prevhash()))
+            prevhash = util.reverse_hash((yield self.bitcoin_rpc.prevhash()))
             if prevhash and prevhash != current_prevhash:
                 log.info("New block! Prevhash: %s" % prevhash)
                 update = True

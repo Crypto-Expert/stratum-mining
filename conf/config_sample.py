@@ -9,7 +9,7 @@ You NEED to set the parameters in BASIC SETTINGS
 # ******************** BASIC SETTINGS ***************
 # These are the MUST BE SET parameters!
 
-CENTRAL_WALLET = 'set_valid_addresss_in_config!'	# local coin address where money goes
+CENTRAL_WALLET = 'set_valid_addresss_in_config!'    # local coin address where money goes
 
 COINDAEMON_TRUSTED_HOST = 'localhost'
 COINDAEMON_TRUSTED_PORT = 8332
@@ -50,7 +50,7 @@ DEBUG = False
 LOGDIR = 'log/'
 
 # Main application log file.
-LOGFILE = None		# eg. 'stratum.log'
+LOGFILE = None      # eg. 'stratum.log'
 LOGLEVEL = 'DEBUG'
 # Logging Rotation can be enabled with the following settings
 # It if not enabled here, you can set up logrotate to rotate the files. 
@@ -104,39 +104,39 @@ DB_MYSQL_HOST = 'localhost'
 DB_MYSQL_DBNAME = 'pooldb'
 DB_MYSQL_USER = 'pooldb'
 DB_MYSQL_PASS = '**empty**'
-DB_MYSQL_PORT = 3306		# Default port for MySQL
+DB_MYSQL_PORT = 3306        # Default port for MySQL
 
 # ******************** Adv. DB Settings *********************
 #  Don't change these unless you know what you are doing
 
-DB_LOADER_CHECKTIME = 15	# How often we check to see if we should run the loader
-DB_LOADER_REC_MIN = 10		# Min Records before the bulk loader fires
-DB_LOADER_REC_MAX = 50		# Max Records the bulk loader will commit at a time
+DB_LOADER_CHECKTIME = 15        # How often we check to see if we should run the loader
+DB_LOADER_REC_MIN = 10          # Min Records before the bulk loader fires
+DB_LOADER_REC_MAX = 50          # Max Records the bulk loader will commit at a time
 DB_LOADER_FORCE_TIME = 300      # How often the cache should be flushed into the DB regardless of size.
-DB_STATS_AVG_TIME = 300		# When using the DATABASE_EXTEND option, average speed over X sec
-				# Note: this is also how often it updates
-DB_USERCACHE_TIME = 600		# How long the usercache is good for before we refresh
+DB_STATS_AVG_TIME = 300         # When using the DATABASE_EXTEND option, average speed over X sec
+                                # Note: this is also how often it updates
+DB_USERCACHE_TIME = 600         # How long the usercache is good for before we refresh
 
 # ******************** Pool Settings *********************
 
 # User Auth Options
-USERS_AUTOADD = False		# Automatically add users to db when they connect.
+USERS_AUTOADD = False           # Automatically add users to db when they connect.
                                 # This basically disables User Auth for the pool.
-USERS_CHECK_PASSWORD = False	# Check the workers password? (Many pools don't)
+USERS_CHECK_PASSWORD = False    # Check the workers password? (Many pools don't)
 
 # Transaction Settings
-COINBASE_EXTRAS = '/stratumPool/'			# Extra Descriptive String to incorporate in solved blocks
-ALLOW_NONLOCAL_WALLET = False				# Allow valid, but NON-Local wallet's
+COINBASE_EXTRAS = '/stratumPool/'           # Extra Descriptive String to incorporate in solved blocks
+ALLOW_NONLOCAL_WALLET = False               # Allow valid, but NON-Local wallet's
 
 # Coin Daemon communication polling settings (In Seconds)
-PREVHASH_REFRESH_INTERVAL = 5 	# How often to check for new Blocks
-				#	If using the blocknotify script (recommended) set = to MERKLE_REFRESH_INTERVAL
-				#	(No reason to poll if we're getting pushed notifications)
-MERKLE_REFRESH_INTERVAL = 60	# How often check memorypool
-				#	This effectively resets the template and incorporates new transactions.
-				#	This should be "slow"
+PREVHASH_REFRESH_INTERVAL = 5       # How often to check for new Blocks
+                                    #   If using the blocknotify script (recommended) set = to MERKLE_REFRESH_INTERVAL
+                                    #   (No reason to poll if we're getting pushed notifications)
+MERKLE_REFRESH_INTERVAL = 60        # How often check memorypool
+                                    #   This effectively resets the template and incorporates new transactions.
+                                    #   This should be "slow"
 
-INSTANCE_ID = 31		# Used for extranonce and needs to be 0-31
+INSTANCE_ID = 31                    # Used for extranonce and needs to be 0-31
 
 # ******************** Pool Difficulty Settings *********************
 VDIFF_X2_TYPE = True  # powers of 2 e.g. 2,4,8,16,32,64,128,256,512,1024
