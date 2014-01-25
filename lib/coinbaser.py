@@ -25,66 +25,37 @@ class SimpleCoinbaser(object):
 
     def _validate(self):
         d = self.bitcoin_rpc.validateaddress(self.address)
-        if settings.COINDAEMON_Reward == 'POW':
-            d.addCallback(self._POW_address_check)
-        else:
-            d.addCallback(self._POS_address_check)
-
+        d.addCallback(self.address_check)
         d.addErrback(self._failure)
 
-    def _POW_address_check(self, result):
+    def address_check(self, result):
         if result['isvalid'] and result['ismine']:
-            self.is_valid = True
-            log.info("Coinbase address '%s' is valid" % self.address)
-        if result['isvalid'] == True:
-            log.debug("Is Valid = %s" % result['isvalid'])
-            log.debug("Address = %s " % result['address'])
-            log.debug("PubKey = %s " % result['pubkey'])
-            log.debug("Is Compressed = %s " % result['iscompressed'])
-            log.debug("Account = %s " % result['account'])
-            self.address = result['address']
-            if not self.on_load.called:
+           self.is_valid = True
+           log.info("Coinbase address '%s' is valid" % self.address)
+        if 'isvalid' in result and result['isvalid'] == True:
+           log.debug("Is Valid = %s" % result['isvalid'])
+        if 'address' in result:
+           log.debug("Address = %s " % result['address'])
+           self.address = result['address']
+        if 'pubkey' in result:
+           log.debug("PubKey = %s " % result['pubkey'])
+           self.pubkey = result['pubkey']
+        if 'iscompressed' in result:
+           log.debug("Is Compressed = %s " % result['iscompressed'])
+        if 'account' in result:
+           log.debug("Account = %s " % result['account'])
+           if not self.on_load.called:
                 self.on_load.callback(True)
-
+  
         elif result['isvalid'] and settings.ALLOW_NONLOCAL_WALLET == True :
              self.is_valid = True
              log.warning("!!! Coinbase address '%s' is valid BUT it is not local" % self.address)
              if not self.on_load.called:
                     self.on_load.callback(True)
-
         else:
             self.is_valid = False
             log.error("Coinbase address '%s' is NOT valid!" % self.address)
         
-    def _POS_address_check(self, result):
-        if result['isvalid'] and result['ismine']:
-            self.is_valid = True
-            log.info("Coinbase address '%s' is valid" % self.address)
-            if result['isvalid'] == True:
-                log.debug("Is Valid = %s" % result['isvalid'])
-                log.debug("Address = %s " % result['address'])
-                log.debug("PubKey = %s " % result['pubkey'])
-                log.debug("Is Compressed = %s " % result['iscompressed'])
-                log.debug("Account = %s " % result['account'])
-                self.pubkey = result['pubkey']
-            if not self.on_load.called:
-                self.on_load.callback(True)
-
-        elif result['isvalid'] and settings.ALLOW_NONLOCAL_WALLET == True :
-            self.is_valid = True
-            log.warning("!!! Coinbase address '%s' is valid BUT it is not local" % self.address)
-            self.pubkey = result['pubkey']
-            if not self.on_load.called:
-                self.on_load.callback(True)
-
-        else:
-            self.is_valid = False
-
-    #def on_new_block(self):
-    #    pass
-    
-    #def on_new_template(self):
-    #    pass
     def _failure(self, failure):
            log.exception("Cannot validate Wallet address '%s'" % self.address)
            raise
