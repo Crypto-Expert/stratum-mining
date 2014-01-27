@@ -118,13 +118,15 @@ class MiningService(GenericService):
         # Check if worker is authorized to submit shares
         ip = self.connection_ref()._get_ip()
         if not Interfaces.worker_manager.authorize(worker_name, session['authorized'].get(worker_name)):
-            raise SubmitException("Worker is not authorized: IP "+str(ip))
+            log.info("Worker is not authorized: IP %s", str(ip))
+            raise SubmitException("Worker is not authorized")
 
         # Check if extranonce1 is in connection session
         extranonce1_bin = session.get('extranonce1', None)
         
         if not extranonce1_bin:
-            raise SubmitException("Connection is not subscribed for mining: %s"+str(ip))
+            log.info("Connection is not subscribed for mining: IP %s", str(ip))
+            raise SubmitException("Connection is not subscribed for mining")
         
         # Get current block job_id
         difficulty = session['difficulty']
