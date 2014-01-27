@@ -78,6 +78,8 @@ class BitcoinRPC(object):
             if (str(e) == "500 Internal Server Error"):
                 resp = (yield self._call('getblocktemplate', []))
                 defer.returnValue(json.loads(resp)['result'])
+            else:
+                raise
                                                   
     @defer.inlineCallbacks
     def prevhash(self):
