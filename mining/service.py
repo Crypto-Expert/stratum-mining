@@ -90,6 +90,8 @@ class MiningService(GenericService):
             Interfaces.worker_manager.worker_log['authorized'][worker_name] = (0, 0, False, session['difficulty'], is_ext_diff, Interfaces.timestamper.time())            
             return True
         else:
+            ip = self.connection_ref()._get_ip()
+            log.info("Failed worker authorization: IP %s", str(ip))
             if worker_name in session['authorized']:
                 del session['authorized'][worker_name]
             if worker_name in Interfaces.worker_manager.worker_log['authorized']:
@@ -116,13 +118,16 @@ class MiningService(GenericService):
         session.setdefault('authorized', {})
         
         # Check if worker is authorized to submit shares
+        ip = self.connection_ref()._get_ip()
         if not Interfaces.worker_manager.authorize(worker_name, session['authorized'].get(worker_name)):
+            log.info("Worker is not authorized: IP %s", str(ip))
             raise SubmitException("Worker is not authorized")
 
         # Check if extranonce1 is in connection session
         extranonce1_bin = session.get('extranonce1', None)
         
         if not extranonce1_bin:
+            log.info("Connection is not subscribed for mining: IP %s", str(ip))
             raise SubmitException("Connection is not subscribed for mining")
         
         # Get current block job_id
@@ -136,7 +141,7 @@ class MiningService(GenericService):
         #log.debug("worker_job_log: %s" % repr(Interfaces.worker_manager.job_log))
 
         submit_time = Interfaces.timestamper.time()
-        ip = self.connection_ref()._get_ip()
+
         (valid, invalid, is_banned, diff, is_ext_diff, last_ts) = Interfaces.worker_manager.worker_log['authorized'][worker_name]
         percent = float(float(invalid) / (float(valid) if valid else 1) * 100)
 
