@@ -90,6 +90,8 @@ class MiningService(GenericService):
             Interfaces.worker_manager.worker_log['authorized'][worker_name] = (0, 0, False, session['difficulty'], is_ext_diff, Interfaces.timestamper.time())            
             return True
         else:
+            ip = self.connection_ref()._get_ip()
+            log.info("Failed worker authorization: IP %s", str(ip))
             if worker_name in session['authorized']:
                 del session['authorized'][worker_name]
             if worker_name in Interfaces.worker_manager.worker_log['authorized']:
