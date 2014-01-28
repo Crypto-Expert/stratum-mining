@@ -196,3 +196,9 @@ MEMCACHE_PORT = 11211 # Port
 MEMCACHE_TIMEOUT = 900 # Key timeout
 MEMCACHE_PREFIX = "stratum_" # Prefix for keys
 
+######## IRC BOT ##################
+BOT_ENABLED = True
+BOT_NETWORK = "irc.freenode.net"
+BOT_PORT = 6667
+BOT_NICK = "StratumBot"
+BOT_CHANNEL = "#cryptopools"
