@@ -23,6 +23,7 @@ class BitcoinRPC(object):
         }
         client.HTTPClientFactory.noisy = False
 	self.has_submitblock = False        
+
     def _call_raw(self, data):
         client.Headers
         return client.getPage(
@@ -45,7 +46,7 @@ class BitcoinRPC(object):
         try:
             log.info("Checking for submitblock")
             resp = (yield self._call('submitblock', []))
-	    self.has_submitblock = Trie
+	    self.has_submitblock = True
         except Exception as e:
             if (str(e) == "404 Not Found"):
                 log.debug("No submitblock detected.")
@@ -61,7 +62,7 @@ class BitcoinRPC(object):
 
     
     @defer.inlineCallbacks
-    def submitblock(self, block_hex, hash_hex):
+    def submitblock(self, block_hex, hash_hex, scrypt_hex):
   #try 5 times? 500 Internal Server Error could mean random error or that TX messages setting is wrong
         attempts = 0
         while True:
@@ -116,7 +117,7 @@ class BitcoinRPC(object):
         if json.loads(resp)['result'] == None:
             # make sure the block was created.
             log.info("CHECKING FOR BLOCK AFTER SUBMITBLOCK")
-            defer.returnValue((yield self.blockexists(hash_hex, block_hex)))
+	    defer.returnValue((yield self.blockexists(hash_hex, scrypt_hex)))
         else:
             defer.returnValue(False)
 
