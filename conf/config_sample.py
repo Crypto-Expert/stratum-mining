@@ -19,7 +19,7 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 # Coin Algorithm is the option used to determine the algortithm used by stratum
 # This currently works with POW and POS coins
 # The available options are:
-# scrypt, sha256d, scrypt-jane and quark
+# scrypt, sha256d, scrypt-jane, skeinhash, and quark
 # If the option does not meet either of these criteria stratum defaults to scrypt
 # For Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_ALGO = 'scrypt'
