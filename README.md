@@ -4,7 +4,7 @@ Stratum-mining is a pooled mining protocol. It is a replacement for *getwork* ba
 
 This is a implementation of stratum-mining for scrypt based coins. It is compatible with *MPOS* as it complies with the standards of *pushpool*. The end goal is to build on these standards to come up with a more stable solution.
 
-The goal is to make a reliable stratum mining server for scrypt based coins. Over time I will develop this to be more feature rich and very stable. If you would like to see a feature please file a feature request. 
+The goal is to make a reliable stratum mining server for a wide range of coins unlike other forks where the code is limited to specific algorithm's. Over time I will develop this to be more feature rich and very stable. If you would like to see a feature please file a feature request. 
 
 **NOTE:** This fork is still in development. Many features may be broken. Please report any broken features or issues.
 
@@ -14,7 +14,6 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 * Solved Block Confirmation
 * Job Based Vardiff support
 * Solution Block Hash Support
-* *NEW* SHA256 and Scrypt Algo Support 
 * Log Rotation
 * Initial low difficulty share confirmation
 * Multiple *coind* wallets
@@ -34,7 +33,7 @@ The goal is to make a reliable stratum mining server for scrypt based coins. Ove
 * Doge: DLtBRYtNCzfiZfcpUeEr8KPvy5k1aR7jca
 * SRC:  sMP2wHN5H2ik7FQDPjhSzFZUWux75BYZGe
 * ARG:  AQvXPWVqGzcpH2j2XSRG7X5R9nA3y9D9aQ
-* CryptsyTradeKey: ec13d183e304326ebd41258d6ae7188e303866fe
+* Cryptsy Trade Key: ec13d183e304326ebd41258d6ae7188e303866fe
 
 
 #Requirements
@@ -76,10 +75,9 @@ Please research and attempt to debug first.
 
 #Credits
 
-* Original version by Slush0 (original stratum code)
-* More Features added by GeneralFault, Wadee Womersley and Moopless
+* Original version by Slush0 and ArtForz (original stratum code)
+* More Features added by GeneralFault, Wadee Womersley, Viperaus, TheSeven and Moopless
 * Scrypt conversion from work done by viperaus 
-* PoS conversion done by TheSeven
 * Multi Algo, Vardiff, DB and MPOS support done by Ahmed_Bodi and Obigal
 
 #License
