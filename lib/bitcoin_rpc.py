@@ -61,7 +61,7 @@ class BitcoinRPC(object):
 
     
     @defer.inlineCallbacks
-    def submitblock(self, block_hex, hash_hex):
+    def submitblock(self, block_hex, hash_hex, scrypt_hex):
   #try 5 times? 500 Internal Server Error could mean random error or that TX messages setting is wrong
         attempts = 0
         while True:
