@@ -83,7 +83,7 @@ class DB_Mysql_Vardiff(DB_Mysql.DB_Mysql):
 
         shareid = self.dbc.fetchone()
 
-        if shareid[0] > 0:
+        if shareid and shareid[0] > 0:
             # Note: difficulty = -1 here
             self.execute(
                 """
@@ -113,16 +113,15 @@ class DB_Mysql_Vardiff(DB_Mysql.DB_Mysql):
                   %(lres)s, %(result)s, %(reason)s, %(solution)s)
                 """,
                 {
-                    "time": v[4], 
-                    "host": v[6], 
-                    "uname": v[0], 
-                    "lres": v[5], 
-                    "result": v[5], 
-                    "reason": v[9],
-                    "solution": v[2]
+                    "time": data[4],
+                    "host": data[6],
+                    "uname": data[0],
+                    "lres": data[5],
+                    "result": data[5],
+                    "reason": data[9],
+                    "solution": data[2]
                 }
             )
-
             self.dbh.commit()
 
 
