@@ -22,20 +22,12 @@ log.debug("Got to Halfnode")
 
 if settings.COINDAEMON_ALGO == 'scrypt':
     log.debug("########################################### Loading LTC Scrypt #########################################################")
-    import ltc_scrypt
+    import settings.SCRYPTJANE_NAME
 elif settings.COINDAEMON_ALGO == 'quark':
     log.debug("########################################### Loading Quark Support #########################################################")
     import quark_hash
 else: 
     log.debug("########################################### Loading SHA256 Support ######################################################")
-
-#if settings.COINDAEMON_Reward == 'POS':
-#        log.debug("########################################### Loading POS Support #########################################################")
-#        pass
-#else:
-#        log.debug("########################################### Loading POW Support ######################################################")
-#        pass
-
 if settings.COINDAEMON_TX == 'yes':
     log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")
     pass
