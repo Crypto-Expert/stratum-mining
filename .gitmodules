@@ -10,3 +10,6 @@
 [submodule "externals/quarkcoin-hash"]
 	path = externals/quarkcoin-hash
 	url = https://github.com/Neisklar/quarkcoin-hash-python
+[submodule "externals/vertcoin_scrypt"]
+	path = externals/vertcoin_scrypt
+	url = https://github.com/scr34m/vertcoin_scrypt.git
