@@ -28,7 +28,7 @@ elif settings.COINDAEMON_ALGO == 'scrypt-jane':
 elif settings.COINDAEMON_ALGO == 'quark':
     log.debug("########################################### Loading Quark Support #########################################################")
     import quark_hash
-    elif settings.COINDAEMON_ALGO == 'skeinhash':
+elif settings.COINDAEMON_ALGO == 'skeinhash':
     import skeinhash
 
 else: 
@@ -232,7 +232,7 @@ class CBlock(object):
         self.nNonce = 0
         self.vtx = []
         self.sha256 = None
-        if settings.COINDAEMON_ALGO == 'scrypt'
+        if settings.COINDAEMON_ALGO == 'scrypt':
             self.scrypt= None
         elif settings.COINDAEMON_ALGO == 'scrypt-jane':
             self.scryptjane = None

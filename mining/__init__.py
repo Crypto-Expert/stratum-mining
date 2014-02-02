@@ -7,7 +7,6 @@ import simplejson as json
 from twisted.internet import reactor
 import threading
 from mining.work_log_pruner import WorkLogPruner
-
 @defer.inlineCallbacks
 def setup(on_startup):
     '''Setup mining service internal environment.
@@ -17,11 +16,13 @@ def setup(on_startup):
     *before* you call setup() in the launcher script.'''
     
     import lib.settings as settings
-        
+           
     # Get logging online as soon as possible
     import lib.logger
     log = lib.logger.get_logger('mining')
-
+    if settings.CONFIG_VERSION == None:
+	settings.CONFIG_VERSION = 0
+    else: pass
     from interfaces import Interfaces
     
     from lib.block_updater import BlockUpdater
@@ -31,10 +32,6 @@ def setup(on_startup):
     from lib.coinbaser import SimpleCoinbaser
     
     bitcoin_rpc = BitcoinRPCManager()
-    if settings.CONFIG_VERSION != 0.1:
-       log.exception("Config File is out of date. Stratum will now shut down")
-       reactor.stop()
-    else: continue
     # Check litecoind
     #         Check we can connect (sleep)
     # Check the results:
@@ -44,7 +41,7 @@ def setup(on_startup):
     while True:
         try:
             result = (yield bitcoin_rpc.check_submitblock())
-            if result == True:
+	    if result == True:
                 log.info("Found submitblock")
             elif result == False:
                 log.info("Did not find submitblock")
@@ -101,7 +98,12 @@ def setup(on_startup):
         time.sleep(1)  # If we didn't get a result or the connect failed
         
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
-
+    try:
+       if settings.CONFIG_VERSION != 0.1:
+          log.exception("Config File Out OF Date")
+          reactor.stop()
+    except:
+	  pass
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)
