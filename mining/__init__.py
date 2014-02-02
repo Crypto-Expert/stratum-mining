@@ -33,6 +33,7 @@ def setup(on_startup):
     bitcoin_rpc = BitcoinRPCManager()
     if settings.CONFIG_VERSION != 0.1:
        log.exception("Config File is out of date. Stratum will now shut down")
+       reactor.stop()
        break
     else: continue
     # Check litecoind
