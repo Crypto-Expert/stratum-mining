@@ -174,7 +174,7 @@ class DBInterface():
             self.cache.set(username, password)
             return True
         elif settings.USERS_AUTOADD == True:
-            if self.dbi.get_uid(username) != False:
+            if self.dbi.get_uid(username) == False:
                 uid = self.dbi.get_uid(username)
                 self.dbi.insert_worker(uid, username, password)
                 self.cache.set(username, password)
