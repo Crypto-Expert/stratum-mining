@@ -6,7 +6,7 @@ import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
     import ltc_scrypt
 elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-    import yac_scrypt
+    import settings.SCRYPTJANE_NAME 
 elif settings.COINDAEMON_ALGO == 'quark':
     import quark_hash
 elif settings.COINDAEMON_ALGO == 'skeinhash':
