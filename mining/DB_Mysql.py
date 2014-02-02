@@ -208,7 +208,7 @@ class DB_Mysql():
     def get_uid(self, id_or_username):
         log.debug("Finding user id of %s", id_or_username)
         uname = id_or_username.split(".", 1)[0]
-        self.execute("SELECT `id` FROM `accounts` where username = %s", (uname))
+        self.execute("SELECT `id` FROM `pool_worker` where username = %s", (uname))
         row = self.dbc.fetchone()
 
         if row is None:
@@ -345,24 +345,24 @@ class DB_Mysql():
     def get_uid(self, id_or_username):
         log.debug("Finding user id of %s", id_or_username)
         uname = id_or_username.split(".", 1)[0]
-        self.execute("SELECT `id` FROM `accounts` where username = %s", (uname))
+        self.execute("SELECT `id` FROM `pool_worker` where username = %s", (uname))
         row = self.dbc.fetchone()
-        
-       
+
+
         if row is None:
             return False
         else:
             uid = row[0]
             return uid
-    
-    
+
+
     def insert_worker(self, account_id, username, password):
         log.debug("Adding new worker %s", username)
         query = "INSERT INTO pool_worker"
         self.execute(query + '(account_id, username, password) VALUES (%s, %s, %s);', (account_id, username, password))
         self.dbh.commit()
         return str(username)
-        
+
 
 
     def close(self):
