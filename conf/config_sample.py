@@ -5,7 +5,8 @@ Please rename it to config.py and fill correct values.
 This is already setup with sane values for solomining.
 You NEED to set the parameters in BASIC SETTINGS
 '''
-
+#********************* Config Version ***************
+CONFIG_VERSION = 0.1
 # ******************** BASIC SETTINGS ***************
 # These are the MUST BE SET parameters!
 
@@ -16,14 +17,10 @@ COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
-# Coin Algorithm is the option used to determine the algortithm used by stratum
-# This currently works with POW and POS coins
-# The available options are:
-# scrypt, sha256d, scrypt-jane, skeinhash, and quark
-# If the option does not meet either of these criteria stratum defaults to scrypt
-# For Coins which support TX Messages please enter yes in the TX selection
-COINDAEMON_ALGO = 'scrypt'
-COINDAEMON_TX = 'no'
+COINDAEMON_ALGO = 'scrypt'    # The available options are:  scrypt, sha256d, scrypt-jane, skeinhash, and quark
+SCRYPTJANE_NAME = 'vtc_scrypt'
+COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
+
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
@@ -139,7 +136,7 @@ MERKLE_REFRESH_INTERVAL = 60        # How often check memorypool
 INSTANCE_ID = 31                    # Used for extranonce and needs to be 0-31
 
 # ******************** Pool Difficulty Settings *********************
-VDIFF_X2_TYPE = True  # powers of 2 e.g. 2,4,8,16,32,64,128,256,512,1024
+VDIFF_X2_TYPE = False  # powers of 2 e.g. 2,4,8,16,32,64,128,256,512,1024
 VDIFF_FLOAT = False    # Use float difficulty
 
 # Pool Target (Base Difficulty)
