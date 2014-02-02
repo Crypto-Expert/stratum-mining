@@ -31,7 +31,10 @@ def setup(on_startup):
     from lib.coinbaser import SimpleCoinbaser
     
     bitcoin_rpc = BitcoinRPCManager()
-    
+    if settings.CONFIG_VERSION != 0.1:
+       log.exception("Config File is out of date. Stratum will now shut down")
+       break
+    else: continue
     # Check litecoind
     #         Check we can connect (sleep)
     # Check the results:
