@@ -6,7 +6,7 @@ import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
     import ltc_scrypt
 elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-    import settings.SCRYPTJANE_NAME 
+    scryptjane = __import__(settings.SCRYPTJANE_NAME) 
 elif settings.COINDAEMON_ALGO == 'quark':
     import quark_hash
 elif settings.COINDAEMON_ALGO == 'skeinhash':
@@ -241,7 +241,7 @@ class TemplateRegistry(object):
         if settings.COINDAEMON_ALGO == 'scrypt':
             hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-            hash_bin = yac_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
+            hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ])), int(ntime, 16))
         elif settings.COINDAEMON_ALGO == 'quark':
             hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
 	elif settings.COINDAEMON_ALGO == 'skeinhash':
