@@ -24,7 +24,8 @@ if settings.COINDAEMON_ALGO == 'scrypt':
     log.debug("########################################### Loading LTC Scrypt #########################################################")
     import ltc_scrypt
 elif settings.COINDAEMON_ALGO == 'scrypt-jane':
-    import settings.SCRYPTJANE_NAME
+    __import__(settings.SCRYPTJANE_NAME)
+    log.debug("########################################### LoadingScrypt jane #########################################################")
 elif settings.COINDAEMON_ALGO == 'quark':
     log.debug("########################################### Loading Quark Support #########################################################")
     import quark_hash
