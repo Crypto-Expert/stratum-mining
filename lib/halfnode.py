@@ -11,6 +11,7 @@ import sys
 import random
 import cStringIO
 from Crypto.Hash import SHA256
+from sha3 import sha3_256
 
 from twisted.internet.protocol import Protocol
 from util import *
@@ -26,6 +27,11 @@ if settings.COINDAEMON_ALGO == 'scrypt':
 elif settings.COINDAEMON_ALGO == 'quark':
     log.debug("########################################### Loading Quark Support #########################################################")
     import quark_hash
+elif settings.COINDAEMON_ALGO == 'max':
+    log.debug("########################################### Loading Max Support #########################################################")
+    import max_hash
+elif settings.COINDAEMON_ALGO == 'keccak':
+     import sha3
 else: 
     log.debug("########################################### Loading SHA256 Support ######################################################")
 
@@ -156,6 +162,7 @@ class CTxOut(object):
 
 class CTransaction(object):
     def __init__(self):
+        self.sha3 = None
         if settings.COINDAEMON_Reward == 'POW':
             self.nVersion = 1
             if settings.COINDAEMON_TX == 'yes':
@@ -239,6 +246,10 @@ class CBlock(object):
             self.scrypt = None
         elif settings.COINDAEMON_ALGO == 'quark':
             self.quark = None
+        elif settings.COINDAEMON_ALGO == 'max':
+            self.max = None
+        elif settings.COINDAEMON_ALGO == 'keccak':
+             self.sha3 = None
         else: pass
         if settings.COINDAEMON_Reward == 'POS':
             self.signature = b""
@@ -294,6 +305,37 @@ class CBlock(object):
                 r.append(struct.pack("<I", self.nNonce))
                 self.quark = uint256_from_str(quark_hash.getPoWHash(''.join(r)))
              return self.quark
+    elif settings.COINDAEMON_ALGO == 'max':
+        def calc_max(self):
+            if self.max is None:
+                r = []
+                r.append(struct.pack("<i", self.nVersion))
+                r.append(ser_uint256(self.hashPrevBlock))
+                r.append(ser_uint256(self.hashMerkleRoot))
+                r.append(struct.pack("<I", self.nTime))
+                r.append(struct.pack("<I", self.nBits))
+                r.append(struct.pack("<I", self.nNonce))
+                #self.max = uint256_from_str(max_hash.getPoWHash(''.join(r)))
+                self.max = uint256_from_str(sha3_256(''.join(r)).digest())
+            return self.max
+    elif settings.COINDAEMON_ALGO == 'keccak':
+        def calc_sha3(self):
+            if self.sha3 is None:
+                r = []
+                r.append(struct.pack("<i", self.nVersion))
+                r.append(ser_uint256(self.hashPrevBlock))
+                r.append(ser_uint256(self.hashMerkleRoot))
+                r.append(struct.pack("<I", self.nTime))
+                r.append(struct.pack("<I", self.nBits))
+                r.append(struct.pack("<I", self.nNonce))
+                s = sha3.SHA3256()
+                s.update(''.join(r) + str(self.nTime))
+#            hash_bin_temp = s.hexdigest()
+#            s = sha3.SHA3256()
+#            s.update(hash_bin_temp)
+            block_hash_bin = s.hexdigest()
+            self.sha3 = uint256_from_str(block_hash_bin)
+            return self.sha3
     else:
        def calc_sha256(self):
            if self.sha256 is None:
@@ -313,6 +355,10 @@ class CBlock(object):
             self.calc_scrypt()
         elif settings.COINDAEMON_ALGO == 'quark':
             self.calc_quark()
+        elif settings.COINDAEMON_ALGO == 'max':
+            self.calc_max()
+        elif settings.COINDAEMON_ALGO == 'keccak':
+             self.calc_sha3()
         else:
             self.calc_sha256()
 
@@ -323,6 +369,12 @@ class CBlock(object):
                 return False
         elif settings.COINDAEMON_ALGO == 'quark':
             if self.quark > target:
+                return False
+        elif settings.COINDAEMON_ALGO == 'max':
+            if self.max > target:
+                return False
+        elif settings.COINDAEMON_ALGO == 'sha3':
+            if self.sha3 > target:
                 return False
         else:
            if self.sha256 > target:
