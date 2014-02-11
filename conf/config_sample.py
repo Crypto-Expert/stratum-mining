@@ -16,6 +16,8 @@ COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
+
+
 # Coin Algorithm is the option used to determine the algortithm used by stratum
 # This currently works with POW and POS coins
 # The available options are:
@@ -37,6 +39,13 @@ COINDAEMON_TX = 'no'
 #COINDAEMON_TRUSTED_PORT_2 = 8332
 #COINDAEMON_TRUSTED_USER_2 = 'user'
 #COINDAEMON_TRUSTED_PASSWORD_2 = 'somepassword'
+
+# ******************* Merge Mining Coin ***************
+MM_HOST = 'localhost'
+MM_PORT = 8332
+MM_USER = 'user'
+MM_PASSWORD = 'somepassword'
+
 
 # ******************** GENERAL SETTINGS ***************
 # Set process name of twistd, much more comfortable if you run multiple processes on one machine

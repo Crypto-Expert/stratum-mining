@@ -31,13 +31,17 @@ def setup(on_startup):
     from lib.coinbaser import SimpleCoinbaser
     
     bitcoin_rpc = BitcoinRPCManager()
+    mm_rpc = BitcoinRPCManager(settings.MM_HOST,
+                               settings.MM_PORT,
+                               settings.MM_USER,
+                               settings.MM_PASSWORD)
     
     # Check litecoind
     #         Check we can connect (sleep)
     # Check the results:
     #         - getblocktemplate is avalible        (Die if not)
     #         - we are not still downloading the blockchain        (Sleep)
-    log.info("Connecting to litecoind...")
+    log.info("Connecting to master coind...")
     while True:
         try:
             result = (yield bitcoin_rpc.check_submitblock())
@@ -99,6 +103,51 @@ def setup(on_startup):
         
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
 
+    log.info("Connecting to mm coind...")
+    while True:
+        try:
+            result = (yield mm_rpc.check_height())
+        except ConnectionRefusedError, e:
+            log.error("Connection refused while trying to connect to the coind (are your COIND_* settings correct?)")
+            reactor.stop()
+            break
+
+        except Exception, e:
+            log.debug(str(e))
+
+        try:
+            result = (yield mm_rpc.getauxblock())
+            if isinstance(result, dict):
+                # litecoind implements version 1 of getblocktemplate
+                print result
+                break
+
+        except ConnectionRefusedError, e:
+            log.error("Connection refused while trying to connect to the coind (are your COIND_* settings correct?)")
+            reactor.stop()
+            break
+
+        except Exception, e:
+            if isinstance(e[2], str):
+                try:
+                    if isinstance(json.loads(e[2])['error']['message'], str):
+                        error = json.loads(e[2])['error']['message']
+                    if error == "Method not found":
+                        log.error("CoinD does not support getauxblock!!! (time to upgrade.)")
+                        reactor.stop()
+                    elif "downloading blocks" in error:
+                        log.error("CoinD downloading blockchain... will check back in 30 sec")
+                        time.sleep(29)
+                    else:
+                        log.error("Coind Error: %s", error)
+                except ValueError:
+                    log.error("Failed Connect(HTTP 500 or Invalid JSON), Check Username and Password!")
+                    reactor.stop()
+        time.sleep(1)  # If we didn't get a result or the connect failed
+        
+    log.info('Connected to the MM coind - Begining to load Address and Module Checks!')
+
+
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)
@@ -106,6 +155,7 @@ def setup(on_startup):
     registry = TemplateRegistry(BlockTemplate,
                                 coinbaser,
                                 bitcoin_rpc,
+                                mm_rpc,
                                 getattr(settings, 'INSTANCE_ID'),
                                 MiningSubscription.on_template,
                                 Interfaces.share_manager.on_network_block)

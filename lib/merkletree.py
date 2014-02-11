@@ -63,6 +63,12 @@ class MerkleTree:
     def merkleRoot(self):
         return self.withFirst(self.data[0])
 
+    def branchCount(self):
+        return binascii.hexlify(ser_number(len(self.data)))
+
+    def branchHex(self):
+        return ''.join([binascii.hexlify(d) for d in self.data])
+
 # MerkleTree tests
 def _test():
     import binascii

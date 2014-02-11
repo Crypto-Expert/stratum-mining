@@ -40,6 +40,7 @@ class BlockTemplate(halfnode.CBlock):
         self.timedelta = 0
         self.curtime = 0
         self.target = 0
+        self.mm_target = 0
         #self.coinbase_hex = None 
         self.merkletree = None
                 
@@ -50,7 +51,7 @@ class BlockTemplate(halfnode.CBlock):
         # There may be registered also invalid shares inside!
         self.submits = [] 
                 
-    def fill_from_rpc(self, data):
+    def fill_from_rpc(self, data,mm_script,mm_target):
         '''Convert getblocktemplate result into BlockTemplate instance'''
         
         #txhashes = [None] + [ binascii.unhexlify(t['hash']) for t in data['transactions'] ]
@@ -59,12 +60,12 @@ class BlockTemplate(halfnode.CBlock):
         if settings.COINDAEMON_Reward == 'POW':
             coinbase = CoinbaseTransactionPOW(self.timestamper, self.coinbaser, data['coinbasevalue'],
                                               data['coinbaseaux']['flags'], data['height'],
-                                              settings.COINBASE_EXTRAS)
+                                              settings.COINBASE_EXTRAS+mm_script)
         else:
             coinbase = CoinbaseTransactionPOS(self.timestamper, self.coinbaser, data['coinbasevalue'],
                                               data['coinbaseaux']['flags'], data['height'],
-                                              settings.COINBASE_EXTRAS, data['curtime'])
-
+                                              settings.COINBASE_EXTRAS+mm_script, data['curtime'])
+            
         self.height = data['height']
         self.nVersion = data['version']
         self.hashPrevBlock = int(data['previousblockhash'], 16)
@@ -83,7 +84,7 @@ class BlockTemplate(halfnode.CBlock):
         self.timedelta = self.curtime - int(self.timestamper.time()) 
         self.merkletree = mt
         self.target = util.uint256_from_compact(self.nBits)
-        
+        self.mm_target = mm_target
         # Reversed prevhash
         self.prevhash_bin = binascii.unhexlify(util.reverse_hash(data['previousblockhash']))
         self.prevhash_hex = "%064x" % self.hashPrevBlock

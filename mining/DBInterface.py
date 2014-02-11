@@ -187,10 +187,7 @@ class DBInterface():
         return self.dbi.list_users()
     
     def get_user(self, id):
-        if self.cache.get(id) is None:
-            self.cache.set(id,self.dbi.get_user(id))
-        return self.cache.get(id)
- 
+        return self.dbi.get_user(id)
 
     def user_exists(self, username):
         if self.cache.get(username) is not None:
