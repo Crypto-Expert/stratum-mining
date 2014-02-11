@@ -1,4 +1,4 @@
-[ ![Codeship Status for ahmedbodi/php-mpos](https://www.codeship.io/projects/b3003a70-61a3-0131-231e-26f75a0c690d/status?branch=master)](https://www.codeship.io/projects/12274)
+Merged Mining Fork
 #Description
 Stratum-mining is a pooled mining protocol. It is a replacement for *getwork* based pooling servers by allowing clients to generate work. The stratum protocol is described [here](http://mining.bitcoin.cz/stratum-mining) in full detail.
 
