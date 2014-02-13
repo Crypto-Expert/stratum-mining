@@ -13,6 +13,3 @@
 [submodule "externals/vertcoin_scrypt"]
 	path = externals/vertcoin_scrypt
 	url = https://github.com/scr34m/vertcoin_scrypt.git
-[submodule "externals/vtc_scrypt"]
-	path = externals/vtc_scrypt
-	url = https://github.com/scr34m/vertcoin_scrypt.git
