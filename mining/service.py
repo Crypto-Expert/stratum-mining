@@ -53,6 +53,7 @@ class MiningService(GenericService):
         
         log.info("New block notification received")
         Interfaces.template_registry.update_block()
+        Interfaces.template_registry.update_mm_block()
         return True 
 
     @admin

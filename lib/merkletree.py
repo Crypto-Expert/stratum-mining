@@ -16,6 +16,8 @@
 
 from hashlib import sha256
 from util import doublesha
+import binascii
+import util
 
 class MerkleTree:
     def __init__(self, data, detailed=False):
@@ -64,10 +66,10 @@ class MerkleTree:
         return self.withFirst(self.data[0])
 
     def branchCount(self):
-        return binascii.hexlify(ser_number(len(self.data)))
+        return binascii.hexlify(util.to_varint(len(self._steps)))
 
     def branchHex(self):
-        return ''.join([binascii.hexlify(d) for d in self.data])
+        return ''.join([binascii.hexlify(d) for d in self._steps])
 
 # MerkleTree tests
 def _test():

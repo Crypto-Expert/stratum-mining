@@ -34,7 +34,6 @@ class CoinbaseTransactionPOW(halfnode.CTransaction):
         )
                 
         tx_in.scriptSig = tx_in._scriptSig_template[0] + self.extranonce_placeholder + tx_in._scriptSig_template[1]
-    
         tx_out = halfnode.CTxOut()
         tx_out.nValue = value
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()

@@ -125,12 +125,19 @@ class BitcoinRPCManager(object):
             except:
                 self.next_connection()
 
-    def getauxblock(self):
+    def getauxblock(self,mm_hash=None,mm_submission=None):
         while True:
-            try:
-               return self.conns[self.curr_conn].getauxblock()
-            except:
-                self.next_connection()
+            if mm_hash is None or mm_submission is None:
+                try:
+                    return self.conns[self.curr_conn].getauxblock()
+                except:
+                    self.next_connection()
+            else:
+                try:
+                    return self.conns[self.curr_conn].getauxblock(mm_hash,mm_submission)
+                except:
+                    self.next_connection()
+                
 
     def prevhash(self):
         self.check_height()

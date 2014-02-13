@@ -211,6 +211,38 @@ def ser_number(n):
     s.append(n)
     return bytes(s)
 
+def to_varint(n):
+    s = bytearray()
+    if(n<0xfd):
+        s.append(n)
+    elif (n<0xffff):
+        s.append(0xfd)
+        s.append(n%256)
+        n=n//256
+        s.append(n)
+    elif(n<0xffffffff):
+        s.append(0xfe)
+        while(n>256):
+            s.append(n%256)
+            n=n//256
+        s.append(n)
+    return bytes(s)
+
+def flip(s):
+    if len(s) % 4 != 0:
+        raise ValueError('string length not multiple of 4')
+    s = binascii.unhexlify(s)
+    f = '{}L'.format(len(s)//4)
+    dw = struct.unpack('>'+f,s)
+    s = struct.pack('<'+f,*dw)
+    return binascii.hexlify(s)
+
+def rev(s):
+    b = bytearray.fromhex(s)
+    b.reverse()
+    return bytes(b).encode('hex')
+        
+
 #if settings.COINDAEMON_Reward == 'POW':
 def script_to_address(addr):
     d = address_to_pubkeyhash(addr)
