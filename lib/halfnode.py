@@ -296,7 +296,7 @@ class CBlock(object):
                 self.quark = uint256_from_str(quark_hash.getPoWHash(''.join(r)))
              return self.quark
     elif settings.COINDAEMON_ALGO == 'scrypt-jane':
-        def calc_acryptjane(self):
+        def calc_scryptjane(self):
              if self.scryptjane is None:
                 r = []
                 r.append(struct.pack("<i", self.nVersion))
