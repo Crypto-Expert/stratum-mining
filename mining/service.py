@@ -169,7 +169,7 @@ class MiningService(GenericService):
         # and it is valid proof of work.
         try:
             (block_header, block_hash, share_diff, on_submit) = Interfaces.template_registry.submit_share(job_id,
-                worker_name, session, extranonce1_bin, extranonce2, ntime, nonce, difficulty)
+                worker_name, session, extranonce1_bin, extranonce2, ntime, nonce, difficulty, ip)
         except SubmitException as e:
             # block_header and block_hash are None when submitted data are corrupted
             invalid += 1

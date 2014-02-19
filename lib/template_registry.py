@@ -159,12 +159,16 @@ class TemplateRegistry(object):
 
         return diff1 / difficulty
     
-    def get_job(self, job_id):
+    def get_job(self, job_id, worker_name, ip=False):
         '''For given job_id returns BlockTemplate instance or None'''
         try:
             j = self.jobs[job_id]
         except:
-            log.info("Job id '%s' not found" % job_id)
+            log.info("Job id '%s' not found, worker_name: '%s'" % (job_id, worker_name))
+
+            if ip:
+                log.info("Worker submited invalid Job id: IP %s", str(ip))
+
             return None
         
         # Now we have to check if job is still valid.
@@ -181,7 +185,7 @@ class TemplateRegistry(object):
         return j
         
     def submit_share(self, job_id, worker_name, session, extranonce1_bin, extranonce2, ntime, nonce,
-                     difficulty):
+                     difficulty, ip=False):
         '''Check parameters and finalize block template. If it leads
            to valid block candidate, asynchronously submits the block
            back to the bitcoin network.
@@ -197,7 +201,7 @@ class TemplateRegistry(object):
             raise SubmitException("Incorrect size of extranonce2. Expected %d chars" % (self.extranonce2_size*2))
         
         # Check for job
-        job = self.get_job(job_id)
+        job = self.get_job(job_id, worker_name, ip)
         if job == None:
             raise SubmitException("Job '%s' not found" % job_id)
                 
