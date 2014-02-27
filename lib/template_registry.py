@@ -3,6 +3,7 @@ import binascii
 import util
 import StringIO
 import settings
+from hashlib import sha256
 if settings.COINDAEMON_ALGO == 'scrypt':
     import ltc_scrypt
 elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
@@ -11,7 +12,7 @@ elif settings.COINDAEMON_ALGO == 'quark':
     import quark_hash
 elif settings.COINDAEMON_ALGO == 'max':
     import max_hash
-    from hashlib import sha256
+    from sha3 import sha3_256
 elif settings.COINDAEMON_ALGO == 'skeinhash':
     import skeinhash
 elif settings.COINDAEMON_ALGO == 'keccak':
@@ -26,9 +27,6 @@ log.debug("Got to Template Registry")
 from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
 import lib.settings as settings
-
-from sha3 import sha3_256
-
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,
@@ -134,8 +132,7 @@ class TemplateRegistry(object):
         self.update_in_progress = True
         self.last_update = Interfaces.timestamper.time()
        
-	log.debug("calling self.bitcoin_rpc.getblocktemplate()") 
-        d = self.bitcoin_rpc.getblocktemplate()
+	d = self.bitcoin_rpc.getblocktemplate()
         d.addCallback(self._update_block)
         d.addErrback(self._update_block_failed)
         
@@ -145,9 +142,7 @@ class TemplateRegistry(object):
         
     def _update_block(self, data):
         start = Interfaces.timestamper.time()
-	log.debug("_update_block")
-        #log.info(template.fill_from_rpc(data)) 
-        template = self.block_template_class(Interfaces.timestamper, self.coinbaser, JobIdGenerator.get_new_id())
+	template = self.block_template_class(Interfaces.timestamper, self.coinbaser, JobIdGenerator.get_new_id())
         log.info(template.fill_from_rpc(data))
         self.add_template(template,data['height'])
 
@@ -163,15 +158,12 @@ class TemplateRegistry(object):
             diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
         elif settings.COINDAEMON_ALGO == 'quark':
             diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
-        #elif settings.coindaemon_algo == 'max':
-            #diff1 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000
         elif settings.coindaemon_algo == 'max':
             diff1 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000
         elif settings.COINDAEMON_ALGO == 'keccak':
             diff1 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000
         else:
             diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
-
         return diff1 / difficulty
     
     def get_job(self, job_id):
@@ -243,9 +235,10 @@ class TemplateRegistry(object):
                 
         # 1. Build coinbase
         coinbase_bin = job.serialize_coinbase(extranonce1_bin, extranonce2_bin)
-        #coinbase_hash = util.doublesha(coinbase_bin)
-        coinbase_hash = sha256(coinbase_bin).digest()
-        
+        if settings.COINDAEMON_ALGO == 'max':
+             coinbase_hash = sha256(coinbase_bin).digest()
+        else:
+             coinbase_hash = util.doublesha(coinbase_bin)
         
         # 2. Calculate merkle root
         merkle_root_bin = job.merkletree.withFirst(coinbase_hash)
@@ -270,9 +263,6 @@ class TemplateRegistry(object):
           s = sha3.sha3_256()
           ntime1 = str(int(ntime, 16))
           s.update(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]) + ntime1)
-          #hash_bin_temp = s.hexdigest()
-          #s = sha3.sha3_256()
-          #s.update(hash_bin_temp)
           hash_bin = s.hexdigest()
 	else:
             hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
@@ -307,24 +297,18 @@ class TemplateRegistry(object):
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
             # Reverse the header and get the potential block hash (for scrypt only) 
-            #if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
-            #   if settings.COINDAEMON_Reward == 'POW':
             if settings.COINDAEMON_ALGO == 'max':
                 block_hash_bin = sha3_256(''.join([ header_bin[i*4:i*4+4][::-1]
                     for i in range(0, 20) ]) + str(int(ntime, 16))).hexdigest()
-            else:
-                block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-            if settings.COINDAEMON_ALGO == 'keccak':
+            elif settings.COINDAEMON_ALGO == 'keccak':
                 s = sha3.SHA3256()
                 ntime1 = str(int(ntime, 16))
                 s.update(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]) + ntime1)
-                #hash_bin_temp = s.hexdigest()
-                #s = sha3.SHA3256()
-                #s.update(hash_bin_temp)
-                block_hash_bin = s.hexdigest()
 	    else:
 	        block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
             block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
+            if settings.COINDAEMON_ALGO != 'max':
+            	block_hash_hex = hash_bin[::-1].encode('hex_codec')
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
             
@@ -349,11 +333,9 @@ class TemplateRegistry(object):
                s = sha3.sha3_256()
                ntime1 = str(int(ntime, 16))
                s.update(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]) + ntime1)
-               #hash_bin_temp = s.hexdigest()
-               #s = sha3.sha3_256()
-               #s.update(hash_bin_temp)
                block_hash_bin = s.hexdigest()
-           else: block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+           else: 
+           	block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
            block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
            return (header_hex, block_hash_hex, share_diff, None)
         else:
