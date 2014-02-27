@@ -11,7 +11,6 @@ import sys
 import random
 import cStringIO
 from Crypto.Hash import SHA256
-from sha3 import sha3_256
 
 from twisted.internet.protocol import Protocol
 from util import *
@@ -30,17 +29,11 @@ elif settings.COINDAEMON_ALGO == 'quark':
 elif settings.COINDAEMON_ALGO == 'max':
     log.debug("########################################### Loading Max Support #########################################################")
     import max_hash
+    from sha3 import sha3_256
 elif settings.COINDAEMON_ALGO == 'keccak':
      import sha3
 else: 
     log.debug("########################################### Loading SHA256 Support ######################################################")
-
-#if settings.COINDAEMON_Reward == 'POS':
-#        log.debug("########################################### Loading POS Support #########################################################")
-#        pass
-#else:
-#        log.debug("########################################### Loading POW Support ######################################################")
-#        pass
 
 if settings.COINDAEMON_TX == 'yes':
     log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")
@@ -162,7 +155,8 @@ class CTxOut(object):
 
 class CTransaction(object):
     def __init__(self):
-        self.sha3 = None
+        if settings.COINDAEMON_ALGO == 'max':
+            self.sha3 = None
         if settings.COINDAEMON_Reward == 'POW':
             self.nVersion = 1
             if settings.COINDAEMON_TX == 'yes':
@@ -315,7 +309,6 @@ class CBlock(object):
                 r.append(struct.pack("<I", self.nTime))
                 r.append(struct.pack("<I", self.nBits))
                 r.append(struct.pack("<I", self.nNonce))
-                #self.max = uint256_from_str(max_hash.getPoWHash(''.join(r)))
                 self.max = uint256_from_str(sha3_256(''.join(r)).digest())
             return self.max
     elif settings.COINDAEMON_ALGO == 'keccak':
