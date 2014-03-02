@@ -34,6 +34,8 @@ class BitcoinRPC(object):
         )
            
     def _call(self, method, params):
+        #log.debug("RPC Call: %s" % json.dumps({'jsonrpc': '2.0', 'method':
+            #method,'params': params,'id': '1'}))
         return self._call_raw(json.dumps({
                 'jsonrpc': '2.0',
                 'method': method,
