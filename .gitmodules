@@ -10,6 +10,3 @@
 [submodule "externals/quarkcoin-hash"]
 	path = externals/quarkcoin-hash
 	url = https://github.com/Neisklar/quarkcoin-hash-python
-[submodule "externals/darkcoin-hash"]
-	path = externals/darkcoin-hash
-	url = git://github.com/Lexomatico/darkcoin-hash-python
