@@ -7,7 +7,7 @@ import settings
 import bitcoin_rpc
 from hashlib import sha256
 
-if settings.COINDAEMON_ALGO == 'keccak':
+if settings.COINDAEMON_ALGO in('keccak', 'max'):
     import sha3
     from sha3 import sha3_256
 
