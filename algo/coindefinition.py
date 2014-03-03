@@ -3,7 +3,7 @@ import lib.settings as settings
 log = lib.logger.get_logger('Coin Definition')
 log.debug("Got to Coin Definition")
 
-ALGOS = ['ltc_scrypt',pass,'yac_scrypt','quark_hash','x11_hash','algo.skeinhash.skeinhash']
+ALGOS = ['ltc_scrypt','yac_scrypt','quark_hash','x11_hash','algo.skeinhash.skeinhash']
 DIFF1 = ['0x0000ffff00000000000000000000000000000000000000000000000000000000','0x000000ffff000000000000000000000000000000000000000000000000000000','0x00000000ffff0000000000000000000000000000000000000000000000000000']
 # Algorithm Array is as follows:
 # Scrypt = 1
@@ -18,15 +18,15 @@ def algo(self):
     if settings.ALGORITHM == 1:
          return ALGOS[1]
     elif settings.ALGORITHM == 2:
-         return ALGOS[2]
+         return None
     elif settings.ALGORITHM == 3:
-         return ALGOS[3] 
+         return ALGOS[2] 
     elif settings.ALGORITHM == 4:
-         return ALGOS[4] 
+         return ALGOS[3] 
     elif settings.ALGORITHM == 5:
-         return ALGOS[5]
+         return ALGOS[4]
     elif settings.ALGORITHM == 6:
-         return ALGOS[6]
+         return ALGOS[5]
          
 def diff1(self):
     if settings.ALGORITHM == 1:
@@ -42,6 +42,6 @@ def diff1(self):
     elif settings.ALGORITHM == 6:
          return DIFF1[3]
          
-def header(self)
+def header(self):
     if settings.ALGORITHM == 1 or settings.ALGORITHM == 3 or settings.ALGORITHM == 4 
        return True
