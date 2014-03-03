@@ -11,24 +11,21 @@ import sys
 import random
 import cStringIO
 from Crypto.Hash import SHA256
-
+import algo.coindefinition as coindef
 from twisted.internet.protocol import Protocol
 from util import *
 import settings
-
 import lib.logger
 log = lib.logger.get_logger('halfnode')
 log.debug("Got to Halfnode")
 
-__import__(settings.ALGO_NAME)
- log.debug("########################################### Loading %s jane #########################################################", settings.ALGO_NAME)
+ALGORITHM = coindef.algo()
+__import__(algorithm)
+ log.debug("########################################### Loading %s  #########################################################", ALGORITHM)
 if settings.COINDAEMON_TX != False:
     log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")
-    pass
 else:
     log.debug("########################################### NOT Loading SHA256 Transaction Message Support ######################################################")
-    pass
-
 
 MY_VERSION = 31402
 MY_SUBVERSION = ".4"
@@ -221,7 +218,7 @@ class CBlock(object):
         self.nNonce = 0
         self.vtx = []
         self.sha256 = None
-	self.algo = NONE
+	self.algo = None
         if settings.COINDAEMON_Reward == 'POS':
             self.signature = b""
         else: pass
@@ -236,7 +233,7 @@ class CBlock(object):
         self.vtx = deser_vector(f, CTransaction)
         if settings.COINDAEMON_Reward == 'POS':
             self.signature = deser_string(f)
-        else: pass
+
 
     def serialize(self):
         r = []
@@ -249,7 +246,6 @@ class CBlock(object):
         r.append(ser_vector(self.vtx))
         if settings.COINDAEMON_Reward == 'POS':
             r.append(ser_string(self.signature))
-        else: pass
         return ''.join(r)
 
     def calc_algo(self):
@@ -261,7 +257,7 @@ class CBlock(object):
                r.append(struct.pack("<I", self.nTime))
                r.append(struct.pack("<I", self.nBits))
                r.append(struct.pack("<I", self.nNonce))
-               self.algo = uint256_from_str(settings.MODULE_NAME.getPoWHash(''.join(r)))
+               self.algo = uint256_from_str(ALGORITHM.getPoWHash(''.join(r)))
         return self.algo
 
 
