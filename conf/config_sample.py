@@ -15,12 +15,15 @@ CENTRAL_WALLET = 'set_valid_addresss_in_config!'                # Local coin add
 COINDAEMON_TRUSTED_HOST = 'localhost'
 COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
-COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
-
-ALGO_NAME = 'ltc_scrypt'      # Set this to the Module  name e.g. yac_scrypt or vtc_scrypt or ltc_scrypt
-DIFF1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000 # Diff 1 (Currently set to Scrypt)
-COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
-HEADER_HEX = True 	      # Needed for Scrypt, Scrypt Jane, NA Scrypt, Quark
+ALGORITHM = 1 
+TX_MESSAGES = True
+# Algorithm Array is as follows:
+# Scrypt = 1
+# SHA256 = 2 
+# YAC = 3
+# Quark = 4
+# Skein = 5
+# Adding a new algo is as simple as editing lib/coindefinition.py and adding the algorithm to there
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
