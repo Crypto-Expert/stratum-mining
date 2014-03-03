@@ -16,14 +16,17 @@ COINDAEMON_TRUSTED_HOST = 'localhost'
 COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 ALGORITHM = 1 
-TX_MESSAGES = True
 # Algorithm Array is as follows:
 # Scrypt = 1
-# SHA256 = 2 
+# SHA256 = 2(none)
 # YAC = 3
 # Quark = 4
-# Skein = 5
-# Adding a new algo is as simple as editing lib/coindefinition.py and adding the algorithm to there
+# X11 = 5
+# Skein = 6
+# HybridSHA256 = 7
+# Adding a new algo is as simple as editing lib/coindefinition.py and adding the algorithm to the array 
+COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
+
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
