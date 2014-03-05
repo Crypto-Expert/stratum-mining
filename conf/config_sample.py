@@ -15,6 +15,7 @@ CENTRAL_WALLET = 'set_valid_addresss_in_config!'                # Local coin add
 COINDAEMON_TRUSTED_HOST = 'localhost'
 COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
+COINDAEMON_TRUSTED_PASSWORD = 'password'                        
 ALGORITHM = 1 
 # Algorithm Array is as follows:
 # Scrypt = 1
