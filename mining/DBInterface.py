@@ -93,6 +93,13 @@ class DBInterface():
         self.do_import(self.dbi, False)
         
         self.scheduleImport()
+        
+    def run_import_force(self):
+        log.debug("DBInterface.run_import called")
+        
+        self.do_import(self.dbi, True)
+        
+        self.scheduleImport()
 
     def import_thread(self):
         # Here we are in the thread.
