@@ -128,6 +128,7 @@ PREVHASH_REFRESH_INTERVAL = 5   # How often to check for new Blocks
                                 #   If using the blocknotify script (recommended) set = to MERKLE_REFRESH_INTERVAL
                                 #   (No reason to poll if we're getting pushed notifications)
 MERKLE_REFRESH_INTERVAL = 60    # How often check memorypool
+                                #   How often to check for new transactions to be added to the block
                                 #   This effectively resets the template and incorporates new transactions.
                                 #   This should be "slow"
 
@@ -146,11 +147,11 @@ VARIABLE_DIFF = True            # Master variable difficulty enable
 # Variable diff tuning variables
 #VARDIFF will start at the POOL_TARGET. It can go as low as the VDIFF_MIN and as high as min(VDIFF_MAX or coindaemons difficulty)
 USE_COINDAEMON_DIFF = False     # Set the maximum difficulty to the coindaemon difficulty. 
-DIFF_UPDATE_FREQUENCY = 86400   # Update the coindaemon difficulty once a day for the VARDIFF maximum
+DIFF_UPDATE_FREQUENCY = 86400   # How often to check coindaemon difficulty. Should be less than coin difficulty retarget time
 VDIFF_MIN_TARGET = 16           # Minimum target difficulty 
 VDIFF_MAX_TARGET = 1024         # Maximum target difficulty 
 VDIFF_TARGET_TIME = 15          # Target time per share (i.e. try to get 1 share per this many seconds)
-VDIFF_RETARGET_TIME = 120       # Check to see if we should retarget this often
+VDIFF_RETARGET_TIME = 120       # How often the miners difficulty changes if appropriate
 VDIFF_VARIANCE_PERCENT = 30     # Allow average time to very this % from target without retarget
 
 # Allow external setting of worker difficulty, checks pool_worker table datarow[6] position for target difficulty
