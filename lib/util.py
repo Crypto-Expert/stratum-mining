@@ -211,6 +211,56 @@ def ser_number(n):
     s.append(n)
     return bytes(s)
 
+
+def isPrime( n )
+    if pow( 2, n-1, n ) == 1:
+        return True
+    return False
+
+def riecoinPoW( hash_bin, diff, nNonce )
+    base = 1 << 8
+    for i in range(256)
+        base = base << 1
+        base = base | (hash_bin & 1)
+        hash_bin = hash_bin >> 1
+    trailingZeros = diff - 1 - 8 - 256
+    if trailingZeros < 16 or trailingZeros > 20000
+        return 0
+    base = base << trailingZeros
+    
+    base += nNonce
+    primes = 0
+    
+    if (base % 210) != 97:
+        return 0
+    
+    if !isPrime( base ):
+        return primes
+    primes++
+    
+    base += 4
+    if !isPrime( base ):
+        return primes
+    primes++
+    
+    base += 2
+    if isPrime( base ):
+        primes++
+    
+    base += 4
+    if !isPrime( base ):
+        primes++
+    
+    base += 2
+    if !isPrime( base ):
+        primes++
+    
+    base += 4
+    if !isPrime( base ):
+        primes++
+      
+    return primes
+
 #if settings.COINDAEMON_Reward == 'POW':
 def script_to_address(addr):
     d = address_to_pubkeyhash(addr)

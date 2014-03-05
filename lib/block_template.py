@@ -139,8 +139,12 @@ class BlockTemplate(halfnode.CBlock):
         r  = struct.pack(">i", self.nVersion)
         r += self.prevhash_bin
         r += util.ser_uint256_be(merkle_root_int)
-        r += ntime_bin
-        r += struct.pack(">I", self.nBits)
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            r += struct.pack(">I", self.nBits)
+            r += ntime_bin
+        else:
+            r += ntime_bin
+            r += struct.pack(">I", self.nBits)
         r += nonce_bin    
         return r       
 

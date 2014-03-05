@@ -1,6 +1,6 @@
 [ ![Codeship Status for ahmedbodi/php-mpos](https://www.codeship.io/projects/b3003a70-61a3-0131-231e-26f75a0c690d/status?branch=master)](https://www.codeship.io/projects/12274)
 #Status
-This project is now in what i'd consider v1 stage as such i dont believe there is much to add to stratum. so as of now this code is in bug fix stage only and should be considered unmaintained. 
+Riecoin support just implemented, needs testing.
 
 #Description
 Stratum-mining is a pooled mining protocol. It is a replacement for *getwork* based pooling servers by allowing clients to generate work. The stratum protocol is described [here](http://mining.bitcoin.cz/stratum-mining) in full detail.
@@ -28,15 +28,7 @@ The goal is to make a reliable stratum mining server for a wide range of coins u
 * Transaction Messaging Support
 
 #Donations 
-* BTC:  18Xg4qP6RUvpeajanKPt5PDvvcqvU2pP6d
-* BTE:  8UJLskr8eDYATvYzmaCBw3vbRmeNweT3rW
-* DGC:  DSBb5KmGWYKMJjxk3rETtvpk9sPqgCCYAw
-* LTC:  Lg4kXMqPsmMHrGr81LLe8oHpbsMiWiuMSB
-* WDC:  WeVFgZQsKSKXGak7NJPp9SrcUexghzTPGJ
-* Doge: DLtBRYtNCzfiZfcpUeEr8KPvy5k1aR7jca
-* SRC:  sMP2wHN5H2ik7FQDPjhSzFZUWux75BYZGe
-* ARG:  AQvXPWVqGzcpH2j2XSRG7X5R9nA3y9D9aQ
-* Cryptsy Trade Key: ec13d183e304326ebd41258d6ae7188e303866fe
+Please see riecoin.org
 
 
 #Requirements
@@ -70,8 +62,8 @@ Other coins have been known to work with this implementation. I have tested with
 The installation of this *stratum-mining* can be found in the Repo Wiki. 
 
 #Contact
-I am available in the #MPOS, #crypto-expert, #digitalcoin, and #worldcoin channels on freenode. 
-Although i am willing to provide support through IRC please file issues on the repo.
+See riecoin.org
+Please file issues on the repo.
 Issues as a direct result of stratum will be helped with as much as possible
 However issues related to a coin daemon's setup and other non stratum issues, 
 Please research and attempt to debug first.
@@ -81,7 +73,8 @@ Please research and attempt to debug first.
 * Original version by Slush0 and ArtForz (original stratum code)
 * More Features added by GeneralFault, Wadee Womersley, Viperaus, TheSeven and Moopless
 * Multi Algo, Vardiff, DB and MPOS support done by Ahmed_Bodi, penner42 and Obigal
+* Riecoin support by gatra
 
 #License
-This software is provides AS-IS without any warranties of any kind. Please use at your own risk. 
+This software is provided AS-IS without any warranties of any kind. Please use at your own risk. 
 
