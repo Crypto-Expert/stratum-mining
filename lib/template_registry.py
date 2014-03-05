@@ -14,6 +14,7 @@ from extranonce_counter import ExtranonceCounter
 import lib.settings as settings
 import algo.coindefinition as coindef
 strAlgo = coindef.algo_needed().algo()
+__import__(strAlgo)
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,
