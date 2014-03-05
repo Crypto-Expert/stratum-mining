@@ -234,7 +234,7 @@ class TemplateRegistry(object):
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
         
-	if coindef.header() = True:
+	if coindef.header() == True:
            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
                  
         target_user = self.diff_to_target(difficulty)
