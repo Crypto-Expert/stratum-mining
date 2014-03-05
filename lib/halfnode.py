@@ -11,7 +11,6 @@ import sys
 import random
 import cStringIO
 from Crypto.Hash import SHA256
-import algo.coindefinition as coindef
 from twisted.internet.protocol import Protocol
 from util import *
 import settings
@@ -19,9 +18,10 @@ import lib.logger
 log = lib.logger.get_logger('halfnode')
 log.debug("Got to Halfnode")
 
-ALGORITHM = coindef.algo()
-__import__(algorithm)
- log.debug("########################################### Loading %s  #########################################################", ALGORITHM)
+import algo.coindefinition as coindef
+strAlgo = coindef.algo_needed().algo()
+__import__(strAlgo)
+log.debug("########################################### Loading %s  #########################################################", strAlgo)
 if settings.COINDAEMON_TX != False:
     log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")
 else:
@@ -257,7 +257,7 @@ class CBlock(object):
                r.append(struct.pack("<I", self.nTime))
                r.append(struct.pack("<I", self.nBits))
                r.append(struct.pack("<I", self.nNonce))
-               self.algo = uint256_from_str(ALGORITHM.getPoWHash(''.join(r)))
+               self.algo = uint256_from_str(strAlgo.getPoWHash(''.join(r)))
         return self.algo
 
 
