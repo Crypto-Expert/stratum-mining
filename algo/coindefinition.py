@@ -59,7 +59,7 @@ class diff1_needed:
 
 class header_needed:
    def header(self):
-    if settings.ALGORITHM == 1 or settings.ALGORITHM == 3 or settings.ALGORITHM == 4 or settings.ALGORITHM == 7 or settings.ALGORITM == 8:
+    if settings.ALGORITHM == 1 or settings.ALGORITHM == 3 or settings.ALGORITHM == 4 or settings.ALGORITHM == 7 or settings.ALGORITHM == 8:
        self.header = True
     else: self.header = False
     return self.header
