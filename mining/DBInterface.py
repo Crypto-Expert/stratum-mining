@@ -202,7 +202,7 @@ class DBInterface():
     def user_exists(self, username):
         if self.cache.get(username) is not None:
             return True
-        user = self.dbi.get_user(username)
+        user = self.get_user(username)
         return user is not None 
 
     def insert_user(self, username, password):        
