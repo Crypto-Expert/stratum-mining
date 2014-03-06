@@ -341,7 +341,7 @@ class CBlock(object):
 
         if settings.COINDAEMON_ALGO == 'riecoin':
             target = settings.POOL_TARGET
-        else
+        else:
             target = uint256_from_compact(self.nBits)
 
         if settings.COINDAEMON_ALGO == 'riecoin':

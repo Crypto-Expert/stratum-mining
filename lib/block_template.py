@@ -68,7 +68,7 @@ class BlockTemplate(halfnode.CBlock):
         self.height = data['height']
         self.nVersion = data['version']
         self.hashPrevBlock = int(data['previousblockhash'], 16)
-        self.nBits = int(data['bits'], 16)
+        self.nBits = int(data['bits'], 8)
         self.hashMerkleRoot = 0
         self.nTime = 0
         self.nNonce = 0

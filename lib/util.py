@@ -212,19 +212,19 @@ def ser_number(n):
     return bytes(s)
 
 
-def isPrime( n )
+def isPrime( n ):
     if pow( 2, n-1, n ) == 1:
         return True
     return False
 
-def riecoinPoW( hash_bin, diff, nNonce )
+def riecoinPoW( hash_bin, diff, nNonce ):
     base = 1 << 8
-    for i in range(256)
+    for i in range(256):
         base = base << 1
         base = base | (hash_bin & 1)
         hash_bin = hash_bin >> 1
     trailingZeros = diff - 1 - 8 - 256
-    if trailingZeros < 16 or trailingZeros > 20000
+    if trailingZeros < 16 or trailingZeros > 20000:
         return 0
     base = base << trailingZeros
     
@@ -234,30 +234,29 @@ def riecoinPoW( hash_bin, diff, nNonce )
     if (base % 210) != 97:
         return 0
     
-    if !isPrime( base ):
+    if not isPrime( base ):
         return primes
     primes++
     
     base += 4
-    if !isPrime( base ):
-        return primes
-    primes++
+    if isPrime( base ):
+        primes+=1
     
     base += 2
     if isPrime( base ):
-        primes++
+        primes+=1
     
     base += 4
-    if !isPrime( base ):
-        primes++
+    if isPrime( base ):
+        primes+=1
     
     base += 2
-    if !isPrime( base ):
-        primes++
+    if isPrime( base ):
+        primes+=1
     
     base += 4
-    if !isPrime( base ):
-        primes++
+    if isPrime( base ):
+        primes+=1
       
     return primes
 

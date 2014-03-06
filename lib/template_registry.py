@@ -248,7 +248,7 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        elif settings.COINDAEMON_ALGO == 'scrypt':
+        if settings.COINDAEMON_ALGO == 'scrypt':
             hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
             hash_bin = yac_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
@@ -295,7 +295,7 @@ class TemplateRegistry(object):
         # 5. Compare hash with target of the network
         isBlockCandidate = False
         if settings.COINDAEMON_ALGO == 'riecoin':
-            if hash_int == 6
+            if hash_int == 6:
                 isBlockCandidate = True
         else:
             if hash_int <= job.target:
