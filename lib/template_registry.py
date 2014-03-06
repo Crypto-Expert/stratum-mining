@@ -13,8 +13,7 @@ from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
 import lib.settings as settings
 import algo.coindefinition as coindef
-strAlgo = coindef.algo_needed().algo()
-__import__(strAlgo)
+algo = __import__(coindef.algo_needed().algo())
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,
@@ -229,9 +228,8 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        hash_bin = coindef.algo_needed().algo().getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-
-        hash_int = util.uint256_from_str(hash_bin)
+        hash_bin = algo.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+	hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
         

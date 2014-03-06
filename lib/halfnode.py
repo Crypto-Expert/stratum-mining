@@ -19,9 +19,8 @@ log = lib.logger.get_logger('halfnode')
 log.debug("Got to Halfnode")
 
 import algo.coindefinition as coindef
-strAlgo = coindef.algo_needed().algo()
-__import__(strAlgo)
-log.debug("########################################### Loading %s  #########################################################", strAlgo)
+algo = __import__(coindef.algo_needed().algo())
+log.debug("########################################### Loading %s  #########################################################", algo)
 if settings.COINDAEMON_TX != False:
     log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")
 else:
@@ -257,7 +256,7 @@ class CBlock(object):
                r.append(struct.pack("<I", self.nTime))
                r.append(struct.pack("<I", self.nBits))
                r.append(struct.pack("<I", self.nNonce))
-               self.algo = uint256_from_str(strAlgo.getPoWHash(''.join(r)))
+               self.algo = uint256_from_str(algo.getPoWHash(''.join(r)))
         return self.algo
 
 

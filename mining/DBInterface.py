@@ -10,7 +10,6 @@ import lib.settings as settings
 
 import lib.logger
 log = lib.logger.get_logger('DBInterface')
-
 class DBInterface():
     def __init__(self):
         self.dbi = self.connectDB()
@@ -30,7 +29,7 @@ class DBInterface():
         self.next_force_import_time = time.time() + settings.DB_LOADER_FORCE_TIME
     
         signal.signal(signal.SIGINT, self.signal_handler)
-
+	
     def signal_handler(self, signal, frame):
         log.warning("SIGINT Detected, shutting down")
         self.do_import(self.dbi, True)
@@ -97,7 +96,7 @@ class DBInterface():
     def import_thread(self):
         # Here we are in the thread.
         dbi = self.connectDB()        
-        self.do_import(dbi, False)
+        self.do_import(dbi, True)
         
         dbi.close()
 

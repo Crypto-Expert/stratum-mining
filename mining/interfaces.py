@@ -13,6 +13,7 @@ log = lib.logger.get_logger('interfaces')
 
 import DBInterface
 dbi = DBInterface.DBInterface()
+dbi.connectDB()
 dbi.init_main()
 
 class WorkerManagerInterface(object):
