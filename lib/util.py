@@ -229,14 +229,13 @@ def riecoinPoW( hash_bin, diff, nNonce ):
     base = base << trailingZeros
     
     base += nNonce
-    primes = 0
     
     if (base % 210) != 97:
         return 0
     
     if not isPrime( base ):
-        return primes
-    primes++
+        return 0
+    primes = 1
     
     base += 4
     if isPrime( base ):
