@@ -13,7 +13,9 @@ from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
 import lib.settings as settings
 import algo.coindefinition as coindef
-algo = __import__(coindef.algo_needed().algo())
+coin_settings = coindef.algo().settings()
+algo = __import__(coin_settings.algo(settings))
+log.exception("Loading %s", algo)
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,

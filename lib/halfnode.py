@@ -19,7 +19,8 @@ log = lib.logger.get_logger('halfnode')
 log.debug("Got to Halfnode")
 
 import algo.coindefinition as coindef
-algo = __import__(coindef.algo_needed().algo())
+coin_settings = coindef.algo().settings()
+algo = __import__(coin_settings.algo(settings))
 log.debug("########################################### Loading %s  #########################################################", algo)
 if settings.COINDAEMON_TX != False:
     log.debug("########################################### Loading SHA256 Transaction Message Support #########################################################")

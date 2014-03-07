@@ -18,9 +18,11 @@ def setup():
             yield (varname, value)
 
     import config_default
-    
+        
     try:
-        import conf.config as config
+        #Testing Mode Config
+	#import conf.config_sample as config
+	import conf.cofig as config
     except ImportError:
         # Custom config not presented, but we can still use defaults
         config = None
