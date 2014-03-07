@@ -15,51 +15,37 @@ DIFF1 = {1:0x0000ffff00000000000000000000000000000000000000000000000000000000, 2
 # HybridSHA256 = 7
 # tjcoin = 8
 # Adding a new algo is as simple as editing lib/coindefinition.py and adding the algorithm to the array 
-
 class algo_needed:
-      def algo(self):
-	  if settings.ALGORITHM == 1:
-		self.algorithm = ALGOS[1]
-	  elif settings.ALGORITHM == 2:
-		self.algorithm = ALGOS[2]
-	  elif settings.ALGORITHM == 3:
-		self.algorithm = ALGOS[3] 
-	  elif settings.ALGORITHM == 4:
-		self.algorithm = ALGOS[4] 
-	  elif settings.ALGORITHM == 5:
-		self.algorithm = ALGOS[5]
-	  elif settings.ALGORITHM == 6:
-		self.algorithm = ALGOS[6]
-	  elif settings.ALGORITHM == 7:
-		self.algorithm = ALGOS[7]
-	  elif settings.ALGORITHM == 8:
-		self.algorithm = ALGOS[8]
-	  return self.algorithm
-
-
-class diff1_needed:
-  def diff1(self):
-    if settings.ALGORITHM == 1:
-         self.DIFF1 = DIFF1[1]
-    elif settings.ALGORITHM == 2:
-         self.DIFF1 = DIFF1[3]
-    elif settings.ALGORITHM == 3:
-         self.DIFF1 = DIFF1[1] 
-    elif settings.ALGORITHM == 4:
-         self.DIFF1 = DIFF1[2] 
-    elif settings.ALGORITHM == 5:
-         self.DIFF1 = DIFF1[3]
-    elif settings.ALGORITHM == 6:
-         self.DIFF1 = DIFF1[3]
-    elif settings.ALGORITHM == 7:
-         self.DIFF1 = DIFF1[1]
-    elif settings.ALGORITHM == 8:
-         self.DIFF1 = DIFF1[4]
-    return self.DIFF1
-
-class header_needed:
-   def header(self):
-    if settings.ALGORITHM == 1 or settings.ALGORITHM == 3 or settings.ALGORITHM == 4 or settings.ALGORITHM == 7 or settings.ALGORITHM == 8:
-       self.header = True
-    else: self.header = False
-    return self.header
+	def algo(self):
+		if settings.ALGORITHM == 'scrypt':
+			return 
+class coin:
+	class Scrypt_Coin:
+		# Algorithm Needed
+		def algo(self):
+			self.algorithm = ALGOS[1]
+			return self.algorithm
+		# Difficulty 1 
+		def diff1(self):
+			self.DIFF1 = DIFF[1]
+			return self.DIFF1
+			
+		# Header modifications
+		def header(self)
+			self.header = True
+			return self.header
+			
+	class Sha256_Coin:
+		# Algorithm Needed
+		def algo(self): 
+			self.algorithm = ALGO[2]
+			return self.algorithm
+		# Difficulty 1
+		def diff1(self):
+			self.DIFF1 = DIFF[3]
+			return self.DIFF1
+		# Header modifications
+		def header(self):
+			self.header = False
+			return self.header
+	
