@@ -65,7 +65,7 @@ class TemplateRegistry(object):
     def get_new_extranonce1(self):
         '''Generates unique extranonce1 (e.g. for newly
         subscribed connection.'''
-        log.debug("Getting Unique Extronance")
+        log.debug("Getting Unique Extranonce")
         return self.extranonce_counter.get_new_bin()
     
     def get_last_broadcast_args(self):
