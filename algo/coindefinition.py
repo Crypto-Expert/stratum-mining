@@ -15,37 +15,42 @@ DIFF1 = {1:0x0000ffff00000000000000000000000000000000000000000000000000000000, 2
 # HybridSHA256 = 7
 # tjcoin = 8
 # Adding a new algo is as simple as editing lib/coindefinition.py and adding the algorithm to the array 
-class algo_needed:
-	def algo(self):
-		if settings.ALGORITHM == 'scrypt':
-			return 
+class algo:
+      def settings(self):
+	if settings.ALGORITHM = 1:
+	   return coin().Scrypt()
+	elif settings.ALGORITHM = 2:
+	   return coin().SHA256()
+	elif settings.ALGORITHM = 3:
+	   return coin().Scrypt_N()
+	elif settings.ALGORITHM = 4:
+	   return coin().Quark()
+	elif settings.ALGORITHM = 5:
+	   return coin().X11()
+	elif settings.ALGORITHM = 6:
+	   return coin().Skein()
+	elif settngs.ALGORITHM  = 7:
+	   return coin().Hybrid_SHA_Scrypt()
+	elif settings.ALGORITHM = 8':
+	   return coin().TJcoin()
+	   
 class coin:
-	class Scrypt_Coin:
-		# Algorithm Needed
-		def algo(self):
-			self.algorithm = ALGOS[1]
-			return self.algorithm
-		# Difficulty 1 
-		def diff1(self):
-			self.DIFF1 = DIFF[1]
-			return self.DIFF1
-			
-		# Header modifications
-		def header(self)
-			self.header = True
-			return self.header
-			
-	class Sha256_Coin:
-		# Algorithm Needed
-		def algo(self): 
-			self.algorithm = ALGO[2]
-			return self.algorithm
-		# Difficulty 1
-		def diff1(self):
-			self.DIFF1 = DIFF[3]
-			return self.DIFF1
-		# Header modifications
-		def header(self):
-			self.header = False
-			return self.header
+	class Scrypt:
+		import ScryptCoin
+		
+	class SHA256:
+		import SHA256
+	class Scrypt_N:
+		import SHA256
+	class Quark:
+		import Quark
+	class X11:
+		import X11
+	class Skein:
+		import skein
+	class Hybrid_SHA_Scrypt
+		import HybridSHA
+	class TJCoin:
+		import TJCoin
+	
 	
