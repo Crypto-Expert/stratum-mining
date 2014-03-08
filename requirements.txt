@@ -21,6 +21,7 @@ pyOpenSSL==0.14
 pyasn1==0.1.7
 pycparser==2.10
 pycrypto==2.6.1
+pylibmc==1.2.3
 pyserial==2.7
 python-dateutil==2.1
 python-memcached==1.53
