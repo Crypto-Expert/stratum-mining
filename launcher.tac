@@ -15,7 +15,7 @@ import stratum
 import lib.settings as settings
 # Bootstrap Stratum framework
 application = stratum.setup(on_startup)
-#IProcess(application).processName = settings.STRATUM_MINING_PROCESS_NAME
+IProcess(application).processName = settings.STRATUM_MINING_PROCESS_NAME
 
 # Load mining service into stratum framework
 import mining
