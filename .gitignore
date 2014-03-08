@@ -1,4 +1,4 @@
-# Project spesific
+# Projec spesific
 conf/config.py
 LOG
 
@@ -23,7 +23,6 @@ build/
 develop-eggs/
 dist/
 eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -44,7 +43,6 @@ build/
 develop-eggs/
 dist/
 eggs/
-lib/
 lib64/
 parts/
 sdist/
