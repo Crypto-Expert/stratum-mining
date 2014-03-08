@@ -1,7 +1,6 @@
 import lib.logger
-import util
 import struct
-from util import ser_uint256
+from lib.util import ser_uint256, doublesha
 
 
 logger = lib.logger.get_logger('Coin Definition')
@@ -23,7 +22,7 @@ class BaseCoin(object):
             Args:
                 heder_bin (str): The block header to be hashed.
         """
-        return util.doublesha(header_bin)
+        return doublesha(header_bin)
 
     @property
     def calc_algo(self, nVersion, hashPrevBlock,
