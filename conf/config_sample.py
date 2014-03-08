@@ -15,10 +15,17 @@ CENTRAL_WALLET = 'set_valid_addresss_in_config!'                # Local coin add
 COINDAEMON_TRUSTED_HOST = 'localhost'
 COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
-COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
-
-COINDAEMON_ALGO = 'scrypt'    # The available options are:  scrypt, sha256d, scrypt-jane, skeinhash, and quark
-SCRYPTJANE_NAME = 'vtc_scrypt'# Set this to the Scrypt jane module name e.g. yac_scrypt or vtc_scrypt
+COINDAEMON_TRUSTED_PASSWORD = 'password'                        
+ALGORITHM = 1 
+# Algorithm Array is as follows:
+# Scrypt = 1
+# SHA256 = 2(none)
+# YAC = 3
+# Quark = 4
+# X11 = 5
+# Skein = 6
+# HybridSHA256 = 7
+# Adding a new algo is as simple as editing lib/coindefinition.py and adding the algorithm to the array 
 COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
 
 # ******************** BASIC SETTINGS ***************
@@ -83,7 +90,7 @@ LISTEN_WSS_TRANSPORT = None
 PASSWORD_SALT = 'some_crazy_string'
 
 # ******************** Database  *********************
-DATABASE_DRIVER = 'mysql'       # Options: none, sqlite, postgresql or mysql
+DATABASE_DRIVER = 'none'       # Options: none, sqlite, postgresql or mysql
 DATABASE_EXTEND = False         # SQLite and PGSQL Only!
 
 # SQLite
