@@ -27,6 +27,7 @@ log.debug("Got to Template Registry")
 
 
 class JobIdGenerator(object):
+
     """
         Generate pseudo-unique job_id. It does not need to be absolutely
         unique, because pool sends "clean_jobs" flag to clients and they should
@@ -43,6 +44,7 @@ class JobIdGenerator(object):
 
 
 class TemplateRegistry(object):
+
     """
         Implements the main logic of the pool. Keep track
         on valid block templates, provide internal interface for stratum
@@ -264,7 +266,7 @@ class TemplateRegistry(object):
         if len(extranonce2) != self.extranonce2_size * 2:
             raise SubmitException(
                 "Incorrect size of extranonce2. Expected %d chars"
-                % (self.extranonce2_size*2)
+                % (self.extranonce2_size * 2)
             )
 
         # Check for job
@@ -392,7 +394,8 @@ class TemplateRegistry(object):
                 ntime1 = str(int(ntime, 16))
                 s.update(
                     ''.join(
-                        [header_bin[i*4:i*4+4][::-1] for i in range(0, 20)]
+                        [header_bin[i * 4: i * 4 + 4][::-1]
+                         for i in range(0, 20)]
                     ) + ntime1
                 )
             else:
@@ -441,12 +444,13 @@ class TemplateRegistry(object):
         # Reverse the header and get the potential block hash (for scrypt only)
         # only do this if we want to send in the block hash to the shares table
         if settings.SOLUTION_BLOCK_HASH:
-            if settings.COINDAEMON_ALGO == 'keccak':
+            if settings.COINDAEMON_ALGO in ('keccak', 'max'):
                 s = sha3.sha3_256()
                 ntime1 = str(int(ntime, 16))
                 s.update(
                     ''.join(
-                        [header_bin[i*4:i*4+4][::-1] for i in range(0, 20)]
+                        [header_bin[i * 4: i * 4 + 4][::-1]
+                         for i in range(0, 20)]
                     ) + ntime1
                 )
                 block_hash_bin = s.hexdigest()
