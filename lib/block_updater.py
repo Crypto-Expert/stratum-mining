@@ -29,7 +29,7 @@ class BlockUpdater(object):
         when = self._get_next_time()
         log.debug("Next prevhash update in %.03f sec" % when)
         log.debug("Merkle update in next %.03f sec" % (
-            self.registry.last_update + settings.MERKLE_REFRESH_INTERVAL) -
+            self.registry.last_update + settings.MERKLE_REFRESH_INTERVAL -
             Interfaces.timestamper.time()
         )
         self.clock = reactor.callLater(when, self.run)
