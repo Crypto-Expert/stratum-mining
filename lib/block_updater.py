@@ -31,7 +31,7 @@ class BlockUpdater(object):
         log.debug("Merkle update in next %.03f sec" % (
             self.registry.last_update + settings.MERKLE_REFRESH_INTERVAL -
             Interfaces.timestamper.time()
-        )
+        ))
         self.clock = reactor.callLater(when, self.run)
 
     def _get_next_time(self):
