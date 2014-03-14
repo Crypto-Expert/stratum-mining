@@ -27,9 +27,6 @@ The goal is to make a reliable stratum mining server for a wide range of coins u
 * Proof Of Work and Proof of Stake Coin Support
 * Transaction Messaging Support
 
-#Donations 
-Please see riecoin.org
-
 
 #Requirements
 *stratum-mining* is built in python. I have been testing it with 2.7.3, but it should work with other versions. The requirements for running the software are below.
@@ -37,7 +34,7 @@ Please see riecoin.org
 * python-twisted
 * stratum
 * MySQL Server 
-* SHA256 or Scrypt CoinDaemon
+* CoinDaemon
 
 Other coins have been known to work with this implementation. I have tested with the following coins, but there may be many others that work. 
 
@@ -73,7 +70,7 @@ Please research and attempt to debug first.
 * Original version by Slush0 and ArtForz (original stratum code)
 * More Features added by GeneralFault, Wadee Womersley, Viperaus, TheSeven and Moopless
 * Multi Algo, Vardiff, DB and MPOS support done by Ahmed_Bodi, penner42 and Obigal
-* Riecoin support by gatra
+* Riecoin support implemented by gatra - RIC: RByJXMhtRa2Jc2ix6sWoVRZq3kyK3zb8nY - BTC: 1Ud6xgvXwKGksbguVgke8UTbJ9sYr9AuH
 
 #License
 This software is provided AS-IS without any warranties of any kind. Please use at your own risk. 
