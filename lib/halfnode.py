@@ -252,11 +252,12 @@ class CBlock(object):
         self.hashMerkleRoot = deser_uint256(f)
         if settings.COINDAEMON_ALGO == 'riecoin':
             self.nBits = struct.unpack("<I", f.read(4))[0]
-            self.nTime = struct.unpack("<I", f.read(4))[0]
+            self.nTime = struct.unpack("<II", f.read(8))[0]
+            self.nNonce = struct.unpack("<IIIIIIII", f.read(32))[0]
         else:
             self.nTime = struct.unpack("<I", f.read(4))[0]
             self.nBits = struct.unpack("<I", f.read(4))[0]
-        self.nNonce = struct.unpack("<I", f.read(4))[0]
+            self.nNonce = struct.unpack("<I", f.read(4))[0]
         self.vtx = deser_vector(f, CTransaction)
         if settings.COINDAEMON_Reward == 'POS':
             self.signature = deser_string(f)
@@ -269,11 +270,12 @@ class CBlock(object):
         r.append(ser_uint256(self.hashMerkleRoot))
         if settings.COINDAEMON_ALGO == 'riecoin':
             r.append(struct.pack("<I", self.nBits))
-            r.append(struct.pack("<I", self.nTime))
+            r.append(struct.pack("<II", self.nTime))
+            r.append(struct.pack("<IIIIIIII", self.nNonce))
         else:
             r.append(struct.pack("<I", self.nTime))
             r.append(struct.pack("<I", self.nBits))
-        r.append(struct.pack("<I", self.nNonce))
+            r.append(struct.pack("<I", self.nNonce))
         r.append(ser_vector(self.vtx))
         if settings.COINDAEMON_Reward == 'POS':
             r.append(ser_string(self.signature))
@@ -313,7 +315,9 @@ class CBlock(object):
                 r.append(ser_uint256(self.hashMerkleRoot))
                 r.append(struct.pack("<I", self.nBits))
                 r.append(struct.pack("<II", self.nTime))
-                self.riecoin = util.riecoinPoW( util.doublesha(r), uint256_from_compact(self.nBits), self.nNonce )
+		hash_bin = util.doublesha(''.join([ r[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+                self.riecoin = util.riecoinPoW( util.uint256_from_str(hash_bin), uint256_from_compact(self.nBits), self.nNonce )
+                log.debug("riecoinPoW in  Halfnode is %d" % self.riecoin)
              return self.riecoin
     else:
        def calc_sha256(self):

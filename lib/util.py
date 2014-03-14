@@ -56,7 +56,10 @@ def uint256_from_str_be(s):
 
 def uint256_from_compact(c):
     nbytes = (c >> 24) & 0xFF
-    v = (c & 0xFFFFFFL) << (8 * (nbytes - 3))
+    if nbytes <= 3:
+        v = (c & 0xFFFFFFL) >> (8 * (3 - nbytes))
+    else:
+        v = (c & 0xFFFFFFL) << (8 * (nbytes - 3))
     return v
 
 def deser_vector(f, c):
@@ -217,12 +220,12 @@ def isPrime( n ):
         return True
     return False
 
-def riecoinPoW( hash_bin, diff, nNonce ):
+def riecoinPoW( hash_int, diff, nNonce ):
     base = 1 << 8
     for i in range(256):
         base = base << 1
-        base = base | (hash_bin & 1)
-        hash_bin = hash_bin >> 1
+        base = base | (hash_int & 1)
+        hash_int = hash_int >> 1
     trailingZeros = diff - 1 - 8 - 256
     if trailingZeros < 16 or trailingZeros > 20000:
         return 0

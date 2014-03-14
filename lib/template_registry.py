@@ -150,12 +150,14 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        if settings.COINDAEMON_ALGO == 'scrypt' or 'scrypt-jane':
+        if settings.COINDAEMON_ALGO == 'scrypt':
+            diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
+        elif settings.COINDAEMON_ALGO == 'scrypt-jane':
             diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
         elif settings.COINDAEMON_ALGO == 'quark':
             diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
         elif settings.COINDAEMON_ALGO == 'riecoin':
-            return difficulty;
+            return difficulty
         else:
             diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
 
@@ -235,6 +237,9 @@ class TemplateRegistry(object):
         extranonce2_bin = binascii.unhexlify(extranonce2)
         ntime_bin = binascii.unhexlify(ntime)
         nonce_bin = binascii.unhexlify(nonce)
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            ntime_bin = (''.join([ ntime_bin[(1-i)*4:(1-i)*4+4] for i in range(0, 2) ]))
+            nonce_bin = (''.join([ nonce_bin[(7-i)*4:(7-i)*4+4] for i in range(0, 8) ]))
                 
         # 1. Build coinbase
         coinbase_bin = job.serialize_coinbase(extranonce1_bin, extranonce2_bin)
@@ -259,13 +264,12 @@ class TemplateRegistry(object):
         else:
             hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
 
-        if settings.COINDAEMON_ALGO == 'riecoin':
-            # hash_bin already has doublesha
-            # this is kind of an ugly hack: we use hash_int to store the number of primes
-            hash_int = util.riecoinPoW( hash_bin, job.target, int(nonce, 16) )
-        else:
-            hash_int = util.uint256_from_str(hash_bin)
+        hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
+
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            # this is kind of an ugly hack: we use hash_int to store the number of primes
+            hash_int = util.riecoinPoW( hash_int, job.target, int(nonce, 16) )
 
         header_hex = binascii.hexlify(header_bin)
         if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane':
@@ -276,7 +280,6 @@ class TemplateRegistry(object):
             header_hex = header_hex+"00000080000000000000000080030000"
         else: pass
                  
-        
         target_user = self.diff_to_target(difficulty)
         if settings.COINDAEMON_ALGO == 'riecoin':
 	    if hash_int < target_user:
