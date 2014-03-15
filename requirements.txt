@@ -4,7 +4,6 @@ Twisted==12.0.0
 argparse==1.2.1
 autobahn==0.6.5
 defer==1.0.4
-distribute==0.6.28
 ecdsa==0.10
 feedparser==5.1.2
 fpconst==0.7.2
