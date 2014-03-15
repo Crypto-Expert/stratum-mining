@@ -28,7 +28,6 @@ elif settings.COINDAEMON_ALGO == 'quark':
     import quark_hash
 elif settings.COINDAEMON_ALGO == 'max':
     log.debug("########################################### Loading Max Support #########################################################")
-    import max_hash
     from sha3 import sha3_256
 elif settings.COINDAEMON_ALGO == 'keccak':
      import sha3

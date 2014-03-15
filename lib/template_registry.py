@@ -11,7 +11,6 @@ elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
 elif settings.COINDAEMON_ALGO == 'quark':
     import quark_hash
 elif settings.COINDAEMON_ALGO == 'max':
-    import max_hash
     from sha3 import sha3_256
 elif settings.COINDAEMON_ALGO == 'skeinhash':
     import skeinhash
@@ -255,7 +254,6 @@ class TemplateRegistry(object):
         elif settings.COINDAEMON_ALGO == 'quark':
             hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         elif settings.COINDAEMON_ALGO == 'max':
-            hash_bin = max_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
             hash_bin = sha3_256(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ])).digest()[0:33]
 	elif settings.COINDAEMON_ALGO == 'skeinhash':
             hash_bin = skeinhash.skeinhash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
