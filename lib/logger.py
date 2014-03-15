@@ -2,6 +2,7 @@
 
 import os
 import logging
+import logging.handlers
 import settings
 
 
@@ -27,7 +28,7 @@ else:
 if settings.LOGFILE is not None:
     # Create the log folder if it does not exist
     LOGDIR = os.path.join(settings.STRATUM_ROOT, settings.LOGDIR)
-    LOGPATH = os.path.join(LOGDIR, settings.LOGFILE),
+    LOGPATH = os.path.join(LOGDIR, settings.LOGFILE)
 
     try:
         os.makedirs(LOGDIR)
@@ -38,9 +39,9 @@ if settings.LOGFILE is not None:
     if settings.LOG_ROTATION:
         file_handler = logging.handlers.RotatingFileHandler(
             LOGPATH,
-            'a',
-            settings.LOG_SIZE,
-            settings.LOG_RETENTION
+            mode='a',
+            maxBytes=settings.LOG_SIZE,
+            backupCount=settings.LOG_RETENTION
         )
     else:
         file_handler = logging.handlers.WatchedFileHandler(
