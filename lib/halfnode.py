@@ -270,8 +270,8 @@ class CBlock(object):
         r.append(ser_uint256(self.hashMerkleRoot))
         if settings.COINDAEMON_ALGO == 'riecoin':
             r.append(struct.pack("<I", self.nBits))
-            r.append(struct.pack("<II", self.nTime))
-            r.append(struct.pack("<IIIIIIII", self.nNonce))
+            r.append(struct.pack("<Q", self.nTime))
+            r.append(ser_uint256(self.nNonce))
         else:
             r.append(struct.pack("<I", self.nTime))
             r.append(struct.pack("<I", self.nBits))
@@ -314,10 +314,9 @@ class CBlock(object):
                 r.append(ser_uint256(self.hashPrevBlock))
                 r.append(ser_uint256(self.hashMerkleRoot))
                 r.append(struct.pack("<I", self.nBits))
-                r.append(struct.pack("<II", self.nTime))
-		hash_bin = util.doublesha(''.join([ r[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-                self.riecoin = util.riecoinPoW( util.uint256_from_str(hash_bin), uint256_from_compact(self.nBits), self.nNonce )
-                log.debug("riecoinPoW in  Halfnode is %d" % self.riecoin)
+                r.append(struct.pack("<Q", self.nTime))
+                sha256 = uint256_from_str(SHA256.new(SHA256.new(''.join(r)).digest()).digest())
+                self.riecoin = riecoinPoW( sha256, uint256_from_compact(self.nBits), self.nNonce )
              return self.riecoin
     else:
        def calc_sha256(self):
@@ -336,7 +335,7 @@ class CBlock(object):
     def is_valid(self):
         if settings.COINDAEMON_ALGO == 'riecoin':
             self.calc_riecoin()
-        if settings.COINDAEMON_ALGO == 'scrypt':
+        elif settings.COINDAEMON_ALGO == 'scrypt':
             self.calc_scrypt()
         elif settings.COINDAEMON_ALGO == 'quark':
             self.calc_quark()
