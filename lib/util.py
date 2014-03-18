@@ -56,7 +56,10 @@ def uint256_from_str_be(s):
 
 def uint256_from_compact(c):
     nbytes = (c >> 24) & 0xFF
-    v = (c & 0xFFFFFFL) << (8 * (nbytes - 3))
+    if nbytes <= 3:
+        v = (c & 0xFFFFFFL) >> (8 * (3 - nbytes))
+    else:
+        v = (c & 0xFFFFFFL) << (8 * (nbytes - 3))
     return v
 
 def deser_vector(f, c):
@@ -210,6 +213,54 @@ def ser_number(n):
         n //= 256
     s.append(n)
     return bytes(s)
+
+
+def isPrime( n ):
+    if pow( 2, n-1, n ) == 1:
+        return True
+    return False
+
+def riecoinPoW( hash_int, diff, nNonce ):
+    base = 1 << 8
+    for i in range(256):
+        base = base << 1
+        base = base | (hash_int & 1)
+        hash_int = hash_int >> 1
+    trailingZeros = diff - 1 - 8 - 256
+    if trailingZeros < 16 or trailingZeros > 20000:
+        return 0
+    base = base << trailingZeros
+    
+    base += nNonce
+    
+    if (base % 210) != 97:
+        return 0
+    
+    if not isPrime( base ):
+        return 0
+    primes = 1
+    
+    base += 4
+    if isPrime( base ):
+        primes+=1
+    
+    base += 2
+    if isPrime( base ):
+        primes+=1
+    
+    base += 4
+    if isPrime( base ):
+        primes+=1
+    
+    base += 2
+    if isPrime( base ):
+        primes+=1
+    
+    base += 4
+    if isPrime( base ):
+        primes+=1
+      
+    return primes
 
 #if settings.COINDAEMON_Reward == 'POW':
 def script_to_address(addr):

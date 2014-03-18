@@ -12,17 +12,17 @@ You NEED to set the parameters in BASIC SETTINGS
 CENTRAL_WALLET = 'set_valid_addresss_in_config!'                # Local coin address where money goes
 
 COINDAEMON_TRUSTED_HOST = 'localhost'
-COINDAEMON_TRUSTED_PORT = 8332
+COINDAEMON_TRUSTED_PORT = 28332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
 # Coin algorithm is the option used to determine the algorithm used by stratum
 # This currently works with POW and POS coins
 # The available options are:
-# scrypt, sha256d, scrypt-jane, skeinhash, and quark
+# scrypt, sha256d, scrypt-jane, skeinhash, quark and riecoin
 # If the option does not meet either of these criteria stratum defaults to scrypt
 # For Coins which support TX Messages please enter yes in the TX selection
-COINDAEMON_ALGO = 'scrypt'
+COINDAEMON_ALGO = 'riecoin'
 COINDAEMON_TX = 'no'
 
 # ******************** BASIC SETTINGS ***************
@@ -30,12 +30,12 @@ COINDAEMON_TX = 'no'
 # You can have up to 99
 
 #COINDAEMON_TRUSTED_HOST_1 = 'localhost'
-#COINDAEMON_TRUSTED_PORT_1 = 8332
+#COINDAEMON_TRUSTED_PORT_1 = 28332
 #COINDAEMON_TRUSTED_USER_1 = 'user'
 #COINDAEMON_TRUSTED_PASSWORD_1 = 'somepassword'
 
 #COINDAEMON_TRUSTED_HOST_2 = 'localhost'
-#COINDAEMON_TRUSTED_PORT_2 = 8332
+#COINDAEMON_TRUSTED_PORT_2 = 28332
 #COINDAEMON_TRUSTED_USER_2 = 'user'
 #COINDAEMON_TRUSTED_PASSWORD_2 = 'somepassword'
 
@@ -142,7 +142,7 @@ VDIFF_X2_TYPE = True            # Powers of 2 e.g. 2,4,8,16,32,64,128,256,512,10
 VDIFF_FLOAT = False             # Use float difficulty
 
 # Pool Target (Base Difficulty)
-POOL_TARGET = 32                # Pool-wide difficulty target int >= 1
+POOL_TARGET = 4                 # Pool-wide difficulty target int >= 1
 
 # Variable Difficulty Enable
 VARIABLE_DIFF = True            # Master variable difficulty enable

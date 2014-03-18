@@ -87,7 +87,7 @@ class MiningService(GenericService):
             else:
                 session['difficulty'] = settings.POOL_TARGET
             # worker_log = (valid, invalid, is_banned, diff, is_ext_diff, timestamp)
-            Interfaces.worker_manager.worker_log['authorized'][worker_name] = (0, 0, False, session['difficulty'], is_ext_diff, Interfaces.timestamper.time())            
+            Interfaces.worker_manager.worker_log['authorized'][worker_name] = (0, 0, False, session['difficulty'], is_ext_diff, Interfaces.timestamper.time())
             return True
         else:
             ip = self.connection_ref()._get_ip()

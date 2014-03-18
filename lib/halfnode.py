@@ -239,6 +239,8 @@ class CBlock(object):
             self.scrypt = None
         elif settings.COINDAEMON_ALGO == 'quark':
             self.quark = None
+        elif settings.COINDAEMON_ALGO == 'riecoin':
+            self.riecoin = None
         else: pass
         if settings.COINDAEMON_Reward == 'POS':
             self.signature = b""
@@ -248,9 +250,14 @@ class CBlock(object):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
         self.hashPrevBlock = deser_uint256(f)
         self.hashMerkleRoot = deser_uint256(f)
-        self.nTime = struct.unpack("<I", f.read(4))[0]
-        self.nBits = struct.unpack("<I", f.read(4))[0]
-        self.nNonce = struct.unpack("<I", f.read(4))[0]
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            self.nBits = struct.unpack("<I", f.read(4))[0]
+            self.nTime = struct.unpack("<II", f.read(8))[0]
+            self.nNonce = struct.unpack("<IIIIIIII", f.read(32))[0]
+        else:
+            self.nTime = struct.unpack("<I", f.read(4))[0]
+            self.nBits = struct.unpack("<I", f.read(4))[0]
+            self.nNonce = struct.unpack("<I", f.read(4))[0]
         self.vtx = deser_vector(f, CTransaction)
         if settings.COINDAEMON_Reward == 'POS':
             self.signature = deser_string(f)
@@ -261,9 +268,14 @@ class CBlock(object):
         r.append(struct.pack("<i", self.nVersion))
         r.append(ser_uint256(self.hashPrevBlock))
         r.append(ser_uint256(self.hashMerkleRoot))
-        r.append(struct.pack("<I", self.nTime))
-        r.append(struct.pack("<I", self.nBits))
-        r.append(struct.pack("<I", self.nNonce))
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            r.append(struct.pack("<I", self.nBits))
+            r.append(struct.pack("<Q", self.nTime))
+            r.append(ser_uint256(self.nNonce))
+        else:
+            r.append(struct.pack("<I", self.nTime))
+            r.append(struct.pack("<I", self.nBits))
+            r.append(struct.pack("<I", self.nNonce))
         r.append(ser_vector(self.vtx))
         if settings.COINDAEMON_Reward == 'POS':
             r.append(ser_string(self.signature))
@@ -294,6 +306,18 @@ class CBlock(object):
                 r.append(struct.pack("<I", self.nNonce))
                 self.quark = uint256_from_str(quark_hash.getPoWHash(''.join(r)))
              return self.quark
+    elif settings.COINDAEMON_ALGO == 'riecoin':
+         def calc_riecoin(self):
+             if self.riecoin is None:
+                r = []
+                r.append(struct.pack("<i", self.nVersion))
+                r.append(ser_uint256(self.hashPrevBlock))
+                r.append(ser_uint256(self.hashMerkleRoot))
+                r.append(struct.pack("<I", self.nBits))
+                r.append(struct.pack("<Q", self.nTime))
+                sha256 = uint256_from_str(SHA256.new(SHA256.new(''.join(r)).digest()).digest())
+                self.riecoin = riecoinPoW( sha256, uint256_from_compact(self.nBits), self.nNonce )
+             return self.riecoin
     else:
        def calc_sha256(self):
            if self.sha256 is None:
@@ -309,15 +333,23 @@ class CBlock(object):
 
 
     def is_valid(self):
-        if settings.COINDAEMON_ALGO == 'scrypt':
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            self.calc_riecoin()
+        elif settings.COINDAEMON_ALGO == 'scrypt':
             self.calc_scrypt()
         elif settings.COINDAEMON_ALGO == 'quark':
             self.calc_quark()
         else:
             self.calc_sha256()
 
-        target = uint256_from_compact(self.nBits)
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            target = settings.POOL_TARGET
+        else:
+            target = uint256_from_compact(self.nBits)
 
+        if settings.COINDAEMON_ALGO == 'riecoin':
+            if self.riecoin < target:
+                return False
         if settings.COINDAEMON_ALGO == 'scrypt':
             if self.scrypt > target:
                 return False
