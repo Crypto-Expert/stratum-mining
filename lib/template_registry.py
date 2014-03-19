@@ -195,10 +195,15 @@ class TemplateRegistry(object):
             - difficulty - decimal number from session, again no checks performed
             - submitblock_callback - reference to method which receive result of submitblock()
         '''
-        # Share Diff Should never be 0 
-        if difficulty < VDIFF_MIN_TARGET :
+        if VARIABLE_DIFF == True:
+            # Share Diff Should never be 0 
+            if difficulty < VDIFF_MIN_TARGET :
         	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
-        	raise SubmitException("Diff is 0 Share Rejected")
+        	raise SubmitException("Diff is 0 Share Rejected Reporting to Admin")
+        else:
+             if difficulty < POOL_TARGET:
+             	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
+        	raise SubmitException("Diff is 0 Share Rejected Reporting to Admin")
         	
         # Check if extranonce2 looks correctly. extranonce2 is in hex form...
         if len(extranonce2) != self.extranonce2_size * 2:
