@@ -3,6 +3,12 @@ This is example configuration for Stratum server.
 Please rename it to config.py and fill correct values.
 '''
 
+import os
+
+STRATUM_ROOT = os.path.dirname(
+    os.path.dirname(os.path.realpath(__file__))
+)
+
 # ******************** GENERAL SETTINGS ***************
 
 # Enable some verbose debug (logging requests and responses).

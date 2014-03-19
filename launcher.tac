@@ -3,18 +3,32 @@
 # Add conf directory to python path.
 # Configuration file is standard python module.
 import os, sys
-sys.path = [os.path.join(os.getcwd(), 'conf'),os.path.join(os.getcwd(), 'externals', 'stratum-mining-proxy'),] + sys.path
+STRATUM_ROOT = os.path.dirname(os.path.realpath(__file__))
+sys.path = [
+    STRATUM_ROOT,
+    os.path.join(STRATUM_ROOT, 'conf'),
+    os.path.join(STRATUM_ROOT, 'externals', 'stratum-mining-proxy')
+] + sys.path
 
 from twisted.internet import defer
 from twisted.application.service import Application, IProcess
+from twisted.python.log import ILogObserver, FileLogObserver
+from twisted.python.logfile import DailyLogFile
 
 # Run listening when mining service is ready
 on_startup = defer.Deferred()
 
 import stratum
 import lib.settings as settings
+
 # Bootstrap Stratum framework
 application = stratum.setup(on_startup)
+
+
+# set up logfile so it's relative to stratum directory
+logfile = DailyLogFile("twisted.log", settings.STRATUM_ROOT)
+application.setComponent(ILogObserver, FileLogObserver(logfile).emit)
+
 IProcess(application).processName = settings.STRATUM_MINING_PROCESS_NAME
 
 # Load mining service into stratum framework
