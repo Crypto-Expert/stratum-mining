@@ -192,8 +192,11 @@ class TemplateRegistry(object):
         
             - extranonce1_bin is binary. No checks performed, it should be from session data
             - job_id, extranonce2, ntime, nonce - in hex form sent by the client
-            - difficulty - decimal number from session, again no checks performed
+            - difficulty - decimal number from session
             - submitblock_callback - reference to method which receive result of submitblock()
+            - difficulty is checked to see if its lower than the vardiff minimum target or pool target
+              from conf/config.py and if it is the share is rejected due to it not meeting the requirements for a share
+              
         '''
         if VARIABLE_DIFF == True:
             # Share Diff Should never be 0 
