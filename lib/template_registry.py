@@ -202,7 +202,7 @@ class TemplateRegistry(object):
             # Share Diff Should never be 0 
             if difficulty < VDIFF_MIN_TARGET :
         	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
-        	raise SubmitException("Diff is %s Share Rejected Reporting to Admin",%(difficulty))
+        	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
         else:
              if difficulty < POOL_TARGET:
              	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
