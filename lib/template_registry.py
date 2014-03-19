@@ -198,13 +198,13 @@ class TemplateRegistry(object):
               from conf/config.py and if it is the share is rejected due to it not meeting the requirements for a share
               
         '''
-        if VARIABLE_DIFF == True:
+        if settings.VARIABLE_DIFF == True:
             # Share Diff Should never be 0 
-            if difficulty < VDIFF_MIN_TARGET :
+            if difficulty < settings.VDIFF_MIN_TARGET :
         	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
         	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
         else:
-             if difficulty < POOL_TARGET:
+             if difficulty < settings.POOL_TARGET:
              	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
         	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
         	
