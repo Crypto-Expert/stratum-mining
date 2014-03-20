@@ -179,6 +179,13 @@ class DBInterface():
                 self.dbi.insert_worker(uid, username, password)
                 self.cache.set(username, password)
                 return True
+            else:
+                self.dbi.insert_user(username, password)
+                if self.dbi.get_uid(username) != False:
+                    uid = self.dbi.get_uid(username)
+                    self.dbi.insert_worker(uid, username, password)
+                    self.cache.set(username, password)
+                    return True
         
         log.info("Authentication for %s failed" % username)
         return False
