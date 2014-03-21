@@ -10,6 +10,7 @@ class DB_None():
 
     def import_shares(self,data):
         log.debug("Importing Shares")
+	pass
 
     def found_block(self,data):
         log.debug("Found Block")

@@ -1,0 +1,21 @@
+2014-03-05 13:58:21-0800 [-] Log opened.
+2014-03-05 13:58:21-0800 [-] twistd 12.0.0 (/usr/bin/python 2.7.3) starting up.
+2014-03-05 13:58:21-0800 [-] reactor class: twisted.internet.epollreactor.EPollReactor.
+2014-03-05 13:58:21-0800 [-] Changing process name to twistd-stratum-mining
+2014-03-05 13:58:21-0800 [-] Log opened.
+2014-03-05 13:58:21-0800 [-] twistd 12.0.0 ( 2.7.3) starting up.
+2014-03-05 13:58:21-0800 [-] reactor class: twisted.internet.epollreactor.EPollReactor.
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] 2014-03-05 13:58:21,675 DEBUG stats # Logging initialized
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] 2014-03-05 13:58:21,679 DEBUG protocol # Logging initialized
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] 2014-03-05 13:58:21,680 DEBUG socket_transport # Logging initialized
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] 2014-03-05 13:58:21,683 DEBUG http_transport # Logging initialized
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] 2014-03-05 13:58:21,686 DEBUG irc # Logging initialized
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] Loading of signing key 'None' failed, protocol messages cannot be signed.
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] Cannot initiate SSL context, are SSL_PRIVKEY or SSL_CACERT missing?
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] This will skip all SSL-based transports.
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] SocketTransportFactory starting on 3339
+2014-03-05 13:58:21-0800 [HTTPPageGetter,client] Starting factory <stratum.socket_transport.SocketTransportFactory instance at 0x225d128>
+2014-03-05 13:58:29-0800 [-] (TCP Port 3339 Closed)
+2014-03-05 13:58:29-0800 [-] Stopping factory <stratum.socket_transport.SocketTransportFactory instance at 0x225d128>
+2014-03-05 13:58:29-0800 [-] Main loop terminated.
+2014-03-05 13:58:29-0800 [-] Server Shut Down.
