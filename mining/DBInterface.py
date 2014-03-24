@@ -131,9 +131,12 @@ class DBInterface():
             
             while self.q.empty() == False and datacnt < settings.DB_LOADER_REC_MAX:
                 datacnt += 1
-                data = self.q.get()
-                sqldata.append(data)
-                self.q.task_done()
+                try:
+                    data = self.q.get(False, 1)
+                    sqldata.append(data)
+                    self.q.task_done()
+                except Queue.Empty:
+                    log.warning("Share Records Queue is empty!")
 
             forcesize -= datacnt
                 
