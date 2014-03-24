@@ -69,42 +69,32 @@ class DBInterface():
 
     def scheduleImport(self):
         # This schedule's the Import
+        self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import_schedule)
+
+    def run_import_schedule(self):
+        log.debug("DBInterface.run_import_schedule called")
+        
+        if self.q.qsize() >= settings.DB_LOADER_REC_MIN or time.time() >= self.next_force_import_time:
+            self.run_import()
+        
+        self.scheduleImport()
+    
+    def run_import(self, force=False):
+        log.debug("DBInterface.run_import called")
         if settings.DATABASE_DRIVER == "sqlite":
             use_thread = False
         else:
             use_thread = True
         
         if use_thread:
-            self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import_thread)
+            reactor.callInThread(self.import_thread, force)
         else:
-            self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import)
-    
-    def run_import_thread(self):
-        log.debug("run_import_thread current size: %d", self.q.qsize())
-        
-        if self.q.qsize() >= settings.DB_LOADER_REC_MIN or time.time() >= self.next_force_import_time:  # Don't incur thread overhead if we're not going to run
-            reactor.callInThread(self.import_thread)
-                
-        self.scheduleImport()
+            self.do_import(self.dbi, force)
 
-    def run_import(self):
-        log.debug("DBInterface.run_import called")
-        
-        self.do_import(self.dbi, False)
-        
-        self.scheduleImport()
-        
-    def run_import_force(self):
-        log.debug("DBInterface.run_import called")
-        
-        self.do_import(self.dbi, True)
-        
-        self.scheduleImport()
-
-    def import_thread(self):
+    def import_thread(self, force=False):
         # Here we are in the thread.
-        dbi = self.connectDB()        
-        self.do_import(dbi, False)
+        dbi = self.connectDB()
+        self.do_import(dbi, force)
         
         dbi.close()
 
