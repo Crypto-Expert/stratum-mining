@@ -82,8 +82,6 @@ class ShareManagerInterface(object):
  
     def on_submit_block(self, is_accepted, worker_name, block_header, block_hash, timestamp, ip, share_diff):
         log.info("Block %s %s" % (block_hash, 'ACCEPTED' if is_accepted else 'REJECTED'))
-        #dbi.do_import(dbi, True)
-        dbi.run_import_force()
         dbi.found_block([worker_name, block_header, block_hash, -1, timestamp, is_accepted, ip, self.block_height, self.prev_hash, share_diff ])
         
 class TimestamperInterface(object):
