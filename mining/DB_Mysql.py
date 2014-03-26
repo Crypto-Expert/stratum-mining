@@ -208,7 +208,7 @@ class DB_Mysql():
     def get_uid(self, id_or_username):
         log.debug("Finding user id of %s", id_or_username)
         uname = id_or_username.split(".", 1)[0]
-        self.execute("SELECT `id` FROM `accounts` where username = %s", (uname))
+        self.execute("SELECT id FROM accounts where username = %s", (uname,))
         row = self.dbc.fetchone()
 
         if row is None:
