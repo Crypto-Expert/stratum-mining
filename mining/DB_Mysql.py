@@ -360,6 +360,10 @@ class DB_Mysql():
            return data[0]
         return settings.POOL_TARGET
 
+    def set_worker_diff(self,username, difficulty):
+        self.execute("UPDATE `pool_worker` SET `difficulty` = %s WHERE `username` = %s",(difficulty,username))
+        self.dbh.commit()
+
     def check_tables(self):
         log.debug("Checking Database")
         
