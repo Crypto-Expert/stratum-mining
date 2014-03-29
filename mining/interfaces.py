@@ -61,8 +61,14 @@ class ShareLimiterInterface(object):
            
            - raise SubmitException for stop processing this request
            - call mining.set_difficulty on connection to adjust the difficulty'''
-        #return dbi.update_worker_diff(worker_name, settings.POOL_TARGET)
-        return
+         new_diff = dbi.get_worker_diff(worker_name)
+      	session = connection_ref().get_session()
+         session['prev_diff'] = session['difficulty']
+         session['prev_jobid'] = job_id
+         session['difficulty'] = new_diff 
+         connection_ref().rpc('mining.set_difficulty', [new_diff,], is_notification=True) 
+         #return dbi.update_worker_diff(worker_name, settings.POOL_TARGET)
+         return
  
 class ShareManagerInterface(object):
     def __init__(self):
@@ -82,7 +88,7 @@ class ShareManagerInterface(object):
  
     def on_submit_block(self, is_accepted, worker_name, block_header, block_hash, timestamp, ip, share_diff):
         log.info("Block %s %s" % (block_hash, 'ACCEPTED' if is_accepted else 'REJECTED'))
-        dbi.run_import(dbi, Force=True)
+        #dbi.run_import(dbi, Force=True)
         dbi.found_block([worker_name, block_header, block_hash, -1, timestamp, is_accepted, ip, self.block_height, self.prev_hash, share_diff ])
         
 class TimestamperInterface(object):
