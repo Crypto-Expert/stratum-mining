@@ -352,6 +352,13 @@ class DB_Mysql():
 
     def close(self):
         self.dbh.close()
+        
+    def get_worker_diff(self,username):
+        self.dbc.execute("select difficulty from pool_worker where username = %s",(username))
+        data = self.dbc.fetchone()
+        if data[0] > 0 :
+           return data[0]
+        return settings.POOL_TARGET
 
     def check_tables(self):
         log.debug("Checking Database")
