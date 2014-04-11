@@ -47,7 +47,9 @@ class BaseCoin(object):
             Location: lib/template_registry.py#L145
         """
         return \
-            0x00000000ffff0000000000000000000000000000000000000000000000000000
+            #0x00000000ffff0000000000000000000000000000000000000000000000000000
+            0x000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            
 
     @property
     def header_needs_padding(self):
