@@ -124,8 +124,8 @@ class BasicShareLimiter(object):
                 if (ddiff * current_difficulty) < settings.VDIFF_MIN_TARGET:
                     ddiff = settings.VDIFF_MIN_TARGET / current_difficulty
             else:
-                if ddiff > -1:
-                    ddiff = -1
+                if ddiff > -settings.VDIFF_MIN_CHANGE:
+                    ddiff = -settings.VDIFF_MIN_CHANGE
                 # Don't drop below POOL_TARGET
                 if (ddiff + current_difficulty) < settings.VDIFF_MIN_TARGET:
                     ddiff = settings.VDIFF_MIN_TARGET - current_difficulty
@@ -143,8 +143,8 @@ class BasicShareLimiter(object):
                 if (ddiff * current_difficulty) > diff_max:
                     ddiff = diff_max / current_difficulty
             else:
-                if ddiff < 1:
-                   ddiff = 1
+                if ddiff < settings.VDIFF_MIN_CHANGE:
+                   ddiff = settings.VDIFF_MIN_CHANGE
                 # Don't go above LITECOIN or VDIFF_MAX_TARGET
                 if settings.USE_COINDAEMON_DIFF:
                    self.update_litecoin_difficulty()
