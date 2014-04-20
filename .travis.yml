@@ -7,10 +7,5 @@ python:
 # command to install dependencies
 install:
   - "pip install -r requirements.txt"
-before_script:
-  - "git clone https://github.com/ahmedbodi/stratum"
-  - "cd stratum"
-  - "python setup.py install"
-  - "cd .."
 # command to run tests
 script: nosetests
