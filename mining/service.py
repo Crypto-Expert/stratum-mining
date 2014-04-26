@@ -108,7 +108,10 @@ class MiningService(GenericService):
         
         session = self.connection_ref().get_session()
         session['extranonce1'] = extranonce1
-        session['difficulty'] = settings.POOL_TARGET  # Following protocol specs, default diff is 1
+        session['prev_diff'] = session['difficulty']
+        session['prev_jobid'] = job_id
+        session['difficulty'] = settings.POOL_TARGET
+        connection_ref().rpc('mining.set_difficulty', [new_diff,], is_notification=True)
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
         
     def submit(self, worker_name, work_id, extranonce2, ntime, nonce):

@@ -3,25 +3,16 @@ import binascii
 import util
 import StringIO
 import settings
-if settings.COINDAEMON_ALGO == 'scrypt':
-    import ltc_scrypt
-elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-    scryptjane = __import__(settings.SCRYPTJANE_NAME) 
-elif settings.COINDAEMON_ALGO == 'quark':
-    import quark_hash
-elif settings.COINDAEMON_ALGO == 'skeinhash':
-    import skeinhash
-else: pass
+import lib.logger
+import lib.settings as settings
+import importlib
 from twisted.internet import defer
 from lib.exceptions import SubmitException
 
-import lib.logger
 log = lib.logger.get_logger('template_registry')
 log.debug("Got to Template Registry")
-from mining.interfaces import Interfaces
-from extranonce_counter import ExtranonceCounter
-import lib.settings as settings
-
+algo = importlib.import_module("lib." +settings.COINDAEMON_ALGO)
+coin = algo.Coin()
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,
@@ -111,17 +102,12 @@ class TemplateRegistry(object):
 
         # Everything is ready, let's broadcast jobs!
         self.on_template_callback(new_block)
-        
-
-        #from twisted.internet import reactor
-        #reactor.callLater(10, self.on_block_callback, new_block) 
               
     def update_block(self):
         '''Registry calls the getblocktemplate() RPC
         and build new block template.'''
         
         if self.update_in_progress:
-            # Block has been already detected
             return
         
         self.update_in_progress = True
@@ -150,13 +136,7 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        if settings.COINDAEMON_ALGO == 'scrypt' or 'scrypt-jane':
-            diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
-        elif settings.COINDAEMON_ALGO == 'quark':
-            diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
-        else:
-            diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
-
+	diff1 = Coin.return_diff1
         return diff1 / difficulty
     
     def get_job(self, job_id, worker_name, ip=False):
@@ -200,7 +180,7 @@ class TemplateRegistry(object):
         '''
         if settings.VARIABLE_DIFF == True:
             # Share Diff Should never be 0 
-            if difficulty < settings.VDIFF_MIN_TARGET :
+            if difficulty < settings.VDIFF_MIN_TARGET:
         	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
         	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
         else:
@@ -254,28 +234,12 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        if settings.COINDAEMON_ALGO == 'scrypt':
-            hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-        elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-        	if settings.SCRYPTJANE_NAME == 'vtc_scrypt':
-            	     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-      		else: 
-      		     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
-        elif settings.COINDAEMON_ALGO == 'quark':
-            hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-	elif settings.COINDAEMON_ALGO == 'skeinhash':
-            hash_bin = skeinhash.skeinhash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-        else:
-            hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+	Coin.hash_bin(header_bin)
 
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
-        if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane':
-            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
-        elif settings.COINDAEMON_ALGO == 'quark':
-            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
-        else: pass
+        header_hex = Coin.padding(header_hex)
                  
         target_user = self.diff_to_target(difficulty)
         if hash_int > target_user:
@@ -295,12 +259,9 @@ class TemplateRegistry(object):
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
             # Reverse the header and get the potential block hash (for scrypt only) 
-            #if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
-            #   if settings.COINDAEMON_Reward == 'POW':
-            block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-            block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
-            #else:   block_hash_hex = hash_bin[::-1].encode('hex_codec')
-            #else:  block_hash_hex = hash_bin[::-1].encode('hex_codec')
+            block_hash_bin = Coin.hash_bin(header_bin)
+	    block_hash_hex = Coin.build_header(block_hash_bin)   
+
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
             
@@ -321,8 +282,8 @@ class TemplateRegistry(object):
         
         if settings.SOLUTION_BLOCK_HASH:
         # Reverse the header and get the potential block hash (for scrypt only) only do this if we want to send in the block hash to the shares table
-            block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-            block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
+            block_hash_bin = Coin.hash_bin(header_bin)
+            block_hash_hex = Coin.build_header(block_hash_bin)
             return (header_hex, block_hash_hex, share_diff, None)
         else:
             return (header_hex, scrypt_hash_hex, share_diff, None)

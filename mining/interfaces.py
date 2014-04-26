@@ -61,13 +61,6 @@ class ShareLimiterInterface(object):
            
            - raise SubmitException for stop processing this request
            - call mining.set_difficulty on connection to adjust the difficulty'''
-        new_diff = dbi.get_worker_diff(worker_name)
-        session = connection_ref().get_session()
-        session['prev_diff'] = session['difficulty']
-        session['prev_jobid'] = job_id
-        session['difficulty'] = new_diff
-        connection_ref().rpc('mining.set_difficulty', [new_diff,], is_notification=True)
-        #return dbi.update_worker_diff(worker_name, settings.POOL_TARGET)
         return
  
 class ShareManagerInterface(object):
