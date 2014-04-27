@@ -63,7 +63,7 @@ class Base(object):
        return block_hash(block_hash_bin)[::-1].encode('hex_codec')
 
    @property
-   def calc_algo(r)
+   def calc_algo(r):
        """
 	builds block
        """
