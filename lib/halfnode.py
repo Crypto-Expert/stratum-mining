@@ -151,7 +151,7 @@ class CTransaction(object):
     def deserialize(self, f):
             self.nVersion = struct.unpack("<i", f.read(4))[0]
 	    if settings.COINDAEMON_Reward == 'POS':
-	       self.nTime == struct.unpack("<i", f.read(4))[0]
+            self.nTime == struct.unpack("<i", f.read(4))[0]
             self.vin = deser_vector(f, CTxIn)
             self.vout = deser_vector(f, CTxOut)
             self.nLockTime = struct.unpack("<I", f.read(4))[0]
@@ -162,7 +162,7 @@ class CTransaction(object):
     def serialize(self):
             r = ""
             r += struct.pack("<i", self.nVersion)
-	    if settings.COINDAEMON_Reward == 'POS':
+            if settings.COINDAEMON_Reward == 'POS':
                r += struct.pack("<i", self.nTime)
             r += ser_vector(self.vin)
             r += ser_vector(self.vout)
