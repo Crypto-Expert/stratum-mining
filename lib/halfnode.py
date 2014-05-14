@@ -225,8 +225,8 @@ class CBlock(object):
 	
     def calc_algo(self):
            if self.algo is None:
-	      coin.build_block(self.nVersion, self.hashPrevBlock, self.hashMerkleRoot, self.nTime, self.nBits, self.nNonce)
-              self.algo = Coin.calc_algo(r)
+	       r = coin.build_block(self.nVersion, self.hashPrevBlock, self.hashMerkleRoot, self.nTime, self.nBits, self.nNonce)
+           self.algo = Coin.calc_algo(r)
            return self.algo
 
     def is_valid(self):

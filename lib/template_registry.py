@@ -259,7 +259,7 @@ class TemplateRegistry(object):
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
             # Reverse the header and get the potential block hash (for scrypt only) 
-            block_hash_bin = Coin.hash_bin(header_bin)
+            block_hash_bin = Coin.block_hash_bin(header_bin)
 	    block_hash_hex = Coin.build_header(block_hash_bin)   
 
             # 6. Finalize and serialize block object 
@@ -282,7 +282,7 @@ class TemplateRegistry(object):
         
         if settings.SOLUTION_BLOCK_HASH:
         # Reverse the header and get the potential block hash (for scrypt only) only do this if we want to send in the block hash to the shares table
-            block_hash_bin = Coin.hash_bin(header_bin)
+            block_hash_bin = Coin.block_hash_bin(header_bin)
             block_hash_hex = Coin.build_header(block_hash_bin)
             return (header_hex, block_hash_hex, share_diff, None)
         else:
