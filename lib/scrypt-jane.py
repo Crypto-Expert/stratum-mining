@@ -13,7 +13,8 @@ class Coin(Base):
    @property
    def import_algo(self):
        """
-       Does an Algo Module need to be imported?
+       Certain functions require the external lib to be imported.
+       Not 100% sure this is the lib name for scrypt-jane. Update as needed.
        """
 	   import scryptjane
 	   
@@ -38,7 +39,7 @@ class Coin(Base):
    @property
    def build_block(self, nVersion, hashPrevBlock, hashMerkleRoot, nTime, nBits, nNonce):
        """
-	Buids the Data For the Block
+       Buids the Data For the Block
        """
        r = []
        r.append(struct.pack("<i", nVersion))
@@ -73,6 +74,6 @@ class Coin(Base):
    @property
    def calc_algo(r):
        """
-	builds block
+       builds block
        """
        return uint256_from_str(vtc_scrypt.getPoWHash(''.join(r)))

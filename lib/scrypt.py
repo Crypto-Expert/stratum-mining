@@ -13,7 +13,8 @@ class Coin(Base):
    @property
    def import_algo(self):
        """
-       Does an Algo Module need to be imported?
+       ltc_scrypt should be usable for any scrypt coin variant. 
+       The math is the same.
        """
 	   import ltc_scrypt
 	   
@@ -38,7 +39,7 @@ class Coin(Base):
    @property
    def build_block(self, nVersion, hashPrevBlock, hashMerkleRoot, nTime, nBits, nNonce):
        """
-	Buids the Data For the Block
+	   Buids the Data For the Block
        """
        r = []
        r.append(struct.pack("<i", nVersion))
@@ -73,6 +74,6 @@ class Coin(Base):
    @property
    def calc_algo(r):
        """
-	builds block
+       builds block
        """
        return uint256_from_str(ltc_scrypt.getPoWHash(''.join(r)))
