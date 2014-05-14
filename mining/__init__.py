@@ -27,20 +27,20 @@ def setup(on_startup):
     
     from lib.block_updater import BlockUpdater
     from lib.template_registry import TemplateRegistry
-    from lib.bitcoin_rpc_manager import BitcoinRPCManager
+    from lib.coin_rpc_manager import CoinRPCManager
     from lib.block_template import BlockTemplate
     from lib.coinbaser import SimpleCoinbaser
     
-    bitcoin_rpc = BitcoinRPCManager()
-    # Check litecoind
+    coin_rpc = CoinRPCManager()
+    # Check coind
     #         Check we can connect (sleep)
     # Check the results:
     #         - getblocktemplate is avalible        (Die if not)
     #         - we are not still downloading the blockchain        (Sleep)
-    log.info("Connecting to litecoind...")
+    log.info("Connecting to coind...")
     while True:
         try:
-            result = (yield bitcoin_rpc.check_submitblock())
+            result = (yield coin_rpc.check_submitblock())
 	    if result == True:
                 log.info("Found submitblock")
             elif result == False:
@@ -56,11 +56,11 @@ def setup(on_startup):
             log.debug(str(e))
 
         try:
-            result = (yield bitcoin_rpc.getblocktemplate())
+            result = (yield coin_rpc.getblocktemplate())
             if isinstance(result, dict):
-                # litecoind implements version 1 of getblocktemplate
+                # coind implements version 1 of getblocktemplate
                 if result['version'] >= 1:
-                    result = (yield bitcoin_rpc.getdifficulty())
+                    result = (yield coin_rpc.getdifficulty())
                     if isinstance(result,dict):
                         if 'proof-of-stake' in result: 
                             settings.COINDAEMON_Reward = 'POS'
@@ -105,12 +105,12 @@ def setup(on_startup):
     except:
 	  pass
     # Start the coinbaser
-    coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))
+    coinbaser = SimpleCoinbaser(coin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)
     
     registry = TemplateRegistry(BlockTemplate,
                                 coinbaser,
-                                bitcoin_rpc,
+                                coin_rpc,
                                 getattr(settings, 'INSTANCE_ID'),
                                 MiningSubscription.on_template,
                                 Interfaces.share_manager.on_network_block)
@@ -122,7 +122,7 @@ def setup(on_startup):
     # Set up polling mechanism for detecting new block on the network
     # This is just failsafe solution when -blocknotify
     # mechanism is not working properly    
-    BlockUpdater(registry, bitcoin_rpc)
+    BlockUpdater(registry, coin_rpc)
 
     prune_thr = threading.Thread(target=WorkLogPruner, args=(Interfaces.worker_manager.job_log,))
     prune_thr.daemon = True

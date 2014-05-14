@@ -9,9 +9,9 @@ from twisted.web import client
 import time
 
 import lib.logger
-log = lib.logger.get_logger('bitcoin_rpc')
+log = lib.logger.get_logger('coin_rpc')
 
-class BitcoinRPC(object):
+class CoinRPC(object):
     
     def __init__(self, host, port, username, password):
         log.debug("Got to Bitcoin RPC")

@@ -124,5 +124,5 @@ class Interfaces(object):
         
     @classmethod
     def set_template_registry(cls, registry):
-        dbi.set_bitcoinrpc(registry.bitcoin_rpc)
+        dbi.set_coinrpc(registry.coin_rpc)
         cls.template_registry = registry

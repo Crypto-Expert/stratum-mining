@@ -31,7 +31,7 @@ class TemplateRegistry(object):
     on valid block templates, provide internal interface for stratum
     service and implements block validation and submits.'''
     
-    def __init__(self, block_template_class, coinbaser, bitcoin_rpc, instance_id,
+    def __init__(self, block_template_class, coinbaser, coin_rpc, instance_id,
                  on_template_callback, on_block_callback):
         self.prevhashes = {}
         self.jobs = weakref.WeakValueDictionary()
@@ -42,7 +42,7 @@ class TemplateRegistry(object):
         log.debug("Got to Template Registry")
         self.coinbaser = coinbaser
         self.block_template_class = block_template_class
-        self.bitcoin_rpc = bitcoin_rpc
+        self.coin_rpc = coin_rpc
         self.on_block_callback = on_block_callback
         self.on_template_callback = on_template_callback
         
@@ -110,7 +110,7 @@ class TemplateRegistry(object):
         self.update_in_progress = True
         self.last_update = Interfaces.timestamper.time()
         
-        d = self.bitcoin_rpc.getblocktemplate()
+        d = self.coin_rpc.getblocktemplate()
         d.addCallback(self._update_block)
         d.addErrback(self._update_block_failed)
         
@@ -268,7 +268,7 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-            on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
+            on_submit = self.coin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
             if on_submit:
                 self.update_block()
 

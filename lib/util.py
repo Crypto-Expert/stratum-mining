@@ -4,7 +4,7 @@ import struct
 import StringIO
 import binascii
 import settings
-import bitcoin_rpc
+import coin_rpc
 from hashlib import sha256
 
 def deser_string(f):

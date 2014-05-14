@@ -11,31 +11,31 @@ import settings
 import time
 
 import lib.logger
-log = lib.logger.get_logger('bitcoin_rpc_manager')
+log = lib.logger.get_logger('coin_rpc_manager')
 
-from lib.bitcoin_rpc import BitcoinRPC
+from lib.coin_rpc import CoinRPC
 
 
-class BitcoinRPCManager(object):
+class CoinRPCManager(object):
     
     def __init__(self):
         log.debug("Got to Bitcoin RPC Manager")
         self.conns = {}
-        self.conns[0] = BitcoinRPC(settings.COINDAEMON_TRUSTED_HOST,
+        self.conns[0] = CoinRPC(settings.COINDAEMON_TRUSTED_HOST,
                                  settings.COINDAEMON_TRUSTED_PORT,
                                  settings.COINDAEMON_TRUSTED_USER,
                                  settings.COINDAEMON_TRUSTED_PASSWORD)
         self.curr_conn = 0
         for x in range (1, 99):
             if hasattr(settings, 'COINDAEMON_TRUSTED_HOST_' + str(x)) and hasattr(settings, 'COINDAEMON_TRUSTED_PORT_' + str(x)) and hasattr(settings, 'COINDAEMON_TRUSTED_USER_' + str(x)) and hasattr(settings, 'COINDAEMON_TRUSTED_PASSWORD_' + str(x)):
-                self.conns[len(self.conns)] = BitcoinRPC(settings.__dict__['COINDAEMON_TRUSTED_HOST_' + str(x)],
+                self.conns[len(self.conns)] = CoinRPC(settings.__dict__['COINDAEMON_TRUSTED_HOST_' + str(x)],
                                 settings.__dict__['COINDAEMON_TRUSTED_PORT_' + str(x)],
                                 settings.__dict__['COINDAEMON_TRUSTED_USER_' + str(x)],
                                 settings.__dict__['COINDAEMON_TRUSTED_PASSWORD_' + str(x)])
 
     def add_connection(self, host, port, user, password):
         # TODO: Some string sanity checks
-        self.conns[len(self.conns)] = BitcoinRPC(host, port, user, password)
+        self.conns[len(self.conns)] = CoinRPC(host, port, user, password)
 
     def next_connection(self):
         time.sleep(1)

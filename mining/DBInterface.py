@@ -36,8 +36,8 @@ class DBInterface():
         self.do_import(self.dbi, True)
         reactor.stop()
 
-    def set_bitcoinrpc(self, bitcoinrpc):
-        self.bitcoinrpc = bitcoinrpc
+    def set_coinrpc(self, coinrpc):
+        self.coinrpc = coinrpc
 
     def connectDB(self):
         if settings.DATABASE_DRIVER == "sqlite":

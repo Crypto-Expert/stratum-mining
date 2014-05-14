@@ -12,7 +12,7 @@ class SimpleCoinbaser(object):
     '''This very simple coinbaser uses constant bitcoin address
     for all generated blocks.'''
     
-    def __init__(self, bitcoin_rpc, address):
+    def __init__(self, coin_rpc, address):
         log.debug("Got to coinbaser")
         # Fire Callback when the coinbaser is ready
         self.on_load = defer.Deferred()
@@ -20,11 +20,11 @@ class SimpleCoinbaser(object):
         self.address = address
         self.is_valid = False
 
-        self.bitcoin_rpc = bitcoin_rpc
+        self.coin_rpc = coin_rpc
         self._validate()
 
     def _validate(self):
-        d = self.bitcoin_rpc.validateaddress(self.address)
+        d = self.coin_rpc.validateaddress(self.address)
         d.addCallback(self.address_check)
         d.addErrback(self._failure)
 
