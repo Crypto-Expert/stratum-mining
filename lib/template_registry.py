@@ -56,13 +56,13 @@ class TemplateRegistry(object):
     def get_new_extranonce1(self):
         '''Generates unique extranonce1 (e.g. for newly
         subscribed connection.'''
-        log.debug("Getting Unique Extronance")
+        log.debug("Getting Unique Extranonce")
         return self.extranonce_counter.get_new_bin()
     
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
-        log.debug("Getting Laat Template")
+        log.debug("Getting Last Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -76,6 +76,8 @@ class TemplateRegistry(object):
             new_block = False
         else:
             new_block = True
+            # Drop templates of obsolete blocks
+            self.prevhashes = []
             self.prevhashes[prevhash] = []
                
         # Blocks sorted by prevhash, so it's easy to drop
@@ -87,11 +89,6 @@ class TemplateRegistry(object):
         
         # Use this template for every new request
         self.last_block = block
-        
-        # Drop templates of obsolete blocks
-        for ph in self.prevhashes.keys():
-            if ph != prevhash:
-                del self.prevhashes[ph]
                 
         log.info("New template for %s" % prevhash)
 
@@ -136,7 +133,7 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-	diff1 = Coin.return_diff1
+        diff1 = Coin.return_diff1
         return diff1 / difficulty
     
     def get_job(self, job_id, worker_name, ip=False):
@@ -234,7 +231,7 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-	Coin.hash_bin(header_bin)
+        Coin.hash_bin(header_bin)
 
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
@@ -260,7 +257,7 @@ class TemplateRegistry(object):
 
             # Reverse the header and get the potential block hash (for scrypt only) 
             block_hash_bin = Coin.block_hash_bin(header_bin)
-	    block_hash_hex = Coin.build_header(block_hash_bin)   
+	        block_hash_hex = Coin.build_header(block_hash_bin)   
 
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
@@ -271,7 +268,7 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-	    on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
+            on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
             if on_submit:
                 self.update_block()
 
