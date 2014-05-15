@@ -257,7 +257,7 @@ class TemplateRegistry(object):
 
             # Reverse the header and get the potential block hash (for scrypt only) 
             block_hash_bin = Coin.block_hash_bin(header_bin)
-	        block_hash_hex = Coin.build_header(block_hash_bin)   
+            block_hash_hex = Coin.build_header(block_hash_bin)   
 
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
