@@ -14,7 +14,7 @@ log = lib.logger.get_logger('coin_rpc')
 class CoinRPC(object):
     
     def __init__(self, host, port, username, password):
-        log.debug("Got to Bitcoin RPC")
+        log.debug("Got to Coin RPC")
         self.bitcoin_url = 'http://%s:%d' % (host, port)
         self.credentials = base64.b64encode("%s:%s" % (username, password))
         self.headers = {

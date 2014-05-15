@@ -19,7 +19,7 @@ from lib.coin_rpc import CoinRPC
 class CoinRPCManager(object):
     
     def __init__(self):
-        log.debug("Got to Bitcoin RPC Manager")
+        log.debug("Got to Coin RPC Manager")
         self.conns = {}
         self.conns[0] = CoinRPC(settings.COINDAEMON_TRUSTED_HOST,
                                  settings.COINDAEMON_TRUSTED_PORT,
