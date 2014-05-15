@@ -122,7 +122,10 @@ class MiningService(GenericService):
         session['prev_jobid'] = session['job_id']
         
         session['difficulty'] = settings.POOL_TARGET
-        connection_ref().rpc('mining.set_difficulty', [new_diff,], is_notification=True)
+        
+        #This must be a WIP. I don't see supporting implementations
+        #connection_ref().rpc('mining.set_difficulty', [new_diff,], is_notification=True)
+        
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
         
     def submit(self, worker_name, work_id, extranonce2, ntime, nonce):
