@@ -10,6 +10,8 @@ import importlib
 from twisted.internet import defer
 from lib.exceptions import SubmitException
 
+ExtranonceCounter = lib.extranonce_counter.ExtranonceCounter
+
 log = lib.logger.get_logger('template_registry')
 log.debug("Got to Template Registry")
 algo = importlib.import_module("lib." +settings.COINDAEMON_ALGO)
