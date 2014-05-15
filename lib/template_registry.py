@@ -6,11 +6,13 @@ import settings
 import lib.logger
 import lib.settings as settings
 import lib.extranonce_counter
+import mining.interfaces
 import importlib
 from twisted.internet import defer
 from lib.exceptions import SubmitException
 
 ExtranonceCounter = lib.extranonce_counter.ExtranonceCounter
+Interfaces = mining.interfaces.Interfaces
 
 log = lib.logger.get_logger('template_registry')
 log.debug("Got to Template Registry")
