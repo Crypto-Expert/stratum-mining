@@ -108,10 +108,19 @@ class MiningService(GenericService):
         
         session = self.connection_ref().get_session()
         session['extranonce1'] = extranonce1
+        
+        ''' It isn't clear why these are in here because they are unused anywhere else
+            I can only assume it is to do some diff subscription over subscription call
+            For now, I init the session keys so it doesn't bomb out'''
         if 'difficulty' not in session.keys():
             session['difficulty'] = settings.POOL_TARGET
+            
+        if 'job_id' not in session.keys():
+            session['job_id'] = None
+            
         session['prev_diff'] = session['difficulty']
-        session['prev_jobid'] = job_id
+        session['prev_jobid'] = session['job_id']
+        
         session['difficulty'] = settings.POOL_TARGET
         connection_ref().rpc('mining.set_difficulty', [new_diff,], is_notification=True)
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
