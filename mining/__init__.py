@@ -21,7 +21,7 @@ def setup(on_startup):
     import lib.logger
     log = lib.logger.get_logger('mining')
     if settings.CONFIG_VERSION == None:
-    settings.CONFIG_VERSION = 0
+        settings.CONFIG_VERSION = 0
     else: pass
     from interfaces import Interfaces
     
