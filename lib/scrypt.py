@@ -16,10 +16,10 @@ class Coin(Base):
        ltc_scrypt should be usable for any scrypt coin variant. 
        The math is the same.
        """
-	   import ltc_scrypt
-	   
+       import ltc_scrypt
+       
        return self.algo
-	   
+       
    @property
    def hash_bin(self, header_bin):
        """
@@ -31,15 +31,15 @@ class Coin(Base):
    @property
    def block_hash_bin(self, header_bin):
        """
-	   The Block Hashing Algorithm Used
-	   """
+       The Block Hashing Algorithm Used
+       """
        hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-	   return hash_bin
+       return hash_bin
 
    @property
    def build_block(self, nVersion, hashPrevBlock, hashMerkleRoot, nTime, nBits, nNonce):
        """
-	   Buids the Data For the Block
+       Buids the Data For the Block
        """
        r = []
        r.append(struct.pack("<i", nVersion))

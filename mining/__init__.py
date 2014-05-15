@@ -21,7 +21,7 @@ def setup(on_startup):
     import lib.logger
     log = lib.logger.get_logger('mining')
     if settings.CONFIG_VERSION == None:
-	settings.CONFIG_VERSION = 0
+    settings.CONFIG_VERSION = 0
     else: pass
     from interfaces import Interfaces
     
@@ -41,7 +41,7 @@ def setup(on_startup):
     while True:
         try:
             result = (yield coin_rpc.check_submitblock())
-	    if result == True:
+            if result == True:
                 log.info("Found submitblock")
             elif result == False:
                 log.info("Did not find submitblock")
@@ -99,11 +99,11 @@ def setup(on_startup):
         
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
     try:
-       if settings.CONFIG_VERSION != 0.1:
-          log.exception("Config File Out OF Date")
-          reactor.stop()
+        if settings.CONFIG_VERSION != 0.1:
+           log.exception("Config File Out OF Date")
+           reactor.stop()
     except:
-	  pass
+        pass
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(coin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)

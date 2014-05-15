@@ -139,19 +139,19 @@ class CTransaction(object):
             self.nVersion = 1
             if settings.COINDAEMON_TX != False:
                 self.nVersion = 2
-	    if settings.COINDAEMON_Reward == 'POS':
-		self.nTime=0
+        if settings.COINDAEMON_Reward == 'POS':
+            self.nTime=0
             self.vin = []
             self.vout = []
             self.nLockTime = 0
             self.sha256 = None
-	    if settings.COINDAEMON_TX != False: 
-		self.strTxComment = ""
+        if settings.COINDAEMON_TX != False: 
+            self.strTxComment = ""
 
     def deserialize(self, f):
             self.nVersion = struct.unpack("<i", f.read(4))[0]
-	    if settings.COINDAEMON_Reward == 'POS':
-            self.nTime == struct.unpack("<i", f.read(4))[0]
+            if settings.COINDAEMON_Reward == 'POS':
+                self.nTime == struct.unpack("<i", f.read(4))[0]
             self.vin = deser_vector(f, CTxIn)
             self.vout = deser_vector(f, CTxOut)
             self.nLockTime = struct.unpack("<I", f.read(4))[0]
@@ -222,12 +222,12 @@ class CBlock(object):
         if settings.COINDAEMON_Reward == 'POS':
             r.append(ser_string(self.signature))
         return ''.join(r)
-	
+    
     def calc_algo(self):
            if self.algo is None:
-	       r = coin.build_block(self.nVersion, self.hashPrevBlock, self.hashMerkleRoot, self.nTime, self.nBits, self.nNonce)
-           self.algo = Coin.calc_algo(r)
-           return self.algo
+               r = coin.build_block(self.nVersion, self.hashPrevBlock, self.hashMerkleRoot, self.nTime, self.nBits, self.nNonce)
+               self.algo = Coin.calc_algo(r)
+               return self.algo
 
     def is_valid(self):
         self.calc_algo()

@@ -18,7 +18,7 @@ class Base(object):
        Does an Algo Module need to be imported?
        """
        return self.algo
-	   
+       
    @property
    def hash_bin(self, header_bin):
        """
@@ -30,15 +30,15 @@ class Base(object):
    @property
    def block_hash_bin(self, header_bin):
        """
-	   The Block Hashing Algorithm Used
-	   """
+       The Block Hashing Algorithm Used
+       """
        hash_bin = self.hash_bin(header_bin)
-	   return hash_bin
+       return hash_bin
 
    @property
    def build_block(self, nVersion, hashPrevBlock, hashMerkleRoot, nTime, nBits, nNonce):
        """
-	Buids the Data For the Block
+       Buids the Data For the Block
        """
        r = []
        r.append(struct.pack("<i", nVersion))
@@ -73,6 +73,6 @@ class Base(object):
    @property
    def calc_algo(r):
        """
-	builds block
+       builds block
        """
        return  uint256_from_str(SHA256.new(SHA256.new(''.join(r)).digest()).digest())

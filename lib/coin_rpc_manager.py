@@ -42,7 +42,7 @@ class CoinRPCManager(object):
         if len(self.conns) <= 1:
             log.error("Problem with Pool 0 -- NO ALTERNATE POOLS!!!")
             time.sleep(4)
-	    self.curr_conn = 0
+            self.curr_conn = 0
             return
         log.error("Problem with Pool %i Switching to Next!" % (self.curr_conn) )
         self.curr_conn = self.curr_conn + 1

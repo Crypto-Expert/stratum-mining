@@ -178,13 +178,13 @@ class TemplateRegistry(object):
         if settings.VARIABLE_DIFF == True:
             # Share Diff Should never be 0 
             if difficulty < settings.VDIFF_MIN_TARGET:
-        	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
-        	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
+                log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
+                raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
         else:
-             if difficulty < settings.POOL_TARGET:
-             	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
-        	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
-        	
+            if difficulty < settings.POOL_TARGET:
+                log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
+                raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
+            
         # Check if extranonce2 looks correctly. extranonce2 is in hex form...
         if len(extranonce2) != self.extranonce2_size * 2:
             raise SubmitException("Incorrect size of extranonce2. Expected %d chars" % (self.extranonce2_size*2))
