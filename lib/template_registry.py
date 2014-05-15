@@ -5,6 +5,7 @@ import StringIO
 import settings
 import lib.logger
 import lib.settings as settings
+import lib.extranonce_counter
 import importlib
 from twisted.internet import defer
 from lib.exceptions import SubmitException
