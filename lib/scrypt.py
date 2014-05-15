@@ -1,9 +1,11 @@
+import basecoin
 import lib.logger
 import struct
 from util import *
 from Crypto.Hash import SHA256
 logger = lib.logger.get_logger('Coin Definition')
 logger.debug("Got to Coin Definition")
+Base = basecoin.Base
 
 class Coin(Base):
    def __init__(self):

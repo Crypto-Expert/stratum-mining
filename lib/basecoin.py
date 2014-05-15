@@ -1,3 +1,4 @@
+import basecoin
 import lib.logger
 import struct
 from util import *
