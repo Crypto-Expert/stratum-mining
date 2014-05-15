@@ -108,6 +108,8 @@ class MiningService(GenericService):
         
         session = self.connection_ref().get_session()
         session['extranonce1'] = extranonce1
+        if 'difficulty' not in session.keys():
+            session['difficulty'] = settings.POOL_TARGET
         session['prev_diff'] = session['difficulty']
         session['prev_jobid'] = job_id
         session['difficulty'] = settings.POOL_TARGET
