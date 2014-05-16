@@ -82,7 +82,7 @@ class TemplateRegistry(object):
         else:
             new_block = True
             # Drop templates of obsolete blocks
-            self.prevhashes = []
+            self.prevhashes = {}
             self.prevhashes[prevhash] = []
                
         # Blocks sorted by prevhash, so it's easy to drop
