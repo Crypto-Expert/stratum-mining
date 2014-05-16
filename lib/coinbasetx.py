@@ -11,8 +11,6 @@ class CoinbaseTransactionPOW(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
-    vin = []
-    vout = []
     
     extranonce_type = '>Q'
     extranonce_placeholder = struct.pack(extranonce_type, int('f000000ff111111f', 16))
@@ -43,6 +41,8 @@ class CoinbaseTransactionPOW(halfnode.CTransaction):
 
         if settings.COINDAEMON_TX != False:
             self.strTxComment = "http://github.com/ahmedbodi/stratum-mining"
+        self.vin = []
+        self.vout = []
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -60,8 +60,6 @@ class CoinbaseTransactionPOS(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
-    vin = []
-    vout = []
     
     extranonce_type = '>Q'
     extranonce_placeholder = struct.pack(extranonce_type, int('f000000ff111111f', 16))
@@ -93,6 +91,8 @@ class CoinbaseTransactionPOS(halfnode.CTransaction):
         self.nTime = ntime 
         if settings.COINDAEMON_SHA256_TX != False:
             self.strTxComment = "http://github.com/ahmedbodi/stratum-mining"
+        self.vin = []
+        self.vout = []
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -110,8 +110,6 @@ class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
-    vin = []
-    vout = []
     
     extranonce_type = '>Q'
     extranonce_placeholder = struct.pack(extranonce_type, int('f000000ff111111f', 16))
@@ -141,6 +139,8 @@ class CoinbaseTransaction(halfnode.CTransaction):
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
        
         self.nTime = ntime 
+        self.vin = []
+        self.vout = []
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
