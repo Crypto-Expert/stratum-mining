@@ -1,6 +1,11 @@
 import basecoin
 import lib.logger
 import struct
+
+''' This import was intended for the import_algo method, but I have not had luck
+    with it being picked up there'''
+import ltc_scrypt
+
 from util import *
 from Crypto.Hash import SHA256
 logger = lib.logger.get_logger('Coin Definition')
@@ -14,11 +19,6 @@ class Coin(Base):
 
    @classmethod
    def import_algo(self):
-       """
-       ltc_scrypt should be usable for any scrypt coin variant. 
-       The math is the same.
-       """
-       import ltc_scrypt
        
        return self.algo
        
@@ -35,7 +35,7 @@ class Coin(Base):
        """
        The Block Hashing Algorithm Used
        """
-       hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+       hash_bin = doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
        return hash_bin
 
    @classmethod

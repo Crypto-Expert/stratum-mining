@@ -1,6 +1,12 @@
 import basecoin
 import lib.logger
 import struct
+
+''' This import was intended for the import_algo method, but I have not had luck
+    with it being picked up there'''
+''' Not 100% sure this is the lib name for scrypt-jane. Update as needed.'''
+import scryptjane
+
 from util import *
 from Crypto.Hash import SHA256
 logger = lib.logger.get_logger('Coin Definition')
@@ -16,9 +22,7 @@ class Coin(Base):
    def import_algo(self):
        """
        Certain functions require the external lib to be imported.
-       Not 100% sure this is the lib name for scrypt-jane. Update as needed.
        """
-       import scryptjane
        
        return self.algo
        
@@ -35,7 +39,7 @@ class Coin(Base):
        """
        The Block Hashing Algorithm Used
        """
-       hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+       hash_bin = doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
        return hash_bin
 
    @classmethod
