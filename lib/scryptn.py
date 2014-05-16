@@ -9,10 +9,9 @@ Base = basecoin.Base
 
 class Coin(Base):
    def __init__(self):
-       Base.__init__(self)
        self.algo = 'scryptn'
 
-   @property
+   @classmethod
    def import_algo(self):
        """
        Does an Algo Module need to be imported?
@@ -21,7 +20,7 @@ class Coin(Base):
        
        return self.algo
        
-   @property
+   @classmethod
    def hash_bin(self, header_bin):
        """
        The Hashing Algorithm Used
@@ -29,7 +28,7 @@ class Coin(Base):
        hash_bin = vtc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
        return hash_bin
 
-   @property
+   @classmethod
    def block_hash_bin(self, header_bin):
        """
        The Block Hashing Algorithm Used
@@ -37,7 +36,7 @@ class Coin(Base):
        hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
        return hash_bin
 
-   @property
+   @classmethod
    def build_block(self, nVersion, hashPrevBlock, hashMerkleRoot, nTime, nBits, nNonce):
        """
        Buids the Data For the Block
@@ -51,28 +50,28 @@ class Coin(Base):
        r.append(struct.pack("<I", nNonce))
        return r;
 
-   @property
+   @classmethod
    def return_diff1(self):
        """
        Returns the difficulty of a diff1 share which is used to calc share diff
        """
        return 0x0000ffff00000000000000000000000000000000000000000000000000000000
 
-   @property
+   @classmethod
    def padding(self, header_hex):
        """
        Does the Header Need Padding?
        """
        return header_hex + "000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
 
-   @property
+   @classmethod
    def build_header(self, block_hash_bin):
        """
        Returns data needed to build the block header
        """
        return block_hash_bin[::-1].encode('hex_codec')
 
-   @property
+   @classmethod
    def calc_algo(r):
        """
        builds block
