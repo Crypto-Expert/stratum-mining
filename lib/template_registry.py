@@ -17,7 +17,6 @@ Interfaces = mining.interfaces.Interfaces
 log = lib.logger.get_logger('template_registry')
 log.debug("Got to Template Registry")
 algo = importlib.import_module("lib." +settings.COINDAEMON_ALGO)
-coin = algo.Coin()
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,
@@ -35,6 +34,8 @@ class TemplateRegistry(object):
     '''Implements the main logic of the pool. Keep track
     on valid block templates, provide internal interface for stratum
     service and implements block validation and submits.'''
+    
+    coin = algo.Coin()
     
     def __init__(self, block_template_class, coinbaser, coin_rpc, instance_id,
                  on_template_callback, on_block_callback):
@@ -138,7 +139,7 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        diff1 = coin.return_diff1
+        diff1 = self.coin.return_diff1
         return diff1 / difficulty
     
     def get_job(self, job_id, worker_name, ip=False):
@@ -236,12 +237,12 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        coin.hash_bin(header_bin)
+        self.coin.hash_bin(header_bin)
 
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
-        header_hex = coin.padding(header_hex)
+        header_hex = self.coin.padding(header_hex)
                  
         target_user = self.diff_to_target(difficulty)
         if hash_int > target_user:
@@ -261,8 +262,8 @@ class TemplateRegistry(object):
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
             # Reverse the header and get the potential block hash (for scrypt only) 
-            block_hash_bin = coin.block_hash_bin(header_bin)
-            block_hash_hex = coin.build_header(block_hash_bin)   
+            block_hash_bin = self.coin.block_hash_bin(header_bin)
+            block_hash_hex = self.coin.build_header(block_hash_bin)   
 
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
@@ -284,8 +285,8 @@ class TemplateRegistry(object):
         
         if settings.SOLUTION_BLOCK_HASH:
         # Reverse the header and get the potential block hash (for scrypt only) only do this if we want to send in the block hash to the shares table
-            block_hash_bin = coin.block_hash_bin(header_bin)
-            block_hash_hex = coin.build_header(block_hash_bin)
+            block_hash_bin = self.coin.block_hash_bin(header_bin)
+            block_hash_hex = self.coin.build_header(block_hash_bin)
             return (header_hex, block_hash_hex, share_diff, None)
         else:
             return (header_hex, scrypt_hash_hex, share_diff, None)
