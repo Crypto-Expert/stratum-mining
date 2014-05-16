@@ -236,7 +236,7 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        coin.hash_bin(header_bin)
+        hash_bin = coin.hash_bin(header_bin)
 
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
