@@ -10,6 +10,7 @@ Base = basecoin.Base
 class Coin(Base):
    def __init__(self):
        self.algo = 'scrypt'
+       self.import_algo
 
    @classmethod
    def import_algo(self):
