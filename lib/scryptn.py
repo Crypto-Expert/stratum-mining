@@ -38,7 +38,7 @@ class Coin(Base):
        """
        The Block Hashing Algorithm Used
        """
-       hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+       hash_bin = doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
        return hash_bin
 
    @classmethod
