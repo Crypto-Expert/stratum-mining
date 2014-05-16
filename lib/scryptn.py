@@ -1,6 +1,11 @@
 import basecoin
 import lib.logger
 import struct
+
+''' This import was intended for the import_algo method, but I have not had luck
+    with it being picked up there'''
+import vtc_scrypt
+
 from util import *
 from Crypto.Hash import SHA256
 logger = lib.logger.get_logger('Coin Definition')
@@ -17,7 +22,6 @@ class Coin(Base):
        """
        Does an Algo Module need to be imported?
        """
-       import vtc_scrypt
        
        return self.algo
        
