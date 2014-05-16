@@ -11,6 +11,8 @@ class CoinbaseTransactionPOW(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
+    self.vin = []
+    self.vout = []
     
     extranonce_type = '>Q'
     extranonce_placeholder = struct.pack(extranonce_type, int('f000000ff111111f', 16))
@@ -58,6 +60,8 @@ class CoinbaseTransactionPOS(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
+    self.vin = []
+    self.vout = []
     
     extranonce_type = '>Q'
     extranonce_placeholder = struct.pack(extranonce_type, int('f000000ff111111f', 16))
@@ -106,6 +110,8 @@ class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
     It also implements quick serialization using pre-cached
     scriptSig template.'''
+    self.vin = []
+    self.vout = []
     
     extranonce_type = '>Q'
     extranonce_placeholder = struct.pack(extranonce_type, int('f000000ff111111f', 16))
