@@ -75,7 +75,7 @@ class BlockTemplate(halfnode.CBlock):
         for tx in data['transactions']:
             t = halfnode.CTransaction()
             t.deserialize(StringIO.StringIO(binascii.unhexlify(tx['data'])))
-            txhashes.append(util.ser_uint256(int(t['hash'], 16)))
+            txhashes.append(util.ser_uint256(int(tx['hash'], 16)))
             self.vtx.append(t)
             
         mt = merkletree.MerkleTree(txhashes)
