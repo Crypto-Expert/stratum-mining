@@ -41,8 +41,7 @@ class CoinbaseTransactionPOW(halfnode.CTransaction):
 
         if settings.COINDAEMON_TX != False:
             self.strTxComment = "http://github.com/ahmedbodi/stratum-mining"
-        self.vin = []
-        self.vout = []
+            
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -91,8 +90,7 @@ class CoinbaseTransactionPOS(halfnode.CTransaction):
         self.nTime = ntime 
         if settings.COINDAEMON_SHA256_TX != False:
             self.strTxComment = "http://github.com/ahmedbodi/stratum-mining"
-        self.vin = []
-        self.vout = []
+            
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         
@@ -139,8 +137,7 @@ class CoinbaseTransaction(halfnode.CTransaction):
         tx_out.scriptPubKey = coinbaser.get_script_pubkey()
        
         self.nTime = ntime 
-        self.vin = []
-        self.vout = []
+        
         self.vin.append(tx_in)
         self.vout.append(tx_out)
         

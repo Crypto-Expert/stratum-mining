@@ -141,10 +141,10 @@ class CTransaction(object):
             self.nVersion = 2
         if settings.COINDAEMON_Reward == 'POS':
             self.nTime=0
-            self.vin = []
-            self.vout = []
-            self.nLockTime = 0
-            self.sha256 = None
+        self.vin = []
+        self.vout = []
+        self.nLockTime = 0
+        self.sha256 = None
         if settings.COINDAEMON_TX != False: 
             self.strTxComment = ""
 
