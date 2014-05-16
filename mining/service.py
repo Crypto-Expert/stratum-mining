@@ -124,7 +124,8 @@ class MiningService(GenericService):
         session['difficulty'] = settings.POOL_TARGET
         
         #This must be a WIP. I don't see supporting implementations
-        self.connection_ref().rpc('mining.set_difficulty', [session['difficulty'],], is_notification=True)
+        #I get further with this commented out
+        #self.connection_ref().rpc('mining.set_difficulty', [session['difficulty'],], is_notification=True)
         
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
         

@@ -314,8 +314,10 @@ class DB_Mysql():
         
         data = self.dbc.fetchone()
         if data[0] > 0:
+            log.debug("Successfully authenticated %s", username)
             return True
         
+        log.debug("Failed to authenticate %s", username)
         return False
 
     def get_workers_stats(self):
