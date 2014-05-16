@@ -138,7 +138,7 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        diff1 = coin.return_diff1
+        diff1 = coin.return_diff1()
         return diff1 / difficulty
     
     def get_job(self, job_id, worker_name, ip=False):
