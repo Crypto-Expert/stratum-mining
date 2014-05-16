@@ -114,7 +114,6 @@ class MiningService(GenericService):
             For now, I init the session keys so it doesn't bomb out'''
         if 'difficulty' not in session.keys():
             session['difficulty'] = settings.POOL_TARGET
-            self.connection_ref().rpc('mining.set_difficulty', [session['difficulty'],], is_notification=True)
             
         if 'job_id' not in session.keys():
             session['job_id'] = None
@@ -126,6 +125,7 @@ class MiningService(GenericService):
         
         #This must be a WIP. I don't see supporting implementations
         #I get further with this commented out
+        #self.connection_ref().rpc('mining.set_difficulty', [session['difficulty'],], is_notification=True)
         
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
         
