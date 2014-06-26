@@ -155,7 +155,8 @@ class TemplateRegistry(object):
         elif settings.COINDAEMON_ALGO == 'quark':
             diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
         else:
-            diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
+            #diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
+            diff1 = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 
         return diff1 / difficulty
     
