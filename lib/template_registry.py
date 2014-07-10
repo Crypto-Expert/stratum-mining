@@ -288,12 +288,12 @@ class TemplateRegistry(object):
         if hash_int > target_user:
             raise SubmitException("Share is above target")
 
+        # Algebra tells us the diff_to_target is the same as hash_to_diff
+        share_diff = int(self.diff_to_target(hash_int))
+        
         # Mostly for debugging purposes
         if hash_int <= self.yay_target:
             log.info("Yay! Share with diff above %d (share: %d; user: %s)" % (self.yay_diff, share_diff, worker_name))
-
-        # Algebra tells us the diff_to_target is the same as hash_to_diff
-        share_diff = int(self.diff_to_target(hash_int))
 
         # 5. Compare hash with target of the network
         if hash_int <= job.target:
