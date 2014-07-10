@@ -349,15 +349,19 @@ class CBlock(object):
 
         if settings.COINDAEMON_ALGO == 'scrypt':
             if self.scrypt > target:
+                log.info("Invalid block detected! Target: %d, Actual: %d" % (target, self.scrypt))
                 return False
         elif settings.COINDAEMON_ALGO == 'quark':
             if self.quark > target:
+                log.info("Invalid block detected! Target: %d, Actual: %d" % (target, self.quark))
                 return False
         elif settings.COINDAEMON_ALGO == 'scrypt-jane':
             if self.scryptjane > target:
+                log.info("Invalid block detected! Target: %d, Actual: %d" % (target, self.scryptjane))
                 return False
         elif settings.COINDAEMON_ALGO == 'skein':
             if self.skein > target:
+                log.info("Invalid block detected! Target: %d, Actual: %d" % (target, self.skein))
                 return False
         else:
            if self.sha256 > target:
@@ -367,6 +371,7 @@ class CBlock(object):
         for tx in self.vtx:
             tx.sha256 = None
             if not tx.is_valid():
+                log.info("Invalid block detected! (Invalid transaction)")
                 return False
             tx.calc_sha256()
             hashes.append(ser_uint256(tx.sha256))
@@ -379,6 +384,7 @@ class CBlock(object):
             hashes = newhashes
         
         if uint256_from_str(hashes[0]) != self.hashMerkleRoot:
+            log.info("Invalid block detected! (Invalid or stale merkle root)")
             return False
         return True
     def __repr__(self):
