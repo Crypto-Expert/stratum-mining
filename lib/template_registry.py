@@ -142,8 +142,11 @@ class TemplateRegistry(object):
         log.info(template.fill_from_rpc(data))
         self.add_template(template,data['height'])
 
-        log.info("Update finished, %.03f sec, %d txes" % \
-                    (Interfaces.timestamper.time() - start, len(template.vtx)))
+        log.info("Update finished, %.03f sec, %d txes, %d share diff, %.3f net diff" % \
+                    (Interfaces.timestamper.time() - start, \
+                     len(template.vtx), \
+                     self.diff_to_target(template.target), \
+                     self.diff_to_target(template.target) / 65536.00))
         
         self.update_in_progress = False        
         return data
