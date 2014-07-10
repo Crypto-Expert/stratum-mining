@@ -11,9 +11,6 @@ from coinbasetx import CoinbaseTransaction
 import lib.logger
 log = lib.logger.get_logger('block_template')
 
-import lib.logger
-log = lib.logger.get_logger('block_template')
-
 
 # Remove dependency to settings, coinbase extras should be
 # provided from coinbaser
@@ -27,7 +24,6 @@ class BlockTemplate(halfnode.CBlock):
     coinbase_transaction_class = CoinbaseTransaction
     
     def __init__(self, timestamper, coinbaser, job_id):
-        log.debug("Got To  Block_template.py")
         log.debug("Got To Block_template.py")
         super(BlockTemplate, self).__init__()
         
