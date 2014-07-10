@@ -59,6 +59,9 @@ class TemplateRegistry(object):
         self.update_in_progress = False
         self.last_update = None
         
+        self.yay_diff = 1024 * 128
+        self.yay_target = self.diff_to_target(self.yay_diff)
+        
         # Create first block template on startup
         self.update_block()
         
@@ -286,9 +289,8 @@ class TemplateRegistry(object):
             raise SubmitException("Share is above target")
 
         # Mostly for debugging purposes
-        target_info = self.diff_to_target(100000)
-        if hash_int <= target_info:
-            log.info("Yay, share with diff above 100000")
+        if hash_int <= self.yay_target:
+            log.info("Yay! Share with diff above %d (share: %d; user: %s)" % (self.yay_diff, share_diff, worker_name))
 
         # Algebra tells us the diff_to_target is the same as hash_to_diff
         share_diff = int(self.diff_to_target(hash_int))
