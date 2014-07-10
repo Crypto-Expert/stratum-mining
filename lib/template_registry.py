@@ -74,7 +74,7 @@ class TemplateRegistry(object):
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
-        log.debug("Getting Laat Template")
+        log.debug("Getting Last Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
