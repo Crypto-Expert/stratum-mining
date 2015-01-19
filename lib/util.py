@@ -5,7 +5,7 @@ import StringIO
 import binascii
 import settings
 import bitcoin_rpc
-import importlb
+import importlib
 from hashlib import sha256
 
 def import_helper(dotted_path):

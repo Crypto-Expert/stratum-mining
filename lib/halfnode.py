@@ -164,15 +164,15 @@ class CTransaction(object):
 		self.strTxComment = deser_string(f)
 
     def serialize(self):
-            r = ""
-            r += struct.pack("<i", self.nVersion)
-	    if settings.COINDAEMON_Reward == 'POS':
-		r += struct.pack('<i', self.nTime)
-            r += ser_vector(self.vin)
-            r += ser_vector(self.vout)
-            r += struct.pack("<I", self.nLockTime)
-            if settings.COINDAEMON_TX != False:
-		r += ser_string(self.strTxComment)
+        r = ""
+        r += struct.pack("<i", self.nVersion)
+	if settings.COINDAEMON_Reward == 'POS':
+	    r += struct.pack('<i', self.nTime)
+        r += ser_vector(self.vin)
+        r += ser_vector(self.vout)
+        r += struct.pack("<I", self.nLockTime)
+        if settings.COINDAEMON_TX != False:
+	   r += ser_string(self.strTxComment)
         return r
  
     def calc_sha256(self):
