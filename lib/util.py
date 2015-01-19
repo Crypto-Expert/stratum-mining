@@ -5,7 +5,13 @@ import StringIO
 import binascii
 import settings
 import bitcoin_rpc
+import importlb
 from hashlib import sha256
+
+def import_helper(dotted_path):
+    module, cls = dotted_path.rsplit(".", 1)
+    module = importlib.import_module(module)
+    return getattr(module, cls)
 
 def deser_string(f):
     nit = struct.unpack("<B", f.read(1))[0]

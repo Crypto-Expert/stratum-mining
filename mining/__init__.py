@@ -59,7 +59,7 @@ def setup(on_startup):
             result = (yield bitcoin_rpc.getblocktemplate())
             if isinstance(result, dict):
                 # litecoind implements version 1 of getblocktemplate
-                if result['version'] >= 1:
+                if result['version'] >= 0:
                     result = (yield bitcoin_rpc.getdifficulty())
                     if isinstance(result,dict):
                         if 'proof-of-stake' in result: 
