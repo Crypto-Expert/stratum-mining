@@ -213,6 +213,10 @@ class TemplateRegistry(object):
         if len(extranonce2) != self.extranonce2_size * 2:
             raise SubmitException("Incorrect size of extranonce2. Expected %d chars" % (self.extranonce2_size*2))
         
+        # normalize the case to prevent duplication of valid shares by the client
+	ntime = ntime.lower()
+	nonce = nonce.lower()
+	extranonce2 = extranonce2.lower()
         # Check for job
         job = self.get_job(job_id, worker_name, ip)
         if job == None:
