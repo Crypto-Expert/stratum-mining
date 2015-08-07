@@ -140,6 +140,7 @@ class BitcoinRPC(object):
                 raise
                                                   
     @defer.inlineCallbacks
+    def prevhash(self):
         try:
             resp = (yield self._call('getblocktemplate', [{}]))
             defer.returnValue(json.loads(resp)['result']['previousblockhash'])
