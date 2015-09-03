@@ -262,10 +262,7 @@ class TemplateRegistry(object):
         if settings.COINDAEMON_ALGO == 'scrypt':
             hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-        	if settings.SCRYPTJANE_NAME == 'vtc_scrypt':
-            	     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-      		else: 
-      		     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
+            hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         elif settings.COINDAEMON_ALGO == 'quark':
             hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
 	elif settings.COINDAEMON_ALGO == 'skeinhash':

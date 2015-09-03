@@ -136,6 +136,7 @@ class BlockTemplate(halfnode.CBlock):
 
     def serialize_header(self, merkle_root_int, ntime_bin, nonce_bin):
         '''Serialize header for calculating block hash'''
+	print(self.nVersion)
         r  = struct.pack(">i", self.nVersion)
         r += self.prevhash_bin
         r += util.ser_uint256_be(merkle_root_int)
