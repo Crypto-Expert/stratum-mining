@@ -59,6 +59,9 @@ class TemplateRegistry(object):
         self.update_in_progress = False
         self.last_update = None
         
+        self.yay_diff = 1024 * 128
+        self.yay_target = self.diff_to_target(self.yay_diff)
+        
         # Create first block template on startup
         self.update_block()
         
@@ -71,7 +74,7 @@ class TemplateRegistry(object):
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
-        log.debug("Getting Laat Template")
+        log.debug("Getting Last Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -142,8 +145,11 @@ class TemplateRegistry(object):
         log.info(template.fill_from_rpc(data))
         self.add_template(template,data['height'])
 
-        log.info("Update finished, %.03f sec, %d txes" % \
-                    (Interfaces.timestamper.time() - start, len(template.vtx)))
+        log.info("Update finished, %.03f sec, %d txes, %d share diff, %.3f net diff" % \
+                    (Interfaces.timestamper.time() - start, \
+                     len(template.vtx), \
+                     self.diff_to_target(template.target), \
+                     self.diff_to_target(template.target) / 65536.00))
         
         self.update_in_progress = False        
         return data
@@ -286,13 +292,12 @@ class TemplateRegistry(object):
         if hash_int > target_user:
             raise SubmitException("Share is above target")
 
-        # Mostly for debugging purposes
-        target_info = self.diff_to_target(100000)
-        if hash_int <= target_info:
-            log.info("Yay, share with diff above 100000")
-
         # Algebra tells us the diff_to_target is the same as hash_to_diff
         share_diff = int(self.diff_to_target(hash_int))
+        
+        # Mostly for debugging purposes
+        if hash_int <= self.yay_target:
+            log.info("Yay! Share with diff above %d (share: %d; user: %s)" % (self.yay_diff, share_diff, worker_name))
 
         # 5. Compare hash with target of the network
         if hash_int <= job.target:
