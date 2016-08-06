@@ -5,6 +5,8 @@ import StringIO
 import settings
 if settings.COINDAEMON_ALGO == 'scrypt':
     import ltc_scrypt
+elif settings.COINDAEMON_ALGO  == 'scrypt-vtc':
+    import vtc_scrypt
 elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
     scryptjane = __import__(settings.SCRYPTJANE_NAME) 
 elif settings.COINDAEMON_ALGO == 'quark':
@@ -150,7 +152,7 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        if settings.COINDAEMON_ALGO == 'scrypt' or 'scrypt-jane':
+        if settings.COINDAEMON_ALGO == 'scrypt' or 'scrypt-jane' or 'scrypt-vtc':
             diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
         elif settings.COINDAEMON_ALGO == 'quark':
             diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
@@ -261,6 +263,8 @@ class TemplateRegistry(object):
         # 4. Reverse header and compare it with target of the user
         if settings.COINDAEMON_ALGO == 'scrypt':
             hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+        elif settings.COINDAEMON_ALGO  == 'scrypt-vtc':
+            hash_bin = vtc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
         	if settings.SCRYPTJANE_NAME == 'vtc_scrypt':
             	     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
@@ -276,7 +280,7 @@ class TemplateRegistry(object):
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
-        if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane':
+        if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane' or settings.COINDAEMON_ALGO == 'scrypt-vtc':
             header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
         elif settings.COINDAEMON_ALGO == 'quark':
             header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
@@ -315,7 +319,10 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-	    on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
+            if settings.BLOCK_CHECK_SCRYPT_HASH:
+                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
+            else:
+                on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
             if on_submit:
                 self.update_block()
 
