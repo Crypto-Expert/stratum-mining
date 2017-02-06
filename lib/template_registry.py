@@ -3,24 +3,13 @@ import binascii
 import util
 import StringIO
 import settings
-if settings.COINDAEMON_ALGO == 'scrypt':
-    import ltc_scrypt
-elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-    scryptjane = __import__(settings.SCRYPTJANE_NAME) 
-elif settings.COINDAEMON_ALGO == 'quark':
-    import quark_hash
-elif settings.COINDAEMON_ALGO == 'skeinhash':
-    import skeinhash
-else: pass
+algolib = __import__(settings.ALGO_NAME)
+import lib.logger
+import lib.settings as settings
 from twisted.internet import defer
 from lib.exceptions import SubmitException
-
-import lib.logger
-log = lib.logger.get_logger('template_registry')
-log.debug("Got to Template Registry")
 from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
-import lib.settings as settings
 
 
 class JobIdGenerator(object):
@@ -71,7 +60,7 @@ class TemplateRegistry(object):
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
-        log.debug("Getting Laat Template")
+        log.debug("Getting Last Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -259,29 +248,11 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        if settings.COINDAEMON_ALGO == 'scrypt':
-            hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-        elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-        	if settings.SCRYPTJANE_NAME == 'vtc_scrypt':
-            	     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-      		else: 
-      		     hash_bin = scryptjane.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
-        elif settings.COINDAEMON_ALGO == 'quark':
-            hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-	elif settings.COINDAEMON_ALGO == 'skeinhash':
-            hash_bin = skeinhash.skeinhash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-        else:
-            hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-
+        hash_bin = algolib.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
-        if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane':
-            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
-        elif settings.COINDAEMON_ALGO == 'quark':
-            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
-        else: pass
-                 
+
         target_user = self.diff_to_target(difficulty)
         if hash_int > target_user:
             raise SubmitException("Share is above target")
@@ -299,13 +270,9 @@ class TemplateRegistry(object):
             # Yay! It is block candidate! 
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
-            # Reverse the header and get the potential block hash (for scrypt only) 
-            #if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
-            #   if settings.COINDAEMON_Reward == 'POW':
             block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
             block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
-            #else:   block_hash_hex = hash_bin[::-1].encode('hex_codec')
-            #else:  block_hash_hex = hash_bin[::-1].encode('hex_codec')
+
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
             
@@ -315,7 +282,7 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-	    on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
+	        on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
             if on_submit:
                 self.update_block()
 
@@ -325,7 +292,6 @@ class TemplateRegistry(object):
                 return (header_hex, scrypt_hash_hex, share_diff, on_submit)
         
         if settings.SOLUTION_BLOCK_HASH:
-        # Reverse the header and get the potential block hash (for scrypt only) only do this if we want to send in the block hash to the shares table
             block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
             block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
             return (header_hex, block_hash_hex, share_diff, None)

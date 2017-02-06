@@ -6,7 +6,7 @@ This is already setup with sane values for solomining.
 You NEED to set the parameters in BASIC SETTINGS
 '''
 #********************* Config Version ***************
-CONFIG_VERSION = 0.1
+CONFIG_VERSION = 0.2
 # ******************** BASIC SETTINGS ***************
 # These are the MUST BE SET parameters!
 
@@ -17,8 +17,7 @@ COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
-COINDAEMON_ALGO = 'scrypt'    # The available options are:  scrypt, sha256d, scrypt-jane, skeinhash, and quark
-SCRYPTJANE_NAME = 'vtc_scrypt'# Set this to the Scrypt jane module name e.g. yac_scrypt or vtc_scrypt
+ALGO_NAME = 'ltc_scrypt'      # Name of module implementing getPoWHash
 COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
 
 # ******************** BASIC SETTINGS ***************
