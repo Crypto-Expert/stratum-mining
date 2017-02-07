@@ -18,6 +18,7 @@ COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 ALGO_NAME = 'lyra2re2_hash'      # Name of module implementing getPoWHash
 COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_HAS_SEGWIT = False
+#CUSTOM_HEADER = "000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
 #CUSTOM_DIFF1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000 # Scrypt
 #COINDAEMON_REWARD = 'POW' If it needs to be overridden i believe
 # ******************** BASIC SETTINGS ***************

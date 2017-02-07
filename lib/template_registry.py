@@ -140,7 +140,8 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        diff1 = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+        diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
         if settings.CUSTOM_DIFF1 != None:
            diff1 = settings.CUSTOM_DIFF1
         return diff1 / difficulty
@@ -250,6 +251,8 @@ class TemplateRegistry(object):
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
+        if settings.CUSTOM_HEADER != None:
+           header_hex = header_hex+ settings.CUSTOM_HEADER
 
         target_user = self.diff_to_target(difficulty)
         if hash_int > target_user:
