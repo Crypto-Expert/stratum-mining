@@ -140,14 +140,9 @@ class TemplateRegistry(object):
     
     def diff_to_target(self, difficulty):
         '''Converts difficulty to target'''
-        if settings.COINDAEMON_ALGO == 'scrypt' or 'scrypt-jane':
-            diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
-        elif settings.COINDAEMON_ALGO == 'quark':
-            diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
-        else:
-            #diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
-            diff1 = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-
+        diff1 = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+        if settings.CUSTOM_DIFF1 != None:
+           diff1 = settings.CUSTOM_DIFF1
         return diff1 / difficulty
     
     def get_job(self, job_id, worker_name, ip=False):
