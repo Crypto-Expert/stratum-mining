@@ -109,9 +109,6 @@ COINDAEMON_TRUSTED_PASSWORD = '***somepassword***'
 # Until AutoReward Selecting Code has been implemented the below options are us$
 # For Reward type there is POW and POS. please ensure you choose the currect ty$
 # For SHA256 PoS Coins which support TX Messages please enter yes in the TX sel$
-COINDAEMON_ALGO = 'scrypt'
-COINDAEMON_Reward = 'POW'
-COINDAEMON_SHA256_TX = 'yes'
 
 # ******************** OTHER CORE SETTINGS *********************
 # Use "echo -n '<yourpassword>' | sha256sum | cut -f1 -d' ' "
@@ -177,6 +174,7 @@ USE_COINDAEMON_DIFF = False   # Set the maximum difficulty to the *coin difficul
 DIFF_UPDATE_FREQUENCY = 86400 # Update the *coin difficulty once a day for the VARDIFF maximum
 VDIFF_MIN_TARGET = 15       #  Minimum Target difficulty
 VDIFF_MAX_TARGET = 1000     # Maximum Target difficulty
+VDIFF_MIN_CHANGE = 1        # Minimum change of worker's difficulty if VDIFF_X2_TYPE=False and the final difficulty will be within the boundaries (VDIFF_MIN_TARGET, VDIFF_MAX_TARGET)
 VDIFF_TARGET_TIME = 30      # Target time per share (i.e. try to get 1 share per this many seconds)
 VDIFF_RETARGET_TIME = 120       # Check to see if we should retarget this often
 VDIFF_VARIANCE_PERCENT = 20 # Allow average time to very this % from target without retarget

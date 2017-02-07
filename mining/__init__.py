@@ -17,11 +17,13 @@ def setup(on_startup):
     *before* you call setup() in the launcher script.'''
     
     import lib.settings as settings
-        
+           
     # Get logging online as soon as possible
     import lib.logger
     log = lib.logger.get_logger('mining')
-
+    if settings.CONFIG_VERSION == None:
+	settings.CONFIG_VERSION = 0
+    else: pass
     from interfaces import Interfaces
     
     from lib.block_updater import BlockUpdater
@@ -31,7 +33,6 @@ def setup(on_startup):
     from lib.coinbaser import SimpleCoinbaser
     
     bitcoin_rpc = BitcoinRPCManager()
-    
     # Check litecoind
     #         Check we can connect (sleep)
     # Check the results:
@@ -40,6 +41,22 @@ def setup(on_startup):
     log.info("Connecting to litecoind...")
     while True:
         try:
+            result = (yield bitcoin_rpc.check_submitblock())
+	    if result == True:
+                log.info("Found submitblock")
+            elif result == False:
+                log.info("Did not find submitblock")
+            else:
+                log.info("unknown submitblock result")
+        except ConnectionRefusedError, e:
+            log.error("Connection refused while trying to connect to the coind (are your COIND_* settings correct?)")
+            reactor.stop()
+            break
+
+        except Exception, e:
+            log.debug(str(e))
+
+        try:
             result = (yield bitcoin_rpc.getblocktemplate())
             if isinstance(result, dict):
                 # litecoind implements version 1 of getblocktemplate
@@ -47,13 +64,13 @@ def setup(on_startup):
                     result = (yield bitcoin_rpc.getdifficulty())
                     if isinstance(result,dict):
                         if 'proof-of-stake' in result: 
-                            settings.COINDAEMON_Reward = 'POS'
+                            settings.COINDAEMON_REWARD = 'POS'
                             log.info("Coin detected as POS")
-                            break;
+                            break
                     else:
-                        settings.COINDAEMON_Reward = 'POW'
+                        settings.COINDAEMON_REWARD = 'POW'
                         log.info("Coin detected as POW")
-                        break;
+                        break
                 else:
                     log.error("Block Version mismatch: %s" % result['version'])
 
@@ -82,7 +99,6 @@ def setup(on_startup):
         time.sleep(1)  # If we didn't get a result or the connect failed
         
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
-
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)

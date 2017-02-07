@@ -3,22 +3,14 @@ import binascii
 import util
 import StringIO
 import settings
-if settings.COINDAEMON_ALGO == 'scrypt':
-    import ltc_scrypt
-elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-    import yac_scrypt
-elif settings.COINDAEMON_ALGO == 'quark':
-    import quark_hash
-else: pass
+algolib = __import__(settings.ALGO_NAME)
+import lib.logger
+import lib.settings as settings
 from twisted.internet import defer
 from lib.exceptions import SubmitException
-
-import lib.logger
-log = lib.logger.get_logger('template_registry')
-log.debug("Got to Template Registry")
 from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
-import lib.settings as settings
+log = lib.logger.get_logger('template_registry')
 
 
 class JobIdGenerator(object):
@@ -69,7 +61,7 @@ class TemplateRegistry(object):
     def get_last_broadcast_args(self):
         '''Returns arguments for mining.notify
         from last known template.'''
-        log.debug("Getting Laat Template")
+        log.debug("Getting Last Template")
         return self.last_block.broadcast_args
         
     def add_template(self, block,block_height):
@@ -153,16 +145,21 @@ class TemplateRegistry(object):
         elif settings.COINDAEMON_ALGO == 'quark':
             diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
         else:
-            diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
+            #diff1 = 0x00000000ffff0000000000000000000000000000000000000000000000000000
+            diff1 = 0x00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 
         return diff1 / difficulty
     
-    def get_job(self, job_id):
+    def get_job(self, job_id, worker_name, ip=False):
         '''For given job_id returns BlockTemplate instance or None'''
         try:
             j = self.jobs[job_id]
         except:
-            log.info("Job id '%s' not found" % job_id)
+            log.info("Job id '%s' not found, worker_name: '%s'" % (job_id, worker_name))
+
+            if ip:
+                log.info("Worker submited invalid Job id: IP %s", str(ip))
+
             return None
         
         # Now we have to check if job is still valid.
@@ -179,23 +176,40 @@ class TemplateRegistry(object):
         return j
         
     def submit_share(self, job_id, worker_name, session, extranonce1_bin, extranonce2, ntime, nonce,
-                     difficulty):
+                     difficulty, ip=False):
         '''Check parameters and finalize block template. If it leads
            to valid block candidate, asynchronously submits the block
            back to the bitcoin network.
         
             - extranonce1_bin is binary. No checks performed, it should be from session data
             - job_id, extranonce2, ntime, nonce - in hex form sent by the client
-            - difficulty - decimal number from session, again no checks performed
+            - difficulty - decimal number from session
             - submitblock_callback - reference to method which receive result of submitblock()
+            - difficulty is checked to see if its lower than the vardiff minimum target or pool target
+              from conf/config.py and if it is the share is rejected due to it not meeting the requirements for a share
+              
         '''
-        
+        if settings.VARIABLE_DIFF == True:
+            # Share Diff Should never be 0 
+            if difficulty < settings.VDIFF_MIN_TARGET :
+        	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
+        	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
+        else:
+             if difficulty < settings.POOL_TARGET:
+             	log.exception("Worker %s @ IP: %s seems to be submitting Fake Shares"%(worker_name,ip))
+        	raise SubmitException("Diff is %s Share Rejected Reporting to Admin"%(difficulty))
+        	
         # Check if extranonce2 looks correctly. extranonce2 is in hex form...
         if len(extranonce2) != self.extranonce2_size * 2:
             raise SubmitException("Incorrect size of extranonce2. Expected %d chars" % (self.extranonce2_size*2))
         
+        # normalize the case to prevent duplication of valid shares by the client
+	    ntime = ntime.lower()
+	    nonce = nonce.lower()
+	    extranonce2 = extranonce2.lower()
+
         # Check for job
-        job = self.get_job(job_id)
+        job = self.get_job(job_id, worker_name, ip)
         if job == None:
             raise SubmitException("Job '%s' not found" % job_id)
                 
@@ -209,21 +223,22 @@ class TemplateRegistry(object):
         # Check nonce        
         if len(nonce) != 8:
             raise SubmitException("Incorrect size of nonce. Expected 8 chars")
+
+        # 0. Some sugar
+        extranonce2_bin = binascii.unhexlify(extranonce2)
+        ntime_bin = binascii.unhexlify(ntime)
+        nonce_bin = binascii.unhexlify(nonce)
         
+
         # Check for duplicated submit
-        if not job.register_submit(extranonce1_bin, extranonce2, ntime, nonce):
+        if not job.register_submit(extranonce1_bin, extranonce2_bin, ntime_bin, nonce_bin):
             log.info("Duplicate from %s, (%s %s %s %s)" % \
                     (worker_name, binascii.hexlify(extranonce1_bin), extranonce2, ntime, nonce))
             raise SubmitException("Duplicate share")
         
         # Now let's do the hard work!
         # ---------------------------
-        
-        # 0. Some sugar
-        extranonce2_bin = binascii.unhexlify(extranonce2)
-        ntime_bin = binascii.unhexlify(ntime)
-        nonce_bin = binascii.unhexlify(nonce)
-                
+                        
         # 1. Build coinbase
         coinbase_bin = job.serialize_coinbase(extranonce1_bin, extranonce2_bin)
         coinbase_hash = util.doublesha(coinbase_bin)
@@ -236,24 +251,11 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
     
         # 4. Reverse header and compare it with target of the user
-        if settings.COINDAEMON_ALGO == 'scrypt':
-            hash_bin = ltc_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-        elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
-            hash_bin = yac_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
-        elif settings.COINDAEMON_ALGO == 'quark':
-            hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-        else:
-            hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
-
+        hash_bin = algolib.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
-        if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane':
-            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
-        elif settings.COINDAEMON_ALGO == 'quark':
-            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
-        else: pass
-                 
+
         target_user = self.diff_to_target(difficulty)
         if hash_int > target_user:
             raise SubmitException("Share is above target")
@@ -271,13 +273,9 @@ class TemplateRegistry(object):
             # Yay! It is block candidate! 
             log.info("We found a block candidate! %s" % scrypt_hash_hex)
 
-            # Reverse the header and get the potential block hash (for scrypt only) 
-            #if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'sha256d':
-            #   if settings.COINDAEMON_Reward == 'POW':
             block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
             block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
-            #else:   block_hash_hex = hash_bin[::-1].encode('hex_codec')
-            #else:  block_hash_hex = hash_bin[::-1].encode('hex_codec')
+
             # 6. Finalize and serialize block object 
             job.finalize(merkle_root_int, extranonce1_bin, extranonce2_bin, int(ntime, 16), int(nonce, 16))
             
@@ -287,10 +285,7 @@ class TemplateRegistry(object):
                             
             # 7. Submit block to the network
             serialized = binascii.hexlify(job.serialize())
-            if settings.BLOCK_CHECK_SCRYPT_HASH:
-                on_submit = self.bitcoin_rpc.submitblock(serialized, scrypt_hash_hex)
-            else:
-                on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex)
+            on_submit = self.bitcoin_rpc.submitblock(serialized, block_hash_hex, scrypt_hash_hex)
             if on_submit:
                 self.update_block()
 
@@ -300,7 +295,6 @@ class TemplateRegistry(object):
                 return (header_hex, scrypt_hash_hex, share_diff, on_submit)
         
         if settings.SOLUTION_BLOCK_HASH:
-        # Reverse the header and get the potential block hash (for scrypt only) only do this if we want to send in the block hash to the shares table
             block_hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
             block_hash_hex = block_hash_bin[::-1].encode('hex_codec')
             return (header_hex, block_hash_hex, share_diff, None)
