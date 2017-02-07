@@ -9,7 +9,7 @@ from twisted.web import client
 import time
 import util
 import lib.logger
-imort lib.settings as settings
+import lib.settings as settings
 log = lib.logger.get_logger('bitcoin_rpc')
 
 gbt_known_rules = ["segwit"] 
