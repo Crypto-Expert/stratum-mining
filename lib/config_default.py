@@ -102,6 +102,14 @@ COINDAEMON_TRUSTED_USER = 'stratum'
 COINDAEMON_TRUSTED_PASSWORD = '***somepassword***'
 
 
+ALGO_NAME = None 
+COINDAEMON_TX = False 
+COINDAEMON_HAS_SEGWIT = None
+CUSTOM_HEADER =  None
+CUSTOM_DIFF1 = None
+COINDAEMON_REWARD = None
+
+
 # Coin Algorithm is the option used to determine the algortithm used by stratum
 # This currently only works with POW SHA256 and Scrypt Coins
 # The available options are scrypt and sha256d.
