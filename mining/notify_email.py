@@ -43,7 +43,7 @@ class NOTIFY_EMAIL(object):
         msg['Subject'] = subject
         msg['From'] = settings.NOTIFY_EMAIL_FROM
         msg['To'] = to
-	    msg.attach(message)
+        msg.attach(message)
         try:
             s = smtplib.SMTP(settings.NOTIFY_EMAIL_SERVER,settings.NOTIFY_EMAIL_SERVER_PORT)
             s.login(settings.NOTIFY_EMAIL_USERNAME,settings.NOTIFY_EMAIL_PASSWORD)
