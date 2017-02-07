@@ -10,6 +10,7 @@ from twisted.internet import defer
 from lib.exceptions import SubmitException
 from mining.interfaces import Interfaces
 from extranonce_counter import ExtranonceCounter
+log = lib.logger.get_logger('template_registry')
 
 
 class JobIdGenerator(object):
