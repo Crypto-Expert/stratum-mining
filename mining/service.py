@@ -66,12 +66,6 @@ class MiningService(GenericService):
         log.info("New litecoind connection added %s:%s" % (args[0], args[1]))
         return True 
     
-    @admin
-    def refresh_config(self):
-        settings.setup()
-        log.info("Updated Config")
-        return True
-        
     def authorize(self, worker_name, worker_password):
         '''Let authorize worker on this connection.'''
         
