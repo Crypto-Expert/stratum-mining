@@ -154,7 +154,7 @@ class BitcoinRPC(object):
         except Exception as e:
             if (str(e) == "500 Internal Server Error"):
                 resp = (yield self._call('getwork', []))
- -              defer.returnValue(util.reverse_hash(json.loads(resp)['result']['data'][8:72])) 
+                defer.returnValue(util.reverse_hash(json.loads(resp)['result']['data'][8:72])) 
             else:
                 log.exception("Cannot decode prevhash %s" % str(e))
                 raise
