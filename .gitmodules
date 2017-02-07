@@ -1,15 +1,3 @@
-[submodule "externals/stratum-mining-proxy"]
-	path = externals/stratum-mining-proxy
-	url = https://github.com/generalfault/stratum-mining-proxy
-[submodule "externals/litecoin_scrypt"]
-	path = externals/litecoin_scrypt
-	url = https://github.com/Tydus/litecoin_scrypt.git
 [submodule "externals/stratum"]
 	path = externals/stratum
 	url = https://github.com/ahmedbodi/stratum.git
-[submodule "externals/quarkcoin-hash"]
-	path = externals/quarkcoin-hash
-	url = https://github.com/Neisklar/quarkcoin-hash-python
-[submodule "externals/vertcoin_scrypt"]
-	path = externals/vertcoin_scrypt
-	url = https://github.com/scr34m/vertcoin_scrypt.git
