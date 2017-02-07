@@ -5,7 +5,7 @@ import Queue
 import signal
 import Cache
 from sets import Set
-
+import notify_email
 import lib.settings as settings
 
 import lib.logger
@@ -17,18 +17,17 @@ class DBInterface():
 
     def init_main(self):
         self.dbi.check_tables()
- 
         self.q = Queue.Queue()
         self.queueclock = None
 
         self.cache = Cache.Cache()
-
+	self.email = notify_email.NOTIFY_EMAIL()
         self.nextStatsUpdate = 0
 
         self.scheduleImport()
         
         self.next_force_import_time = time.time() + settings.DB_LOADER_FORCE_TIME
-    
+    	self.next_force_notify_time = time.time() + settings.NOTIFY_DEADMINER_INTERVAL
         signal.signal(signal.SIGINT, self.signal_handler)
 
     def signal_handler(self, signal, frame):

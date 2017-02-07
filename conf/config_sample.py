@@ -176,17 +176,28 @@ WORKER_BAN_TIME = 300           # How long we temporarily ban worker
 INVALID_SHARES_PERCENT = 50     # Allow average invalid shares vary this % before we ban
 
 # ******************** E-Mail Notification Settings *********************
-NOTIFY_EMAIL_TO = ''                                            # Where to send Start/Found block notifications
-NOTIFY_EMAIL_TO_DEADMINER = ''                                  # Where to send dead miner notifications
-NOTIFY_EMAIL_FROM = 'root@localhost'                            # Sender address
-NOTIFY_EMAIL_SERVER = 'localhost'                               # E-Mail sender
-NOTIFY_EMAIL_USERNAME = ''                                      # E-Mail server SMTP logon
-NOTIFY_EMAIL_PASSWORD = ''
-NOTIFY_EMAIL_USETLS = True
+NOTIFY_ADMIN = 'admin@domain.com'
+NOTIFY_EMAIL_FROM = 'root@localhost'  # Sender address
+NOTIFY_EMAIL_SERVER = 'localhost'  # SMTP Server
+NOTIFY_EMAIL_SERVER_PORT = '587'  # SMTP Port
+NOTIFY_EMAIL_USERNAME = ''    # SMTP Login
+NOTIFY_EMAIL_PASSWORD = ''    # SMTP Password  
+NOTIFY_EMAIL_USETLS = True    # WIP
+NOTIFY_DEADMINER_INTERVAL = 600 # Notify Dead Miners every x seconds
+NOTIFY_MAX_EMAILS = 10          # Max emails sent per user
+
 
 # ******************** Memcache Settings *********************
 # Memcahce is a requirement. Enter the settings below
-MEMCACHE_HOST = "localhost"     # Hostname or IP that runs memcached
-MEMCACHE_PORT = 11211           # Port
-MEMCACHE_TIMEOUT = 900          # Key timeout
-MEMCACHE_PREFIX = "stratum_"    # Prefix for keys
+MEMCACHE_HOST = "localhost" # hostname or IP that runs memcached
+MEMCACHE_PORT = 11211 # Port
+MEMCACHE_TIMEOUT = 900 # Key timeout
+MEMCACHE_PREFIX = "stratum_" # Prefix for keys
+
+######## IRC BOT ##################
+BOT_ENABLED = True
+BOT_NETWORK = "irc.freenode.net"
+BOT_PORT = 6667
+BOT_NICK = "StratumBot"
+BOT_CHANNEL = "#cryptopools"
+
