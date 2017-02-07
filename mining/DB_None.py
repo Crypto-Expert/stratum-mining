@@ -54,3 +54,6 @@ class DB_None():
 
     def close(self):
         log.debug("Close Connection")
+
+    def uodate_worker_diff(self, username, diff):
+        return

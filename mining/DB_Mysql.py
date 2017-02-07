@@ -385,3 +385,6 @@ class DB_Mysql():
            raise Exception("There is no shares table. Have you imported the schema?")
  
 
+    def uodate_worker_diff(self, username, diff):
+        return
+
