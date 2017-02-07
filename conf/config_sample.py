@@ -5,8 +5,6 @@ Please rename it to config.py and fill correct values.
 This is already setup with sane values for solomining.
 You NEED to set the parameters in BASIC SETTINGS
 '''
-#********************* Config Version ***************
-CONFIG_VERSION = 0.2
 # ******************** BASIC SETTINGS ***************
 # These are the MUST BE SET parameters!
 

@@ -7,6 +7,7 @@ import simplejson as json
 from twisted.internet import reactor
 import threading
 from mining.work_log_pruner import WorkLogPruner
+
 @defer.inlineCallbacks
 def setup(on_startup):
     '''Setup mining service internal environment.
@@ -63,11 +64,11 @@ def setup(on_startup):
                     result = (yield bitcoin_rpc.getdifficulty())
                     if isinstance(result,dict):
                         if 'proof-of-stake' in result: 
-                            settings.COINDAEMON_Reward = 'POS'
+                            settings.COINDAEMON_REWARD = 'POS'
                             log.info("Coin detected as POS")
                             break
                     else:
-                        settings.COINDAEMON_Reward = 'POW'
+                        settings.COINDAEMON_REWARD = 'POW'
                         log.info("Coin detected as POW")
                         break
                 else:
@@ -98,12 +99,6 @@ def setup(on_startup):
         time.sleep(1)  # If we didn't get a result or the connect failed
         
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
-    try:
-       if settings.CONFIG_VERSION != 0.1:
-          log.exception("Config File Out OF Date")
-          reactor.stop()
-    except:
-	  pass
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)
