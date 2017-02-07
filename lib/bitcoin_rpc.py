@@ -7,9 +7,12 @@ import base64
 from twisted.internet import defer
 from twisted.web import client
 import time
-
+import util
 import lib.logger
+imort lib.settings as settings
 log = lib.logger.get_logger('bitcoin_rpc')
+
+gbt_known_rules = ["segwit"] 
 
 class BitcoinRPC(object):
     
@@ -129,7 +132,10 @@ class BitcoinRPC(object):
     @defer.inlineCallbacks
     def getblocktemplate(self):
         try:
-            resp = (yield self._call('getblocktemplate', [{}]))
+            params = [{}]
+            if settings.COINDAEMON_HAS_SEGWIT:
+               params = [{"rules": gbt_known_rules}])) 
+            resp = (yield self._call('getblocktemplate', params))
             defer.returnValue(json.loads(resp)['result'])
         # if internal server error try getblocktemplate without empty {} # ppcoin
         except Exception as e:
@@ -142,13 +148,13 @@ class BitcoinRPC(object):
     @defer.inlineCallbacks
     def prevhash(self):
         try:
-            resp = (yield self._call('getblocktemplate', [{}]))
-            defer.returnValue(json.loads(resp)['result']['previousblockhash'])
+            resp = (yield self._call('getbestblockhash', []))
+            defer.returnValue(json.loads(resp)['result'])
         # if internal server error try getblocktemplate without empty {} # ppcoin
         except Exception as e:
             if (str(e) == "500 Internal Server Error"):
-                resp = (yield self._call('getblocktemplate', []))
-                defer.returnValue(json.loads(resp)['result']['previousblockhash'])
+                resp = (yield self._call('getwork', []))
+ -              defer.returnValue(util.reverse_hash(json.loads(resp)['result']['data'][8:72])) 
             else:
                 log.exception("Cannot decode prevhash %s" % str(e))
                 raise

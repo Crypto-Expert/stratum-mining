@@ -1,23 +1,29 @@
 import StringIO
 import binascii
 import struct
-
+import lib.logger
 import util
 import merkletree
 import halfnode
-from coinbasetx import CoinbaseTransactionPOW
-from coinbasetx import CoinbaseTransactionPOS
 from coinbasetx import CoinbaseTransaction
-import lib.logger
-log = lib.logger.get_logger('block_template')
-
-import lib.logger
+from Crypto.Hash import SHA256 
 log = lib.logger.get_logger('block_template')
 
 
 # Remove dependency to settings, coinbase extras should be
 # provided from coinbaser
 import settings
+
+witness_nonce = b'\0' * 0x20
+witness_magic = b'\xaa\x21\xa9\xed'
+
+class TxBlob(object):
+    def __init__(self):
+        self.data = ''
+    def serialize(self):
+       return self.data
+    def deserialize(self, data):
+       self.data = data
 
 class BlockTemplate(halfnode.CBlock):
     '''Template is used for generating new jobs for clients.
@@ -40,6 +46,7 @@ class BlockTemplate(halfnode.CBlock):
         self.timedelta = 0
         self.curtime = 0
         self.target = 0
+        self.witness = 0
         #self.coinbase_hex = None 
         self.merkletree = None
                 
@@ -53,17 +60,37 @@ class BlockTemplate(halfnode.CBlock):
     def fill_from_rpc(self, data):
         '''Convert getblocktemplate result into BlockTemplate instance'''
         
-        #txhashes = [None] + [ binascii.unhexlify(t['hash']) for t in data['transactions'] ]
-        txhashes = [None] + [ util.ser_uint256(int(t['hash'], 16)) for t in data['transactions'] ]
-        mt = merkletree.MerkleTree(txhashes)
-        if settings.COINDAEMON_Reward == 'POW':
-            coinbase = CoinbaseTransactionPOW(self.timestamper, self.coinbaser, data['coinbasevalue'],
-                                              data['coinbaseaux']['flags'], data['height'],
-                                              settings.COINBASE_EXTRAS)
+        commitment = None
+        nTime = data['curtime'] if data.has_key('curtime') else None
+
+        if settings.COINDAEMON_HAS_SEGWIT:
+            txids = [] 
+            hashes = [None] + [ util.ser_uint256(int(t['hash'], 16)) for t in data['transactions'] ]
+            try:
+                txids = [None] + [ util.ser_uint256(int(t['txid'], 16)) for t in data['transactions'] ]
+                mt = merkletree.MerkleTree(txids)
+            except KeyError:
+                mt = merkletree.MerkleTree(hashes)
+
+            wmt = merkletree.MerkleTree(hashes).withFirst(binascii.unhexlify('0000000000000000000000000000000000000000000000000000000000000000'))
+            self.witness = SHA256.new(SHA256.new(wmt + witness_nonce).digest()).digest()
+            commitment = b'\x6a' + struct.pack(">b", len(self.witness) + len(witness_magic)) + witness_magic + self.witness
+            try:
+                default_witness = data['default_witness_commitment']
+                commitment_check = binascii.unhexlify(default_witness)
+                if(commitment != commitment_check):
+                    print("calculated witness does not match supplied one! This block probably will not be accepted!")
+                    commitment = commitment_check
+            except KeyError:
+                 pass
+            self.witness = commitment[6:]
         else:
-            coinbase = CoinbaseTransactionPOS(self.timestamper, self.coinbaser, data['coinbasevalue'],
+            txhashes = [None] + [ util.ser_uint256(int(t['hash'], 16)) for t in data['transactions'] ]
+            mt = merkletree.MerkleTree(txhashes)
+
+        coinbase = CoinbaseTransaction(self.timestamper, self.coinbaser, data['coinbasevalue'],
                                               data['coinbaseaux']['flags'], data['height'],
-                                              settings.COINBASE_EXTRAS, data['curtime'])
+                                              commitment, settings.COINBASE_EXTRAS, nTime)
 
         self.height = data['height']
         self.nVersion = data['version']
@@ -75,8 +102,8 @@ class BlockTemplate(halfnode.CBlock):
         self.vtx = [ coinbase, ]
         
         for tx in data['transactions']:
-            t = halfnode.CTransaction()
-            t.deserialize(StringIO.StringIO(binascii.unhexlify(tx['data'])))
+            t = TxBlob()
+            t.deserialize(binascii.unhexlify(tx['data']))
             self.vtx.append(t)
             
         self.curtime = data['curtime']
@@ -153,3 +180,35 @@ class BlockTemplate(halfnode.CBlock):
         self.nNonce = nonce
         self.vtx[0].set_extranonce(extranonce1_bin + extranonce2_bin)        
         self.sha256 = None # We changed block parameters, let's reset sha256 cache
+
+
+    def serialize(self):
+        r = []
+        r.append(struct.pack("<i", self.nVersion))
+        r.append(util.ser_uint256(self.hashPrevBlock))
+        r.append(util.ser_uint256(self.hashMerkleRoot))
+        r.append(struct.pack("<I", self.nTime))
+        r.append(struct.pack("<I", self.nBits))
+        r.append(struct.pack("<I", self.nNonce))
+        r.append(util.ser_vector(self.vtx))
+        return ''.join(r)
+
+    def is_valid(self):
+        self.calc_sha256()
+        target = util.uint256_from_compact(self.nBits)
+        if self.sha256 > self.target:
+            return False
+        hashes = []
+        hashes.append(b'\0' * 0x20)
+        for tx in self.vtx[1:]:
+            hashes.append(SHA256.new(SHA256.new(tx.serialize()).digest()).digest())
+        while len(hashes) > 1:
+            newhashes = []
+            for i in xrange(0, len(hashes), 2):
+                i2 = min(i+1, len(hashes)-1)
+                newhashes.append(SHA256.new(SHA256.new(hashes[i] + hashes[i2]).digest()).digest())
+            hashes = newhashes
+        calcwitness = SHA256.new(SHA256.new(hashes[0] + witness_nonce).digest()).digest()
+        if calcwitness != self.witness:
+            return False
+        return True 
