@@ -134,7 +134,7 @@ class BitcoinRPC(object):
         try:
             params = [{}]
             if settings.COINDAEMON_HAS_SEGWIT:
-               params = [{"rules": gbt_known_rules}])) 
+               params = [{"rules": gbt_known_rules}]
             resp = (yield self._call('getblocktemplate', params))
             defer.returnValue(json.loads(resp)['result'])
         # if internal server error try getblocktemplate without empty {} # ppcoin
