@@ -226,7 +226,7 @@ class CBlock(object):
            r.append(struct.pack("<I", self.nTime))
            r.append(struct.pack("<I", self.nBits))
            r.append(struct.pack("<I", self.nNonce))
-           self.hash = uint256_from_str(algo_func.getPoWHash(''.join(r)))
+           self.hash = uint256_from_str(algolib.getPoWHash(''.join(r)))
         return self.hash
 
     def is_valid(self):
