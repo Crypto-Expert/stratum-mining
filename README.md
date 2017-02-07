@@ -1,9 +1,7 @@
 #Description
-This Repo will likely be superceeded by a Second Generation All in One, Powerful Serer called CoiniumSev. The Current Repo is [here](https://github.com/CoiniumServ/CoiniumServ).
-
 Stratum-mining is a pooled mining protocol. It is a replacement for *getwork* based pooling servers by allowing clients to generate work. The stratum protocol is described [here](http://mining.bitcoin.cz/stratum-mining) in full detail.
 
-This is a implementation of stratum-mining for scrypt based coins. It is compatible with *MPOS* as it complies with the standards of *pushpool*. The end goal is to build on these standards to come up with a more stable solution.
+This is a implementation of stratum-mining for most coins. It is compatible with *MPOS* as it complies with the standards of *pushpool*. The end goal is to build on these standards to come up with a more stable solution.
 
 The goal is to make a reliable stratum mining server for a wide range of coins unlike other forks where the code is limited to specific algorithm's. Over time I will develop this to be more feature rich and very stable. If you would like to see a feature please file a feature request. 
 
@@ -26,15 +24,7 @@ The goal is to make a reliable stratum mining server for a wide range of coins u
 * Transaction Messaging Support
 
 #Donations 
-* BTC:  18Xg4qP6RUvpeajanKPt5PDvvcqvU2pP6d
-* BTE:  8UJLskr8eDYATvYzmaCBw3vbRmeNweT3rW
-* DGC:  DSBb5KmGWYKMJjxk3rETtvpk9sPqgCCYAw
-* LTC:  Lg4kXMqPsmMHrGr81LLe8oHpbsMiWiuMSB
-* WDC:  WeVFgZQsKSKXGak7NJPp9SrcUexghzTPGJ
-* Doge: DLtBRYtNCzfiZfcpUeEr8KPvy5k1aR7jca
-* SRC:  sMP2wHN5H2ik7FQDPjhSzFZUWux75BYZGe
-* ARG:  AQvXPWVqGzcpH2j2XSRG7X5R9nA3y9D9aQ
-* Cryptsy Trade Key: ec13d183e304326ebd41258d6ae7188e303866fe
+* BTC:  1D9sGeqx5TVzcCSdmiUqxtdqbc8puyVM9N
 
 
 #Requirements
@@ -43,7 +33,7 @@ The goal is to make a reliable stratum mining server for a wide range of coins u
 * python-twisted
 * stratum
 * MySQL Server 
-* SHA256 or Scrypt CoinDaemon
+* CoinDaemon
 
 Other coins have been known to work with this implementation. I have tested with the following coins, but there may be many others that work. 
 
