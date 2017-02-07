@@ -194,7 +194,7 @@ class BlockTemplate(halfnode.CBlock):
         return ''.join(r)
 
     def is_valid(self):
-        self.calc_sha256()
+        self.calc_hash()
         target = util.uint256_from_compact(self.nBits)
         if self.sha256 > self.target:
             return False
