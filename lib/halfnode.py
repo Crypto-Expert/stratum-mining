@@ -201,7 +201,7 @@ class CBlock(object):
         self.nBits = struct.unpack("<I", f.read(4))[0]
         self.nNonce = struct.unpack("<I", f.read(4))[0]
         self.vtx = deser_vector(f, CTransaction)
-        if settings.COINDAEMON_Reward == 'POS':
+        if settings.COINDAEMON_REWARD == 'POS':
             self.signature = deser_string(f)
 
     def serialize(self):
@@ -213,7 +213,7 @@ class CBlock(object):
         r.append(struct.pack("<I", self.nBits))
         r.append(struct.pack("<I", self.nNonce))
         r.append(ser_vector(self.vtx))
-        if settings.COINDAEMON_Reward == 'POS':
+        if settings.COINDAEMON_REWARD == 'POS':
             r.append(ser_string(self.signature))
         return ''.join(r)
 

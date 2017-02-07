@@ -71,7 +71,7 @@ class SimpleCoinbaser(object):
            raise
     
     def get_script_pubkey(self):
-        if settings.COINDAEMON_Reward == 'POW':
+        if settings.COINDAEMON_REWARD == 'POW':
             self._validate()
             return util.script_to_address(self.address)
         else:
