@@ -17,9 +17,10 @@ COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
-ALGO_NAME = 'ltc_scrypt'      # Name of module implementing getPoWHash
+ALGO_NAME = 'lyra2re2_hash'      # Name of module implementing getPoWHash
 COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
-
+COINDAEMON_HAS_SEGWIT = False
+#COINDAEMON_REWARD = 'POW' If it needs to be overridden i believe
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
