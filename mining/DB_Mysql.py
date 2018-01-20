@@ -201,7 +201,7 @@ class DB_Mysql(object):
     def get_uid(self, id_or_username):
         log.debug("Finding user id of %s", id_or_username)
         uname = id_or_username.split(".", 1)[0]
-        row = yield self.fetchone_nb("SELECT `id` FROM `accounts` where username = %s", (uname))
+        row = yield self.fetchone_nb("SELECT `id` FROM `accounts` where username = %s", (uname,))
 
         if row is None:
             defer.returnValue(False)

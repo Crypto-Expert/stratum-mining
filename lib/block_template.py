@@ -181,18 +181,6 @@ class BlockTemplate(halfnode.CBlock):
         self.vtx[0].set_extranonce(extranonce1_bin + extranonce2_bin)        
         self.sha256 = None # We changed block parameters, let's reset sha256 cache
 
-
-    def serialize(self):
-        r = []
-        r.append(struct.pack("<i", self.nVersion))
-        r.append(util.ser_uint256(self.hashPrevBlock))
-        r.append(util.ser_uint256(self.hashMerkleRoot))
-        r.append(struct.pack("<I", self.nTime))
-        r.append(struct.pack("<I", self.nBits))
-        r.append(struct.pack("<I", self.nNonce))
-        r.append(util.ser_vector(self.vtx))
-        return ''.join(r)
-
     def is_valid(self):
         self.calc_hash()
         target = util.uint256_from_compact(self.nBits)

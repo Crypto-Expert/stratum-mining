@@ -20,7 +20,7 @@ COINDAEMON_TX = False         # For Coins which support TX Messages please enter
 COINDAEMON_HAS_SEGWIT = False
 #CUSTOM_HEADER =  "000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
 #CUSTOM_DIFF1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000 # Scrypt
-#COINDAEMON_REWARD = 'POW' If it needs to be overridden i believe
+#COINDAEMON_REWARD = 'POW' # If it needs to be overridden i believe
 # ******************** BASIC SETTINGS ***************
 # Backup Coin Daemon address's (consider having at least 1 backup)
 # You can have up to 99
