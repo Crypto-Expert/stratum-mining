@@ -4,15 +4,13 @@ import stratum.logger
 log = stratum.logger.get_logger('DB_Sqlite')
 
 import sqlite3
-               
+
 class DB_Sqlite():
     def __init__(self):
-        log.debug("Connecting to DB")
         self.dbh = sqlite3.connect(settings.DB_SQLITE_FILE)
         self.dbc = self.dbh.cursor()
 
     def updateStats(self,averageOverTime):
-        log.debug("Updating Stats")
         # Note: we are using transactions... so we can set the speed = 0 and it doesn't take affect until we are commited.
         self.dbc.execute("update pool_worker set speed = 0, alive = 0");
         stime = '%.2f' % ( time.time() - averageOverTime );
@@ -133,10 +131,10 @@ class DB_Sqlite():
                 {'val':total_found,'parm':'pool_total_found'}
                 ])
         self.dbh.commit()
-                
+
     def get_user(self, id_or_username):
         raise NotImplementedError('Not implemented for SQLite')
-        
+
     def list_users(self):
         raise NotImplementedError('Not implemented for SQLite')
 
@@ -144,7 +142,6 @@ class DB_Sqlite():
         raise NotImplementedError('Not implemented for SQLite')
 
     def insert_user(self,username,password):
-        log.debug("Adding Username/Password")
         self.dbc.execute("insert into pool_worker (username,password) VALUES (:user,:pass)", {'user':username,'pass':password})
         self.dbh.commit()
 
@@ -152,7 +149,6 @@ class DB_Sqlite():
         raise NotImplementedError('Not implemented for SQLite')
 
     def check_password(self,username,password):
-        log.debug("Checking Username/Password")
         self.dbc.execute("select COUNT(*) from pool_worker where username = :user and password = :pass", {'user':username,'pass':password})
         data = self.dbc.fetchone()
         if data[0] > 0 :
@@ -162,7 +158,7 @@ class DB_Sqlite():
     def update_worker_diff(self,username,diff):
         self.dbc.execute("update pool_worker set difficulty = :diff where username = :user",{'diff':diff,'user':username})
         self.dbh.commit()
-    
+
     def clear_worker_diff(self):
         if settings.DATABASE_EXTEND == True :
             self.dbc.execute("update pool_worker set difficulty = 0")
@@ -253,7 +249,7 @@ class DB_Sqlite():
         self.dbc.execute("create index if not exists pool_worker_username ON pool_worker(username)")
         self.dbc.execute("update pool set value = 3 where parameter = 'DB Version'")
         self.dbh.commit()
-    
+
     def update_version_3(self):
         log.info("running update 3")
         self.dbc.executemany("insert into pool (parameter,value) VALUES (?,?)",[

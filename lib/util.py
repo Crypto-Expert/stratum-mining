@@ -159,7 +159,7 @@ def reverse_hash(h):
     # This only revert byte order, nothing more
     if len(h) != 64:
         raise Exception('hash must have 64 hexa chars')
-    
+
     return ''.join([ h[56-i:64-i] for i in range(0, 64, 8) ])
 
 def doublesha(b):
@@ -176,14 +176,14 @@ def address_to_pubkeyhash(addr):
 
     if addr is None:
         return None
-    
+
     ver = addr[0]
     cksumA = addr[-4:]
     cksumB = doublesha(addr[:-4])[:4]
-    
+
     if cksumA != cksumB:
         return None
-    
+
     return (ver, addr[1:-4])
 
 def ser_uint256_be(u):
@@ -192,7 +192,7 @@ def ser_uint256_be(u):
     for i in xrange(8):
         rs += struct.pack(">I", u & 0xFFFFFFFFL)
         u >>= 32
-    return rs    
+    return rs
 
 def deser_uint256_be(f):
     r = 0L

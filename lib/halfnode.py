@@ -19,7 +19,6 @@ algolib = __import__(settings.ALGO_NAME)
 
 import lib.logger
 log = lib.logger.get_logger('halfnode')
-log.debug("Got to Halfnode")
 
 
 MY_VERSION = 31402
@@ -166,12 +165,12 @@ class CTransaction(object):
         if settings.COINDAEMON_TX != False:
            r += ser_string(self.strTxComment)
         return r
- 
+
     def calc_sha256(self):
         if self.sha256 is None:
             self.sha256 = uint256_from_str(SHA256.new(SHA256.new(self.serialize()).digest()).digest())
         return self.sha256
-    
+
     def is_valid(self):
         self.calc_sha256()
         for tout in self.vout:
@@ -241,14 +240,14 @@ class CBlock(object):
                 return False
             tx.calc_sha256()
             hashes.append(ser_uint256(tx.sha256))
-        
+
         while len(hashes) > 1:
             newhashes = []
             for i in xrange(0, len(hashes), 2):
                 i2 = min(i+1, len(hashes)-1)
                 newhashes.append(SHA256.new(SHA256.new(hashes[i] + hashes[i2]).digest()).digest())
             hashes = newhashes
-        
+
         if uint256_from_str(hashes[0]) != self.hashMerkleRoot:
             return False
         return True
@@ -267,7 +266,7 @@ class msg_version(object):
         self.nNonce = random.getrandbits(64)
         self.strSubVer = MY_SUBVERSION
         self.nStartingHeight = 0
-        
+
     def deserialize(self, f):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
         if self.nVersion == 10300:
@@ -410,7 +409,7 @@ class msg_alert(object):
         return ""
     def __repr__(self):
         return "msg_alert()"
-    
+
 class BitcoinP2PProtocol(Protocol):
     messagemap = {
         "version": msg_version,
@@ -425,14 +424,14 @@ class BitcoinP2PProtocol(Protocol):
         "ping": msg_ping,
         "alert": msg_alert,
     }
-   
+
     def connectionMade(self):
         peer = self.transport.getPeer()
         self.dstaddr = peer.host
         self.dstport = peer.port
         self.recvbuf = ""
         self.last_sent = 0
- 
+
         t = msg_version()
         t.nStartingHeight = getattr(self, 'nStartingHeight', 0)
         t.addrTo.ip = self.dstaddr
@@ -442,11 +441,11 @@ class BitcoinP2PProtocol(Protocol):
         t.addrFrom.port = 0
         t.addrFrom.nTime = time.time()
         self.send_message(t)
-        
+
     def dataReceived(self, data):
         self.recvbuf += data
         self.got_data()
-        
+
     def got_data(self):
         while True:
             if len(self.recvbuf) < 4:
@@ -475,8 +474,8 @@ class BitcoinP2PProtocol(Protocol):
                 self.got_message(t)
             else:
                 print "UNKNOWN COMMAND", command, repr(msg)
-                
-    def prepare_message(self, message):       
+
+    def prepare_message(self, message):
         command = message.command
         data = message.serialize()
         tmsg = "\xf9\xbe\xb4\xd9"
@@ -488,21 +487,18 @@ class BitcoinP2PProtocol(Protocol):
         tmsg += h[:4]
         tmsg += data
         return tmsg
-    
+
     def send_serialized_message(self, tmsg):
         if not self.connected:
             return
-        
+
         self.transport.write(tmsg)
-        self.last_sent = time.time()       
-        
+        self.last_sent = time.time()
+
     def send_message(self, message):
         if not self.connected:
             return
-        
-        #print message.command
-        
-        #print "send %s" % repr(message)
+
         command = message.command
         data = message.serialize()
         tmsg = "\xf9\xbe\xb4\xd9"
@@ -513,33 +509,22 @@ class BitcoinP2PProtocol(Protocol):
         h = SHA256.new(th).digest()
         tmsg += h[:4]
         tmsg += data
-        
-        #print tmsg, len(tmsg)
+
         self.transport.write(tmsg)
         self.last_sent = time.time()
-        
+
     def got_message(self, message):
         if self.last_sent + 30 * 60 < time.time():
             self.send_message(msg_ping())
 
         mname = 'do_' + message.command
-        #print mname
         if not hasattr(self, mname):
             return
 
         method = getattr(self, mname)
         method(message)
 
-#        if message.command == "tx":
-#            message.tx.calc_sha256()
-#            sha256 = message.tx.sha256
-#            pubkey = binascii.hexlify(message.tx.vout[0].scriptPubKey)
-#            txlock.acquire()
-#            tx.append([str(sha256), str(time.time()), str(self.dstaddr), pubkey])
-#            txlock.release()
-
     def do_version(self, message):
-        #print message
         self.send_message(msg_verack())
 
     def do_inv(self, message):

@@ -6,7 +6,7 @@ log = stratum.logger.get_logger('DB_Postgresql')
 
 import psycopg2
 from psycopg2 import extras
-                
+
 class DB_Postgresql():
     def __init__(self):
         log.debug("Connecting to DB")
@@ -14,7 +14,7 @@ class DB_Postgresql():
                 "' password='"+settings.DB_PGSQL_PASS+"'")
         # TODO -- set the schema
         self.dbc = self.dbh.cursor()
-        
+
         if hasattr(settings, 'PASSWORD_SALT'):
             self.salt = settings.PASSWORD_SALT
         else:
@@ -33,7 +33,7 @@ class DB_Postgresql():
             self.dbc.execute("update pool_worker set speed = %s, alive = 't' where username = %s", (speed,name))
         self.dbc.execute("update pool set value = %s where parameter = 'pool_speed'",[total_speed])
         self.dbh.commit()
-    
+
     def archive_check(self):
         # Check for found shares to archive
         self.dbc.execute("select time from shares where upstream_result = true order by time limit 1")
@@ -47,7 +47,7 @@ class DB_Postgresql():
         self.dbh.commit()
 
     def archive_to_db(self,found_time):
-        self.dbc.execute("insert into shares_archive select * from shares where time <= to_timestamp(%s)",[found_time])        
+        self.dbc.execute("insert into shares_archive select * from shares where time <= to_timestamp(%s)",[found_time])
         self.dbh.commit()
 
     def archive_cleanup(self,found_time):
@@ -109,7 +109,7 @@ class DB_Postgresql():
             else:
                     progress = (round_shares/difficulty)*100
             self.dbc.execute("update pool set value = %s where parameter = 'round_progress'",[progress])
-        
+
             for k,v in checkin_times.items():
                 self.dbc.execute("update pool_worker set last_checkin = to_timestamp(%s), total_shares = total_shares + %s, total_rejects = total_rejects + %s where username = %s",
                         (v["time"],v["shares"],v["rejects"],k))
@@ -132,11 +132,11 @@ class DB_Postgresql():
                 (total_found,'pool_total_found')
                 ])
         self.dbh.commit()
-                
+
     def get_user(self, id_or_username):
         log.debug("Finding user with id or username of %s", id_or_username)
         cursor = self.dbh.cursor(cursor_factory=extras.DictCursor)
-        
+
         cursor.execute(
             """
             SELECT *
@@ -149,11 +149,11 @@ class DB_Postgresql():
                 "uname": id_or_username
             }
         )
-        
+
         user = cursor.fetchone()
         cursor.close()
         return user
-        
+
     def list_users(self):
         cursor = self.dbh.cursor(cursor_factory=extras.DictCursor)
         cursor.execute(
@@ -163,12 +163,12 @@ class DB_Postgresql():
             WHERE id > 0
             """
         )
-        
+
         while True:
             results = cursor.fetchmany()
             if not results:
                 break
-            
+
             for result in results:
                 yield result
 
@@ -193,7 +193,7 @@ class DB_Postgresql():
         self.dbc.execute("insert into pool_worker (username,password) VALUES (%s,%s)",
                 (username, m.hexdigest() ))
         self.dbh.commit()
-        
+
         return str(username)
 
     def update_user(self, id_or_username, password):
@@ -216,7 +216,7 @@ class DB_Postgresql():
     def update_worker_diff(self,username,diff):
         self.dbc.execute("update pool_worker set difficulty = %s where username = %s",(diff,username))
         self.dbh.commit()
-    
+
     def clear_worker_diff(self):
         if settings.DATABASE_EXTEND == True :
             self.dbc.execute("update pool_worker set difficulty = 0")
@@ -280,7 +280,7 @@ class DB_Postgresql():
         if settings.DATABASE_EXTEND == True :
             self.update_tables()
 
-        
+
     def update_tables(self):
         version = 0
         current_version = 7
@@ -291,7 +291,7 @@ class DB_Postgresql():
             if version < current_version :
                 log.info("Updating Database from %i to %i" % (version, version +1))
                 getattr(self, 'update_version_' + str(version) )()
-                    
+
     def update_version_1(self):
         if settings.DATABASE_EXTEND == True :
             self.dbc.execute("create table shares" +\
@@ -328,7 +328,7 @@ class DB_Postgresql():
                 ])
         self.dbc.execute("update pool set value = 3 where parameter = 'DB Version'")
         self.dbh.commit()
-        
+
     def update_version_3(self):
         log.info("running update 3")
         self.dbc.executemany("insert into pool (parameter,value) VALUES (%s,%s)",[
@@ -338,7 +338,7 @@ class DB_Postgresql():
         self.dbc.execute("alter table pool_worker add alive BOOLEAN")
         self.dbc.execute("update pool set value = 4 where parameter = 'DB Version'")
         self.dbh.commit()
-        
+
     def update_version_4(self):
         log.info("running update 4")
         self.dbc.execute("alter table pool_worker add difficulty INTEGER default 0")
@@ -350,7 +350,7 @@ class DB_Postgresql():
                 "block_num INTEGER, prev_block_hash TEXT, useragent TEXT, difficulty INTEGER)")
         self.dbc.execute("update pool set value = 5 where parameter = 'DB Version'")
         self.dbh.commit()
-        
+
     def update_version_5(self):
         log.info("running update 5")
         # Adding Primary key to table: pool
@@ -361,13 +361,13 @@ class DB_Postgresql():
         self.dbc.execute("CREATE INDEX shares_time_username ON shares(time,username)")
         self.dbc.execute("CREATE INDEX shares_upstreamresult ON shares(upstream_result)")
         self.dbh.commit()
-        
+
         self.dbc.execute("update pool set value = 6 where parameter = 'DB Version'")
         self.dbh.commit()
-        
+
     def update_version_6(self):
         log.info("running update 6")
-        
+
         try:
             self.dbc.execute("CREATE EXTENSION pgcrypto")
         except psycopg2.ProgrammingError:
@@ -375,20 +375,20 @@ class DB_Postgresql():
         except psycopg2.OperationalError:
             raise Exception("Could not add pgcrypto extension to database. Have you got it installed? Ubuntu is postgresql-contrib")
         self.dbh.commit()
-        
+
         # Optimising table layout
         self.dbc.execute("ALTER TABLE pool " +\
             "ALTER COLUMN parameter TYPE character varying(128), ALTER COLUMN value TYPE character varying(512);")
         self.dbh.commit()
-        
+
         self.dbc.execute("UPDATE pool_worker SET password = encode(digest(concat(password, %s), 'sha1'), 'hex') WHERE id > 0", [self.salt])
         self.dbh.commit()
-        
+
         self.dbc.execute("ALTER TABLE pool_worker " +\
             "ALTER COLUMN username TYPE character varying(512), ALTER COLUMN password TYPE character(40), " +\
             "ADD CONSTRAINT username UNIQUE (username)")
         self.dbh.commit()
-        
+
         self.dbc.execute("update pool set value = 7 where parameter = 'DB Version'")
         self.dbh.commit()
 

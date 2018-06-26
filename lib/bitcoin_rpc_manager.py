@@ -17,9 +17,8 @@ from lib.bitcoin_rpc import BitcoinRPC
 
 
 class BitcoinRPCManager(object):
-    
+
     def __init__(self):
-        log.debug("Got to Bitcoin RPC Manager")
         self.conns = {}
         self.conns[0] = BitcoinRPC(settings.COINDAEMON_TRUSTED_HOST,
                                  settings.COINDAEMON_TRUSTED_PORT,
@@ -110,7 +109,7 @@ class BitcoinRPCManager(object):
                 return self.conns[self.curr_conn].getinfo()
             except:
                 self.next_connection()
-    
+
     def getblocktemplate(self):
         while True:
             try:
@@ -125,7 +124,7 @@ class BitcoinRPCManager(object):
                 return self.conns[self.curr_conn].prevhash()
             except:
                 self.next_connection()
-        
+
     def validateaddress(self, address):
         while True:
             try:

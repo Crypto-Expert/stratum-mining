@@ -4,7 +4,7 @@ import lib.logger
 log = lib.logger.get_logger('Cache')
 
 import pylibmc
-                
+
 class Cache():
     def __init__(self):
         # Open a new connection

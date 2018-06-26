@@ -11,19 +11,15 @@ import MySQLdb
 
 class DB_Mysql(object):
     def __init__(self):
-        log.debug("Connecting to DB")
-        
-        required_settings = ['PASSWORD_SALT', 'DB_MYSQL_HOST', 
-                             'DB_MYSQL_USER', 'DB_MYSQL_PASS', 
+        required_settings = ['PASSWORD_SALT', 'DB_MYSQL_HOST',
+                             'DB_MYSQL_USER', 'DB_MYSQL_PASS',
                              'DB_MYSQL_DBNAME','DB_MYSQL_PORT']
-        
+
         for setting_name in required_settings:
             if not hasattr(settings, setting_name):
                 raise ValueError("%s isn't set, please set in config.py" % setting_name)
-        
-        self.salt = getattr(settings, 'PASSWORD_SALT')
         self.connect()
-        
+
     def connect(self):
         self.dbpool = adbapi.ConnectionPool(
             "MySQLdb",
@@ -57,19 +53,18 @@ class DB_Mysql(object):
 
     def import_shares(self, data):
         # Data layout
-        # 0: worker_name, 
-        # 1: block_header, 
-        # 2: block_hash, 
-        # 3: difficulty, 
-        # 4: timestamp, 
-        # 5: is_valid, 
-        # 6: ip, 
-        # 7: self.block_height, 
+        # 0: worker_name,
+        # 1: block_header,
+        # 2: block_hash,
+        # 3: difficulty,
+        # 4: timestamp,
+        # 5: is_valid,
+        # 6: ip,
+        # 7: self.block_height,
         # 8: self.prev_hash,
-        # 9: invalid_reason, 
+        # 9: invalid_reason,
         # 10: share_diff
 
-        log.debug("Importing Shares")
         checkin_times = {}
         total_shares = 0
         best_diff = 0
@@ -118,7 +113,7 @@ class DB_Mysql(object):
                 LIMIT 1
                 """,
                 {
-                    "result": data[5], 
+                    "result": data[5],
                     "solution": data[2],
                     "id": shareid[0]
                 }
@@ -128,11 +123,11 @@ class DB_Mysql(object):
             self.execute_nb(
                 """
                 INSERT INTO `shares`
-                (time, rem_host, username, our_result, 
+                (time, rem_host, username, our_result,
                   upstream_result, reason, solution)
-                VALUES 
-                (FROM_UNIXTIME(%(time)s), %(host)s, 
-                  %(uname)s, 
+                VALUES
+                (FROM_UNIXTIME(%(time)s), %(host)s,
+                  %(uname)s,
                   %(lres)s, %(result)s, %(reason)s, %(solution)s))
                 """,
                 {
@@ -146,27 +141,7 @@ class DB_Mysql(object):
                 }
             )
 
-    # def list_users(self):
-    #     self.execute(
-    #         """
-    #         SELECT *
-    #         FROM `pool_worker`
-    #         WHERE `id`> 0
-    #         """
-    #     )
-    #
-    #     while True:
-    #         results = self.dbc.fetchmany()
-    #         if not results:
-    #             break
-    #
-    #         for result in results:
-    #             yield result
-                
-
     def get_user_nb(self, id_or_username):
-        log.debug("Finding nb user with id or username of %s", id_or_username)
-
         user = self.fetchone_nb(
             """
             SELECT *
@@ -182,8 +157,6 @@ class DB_Mysql(object):
         return user
 
     def get_user(self, id_or_username):
-        log.debug("Finding user with id or username of %s", id_or_username)
-
         return self.fetchone_nb(
             """
             SELECT *
@@ -199,7 +172,6 @@ class DB_Mysql(object):
 
     @defer.inlineCallbacks
     def get_uid(self, id_or_username):
-        log.debug("Finding user id of %s", id_or_username)
         uname = id_or_username.split(".", 1)[0]
         row = yield self.fetchone_nb("SELECT `id` FROM `accounts` where username = %s", (uname))
 
@@ -214,14 +186,13 @@ class DB_Mysql(object):
         query = "INSERT INTO pool_worker"
         self.execute_nb(query + '(account_id, username, password) VALUES (%s, %s, %s);', (account_id, username, password))
         return str(username)
-        
 
     def delete_user(self, id_or_username):
         if id_or_username.isdigit() and id_or_username == '0':
             raise Exception('You cannot delete that user')
-        
+
         log.debug("Deleting user with id or username of %s", id_or_username)
-        
+
         self.execute_nb(
             """
             UPDATE `shares`
@@ -233,13 +204,13 @@ class DB_Mysql(object):
                 "uname": id_or_username
             }
         )
-        
+
         self.execute_nb(
             """
             DELETE FROM `pool_worker`
             WHERE `id` = %(id)s
               OR `username` = %(uname)s
-            """, 
+            """,
             {
                 "id": id_or_username if id_or_username.isdigit() else -1,
                 "uname": id_or_username
@@ -247,8 +218,6 @@ class DB_Mysql(object):
         )
 
     def insert_user(self, username, password):
-        log.debug("Adding new user %s", username)
-        
         self.execute_nb(
             """
             INSERT INTO `pool_worker`
@@ -257,15 +226,13 @@ class DB_Mysql(object):
             (%(uname)s, %(pass)s)
             """,
             {
-                "uname": username, 
+                "uname": username,
                 "pass": password
             }
         )
         return str(username)
 
     def update_user(self, id_or_username, password):
-        log.debug("Updating password for user %s", id_or_username);
-        
         self.execute_nb(
             """
             UPDATE `pool_worker`
@@ -282,24 +249,21 @@ class DB_Mysql(object):
 
     @defer.inlineCallbacks
     def check_password(self, username, password):
-        log.debug("Checking username/password for %s", username)
-        
         data = yield self.fetchone_nb(
             """
-            SELECT COUNT(*) 
+            SELECT COUNT(*)
             FROM `pool_worker`
             WHERE `username` = %(uname)s
               AND `password` = %(pass)s
             """,
             {
-                "uname": username, 
+                "uname": username,
                 "pass": password
             }
         )
-        
+
         if data[0] > 0:
             defer.returnValue(True)
-        
         defer.returnValue(False)
 
     @defer.inlineCallbacks
@@ -312,9 +276,8 @@ class DB_Mysql(object):
             WHERE `id` > 0
             """
         )
-        
         ret = {}
-        
+
         for data in result:
             ret[data[0]] = {
                 "username": data[0],
@@ -325,7 +288,6 @@ class DB_Mysql(object):
                 "total_found": int(data[5]),
                 "alive": True if data[6] is 1 else False,
             }
-            
         defer.returnValue(ret)
 
     def close(self):
@@ -334,7 +296,7 @@ class DB_Mysql(object):
     @defer.inlineCallbacks
     def check_tables(self):
         log.debug("Checking Database")
-        
+
         data = yield self.fetchone_nb(
             """
             SELECT COUNT(*)

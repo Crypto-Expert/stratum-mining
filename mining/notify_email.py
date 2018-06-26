@@ -15,7 +15,7 @@ class NOTIFY_EMAIL(object):
             text = ('Stratum service has started!')
             message = MIMEText(text, 'plain')
             self.send_email(settings.NOTIFY_ADMIN,subject,message)
-    
+
     def notify_found_block(self,worker_name):
             subject = ('  Stratum ALERT: Found Block by ' % worker_name)
             text = ('%s on Stratum server found a block!' % worker_name)

@@ -1,59 +1,54 @@
 import stratum.logger
 log = stratum.logger.get_logger('None')
-                
+
 class DB_None():
     def __init__(self):
-        log.debug("Connecting to DB")
+	return
 
     def updateStats(self,averageOverTime):
-        log.debug("Updating Stats")
+	return
 
     def import_shares(self,data):
-        log.debug("Importing Shares")
+	return
 
     def found_block(self,data):
-        log.debug("Found Block")
-    
+	return
+
     def get_user(self, id_or_username):
-        log.debug("Get User")
+	return
 
     def list_users(self):
-        log.debug("List Users")
+	return
 
     def delete_user(self,username):
-        log.debug("Deleting Username")
+	return
 
     def insert_user(self,username,password):
-        log.debug("Adding Username/Password")
+	return
 
     def update_user(self,username,password):
-        log.debug("Updating Username/Password")
+	return
 
     def check_password(self,username,password):
-        log.debug("Checking Username/Password")
-        return True
-    
+	return True
+
     def update_pool_info(self,pi):
-        log.debug("Update Pool Info")
+	return
 
     def clear_worker_diff(self):
-        log.debug("Clear Worker Diff")
+	return
 
     def get_pool_stats(self):
-        log.debug("Get Pool Stats")
-        ret = {}
-        return ret
+        return {}
 
     def get_workers_stats(self):
-        log.debug("Get Workers Stats")
-        ret = {}
-        return ret
+	return {}
 
     def check_tables(self):
-        log.debug("Checking Tables")
+	return True
 
     def close(self):
-        log.debug("Close Connection")
+	return
 
-    def uodate_worker_diff(self, username, diff):
+    def update_worker_diff(self, username, diff):
         return
