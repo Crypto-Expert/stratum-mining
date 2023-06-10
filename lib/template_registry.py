@@ -3,7 +3,8 @@ import binascii
 import util
 import StringIO
 import settings
-algolib = __import__(settings.ALGO_NAME)
+if settings.ALGO_NAME != "SHA256":
+   algolib = __import__(settings.ALGO_NAME)
 import lib.logger
 import lib.settings as settings
 from twisted.internet import defer
@@ -231,7 +232,10 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
 
         # 4. Reverse header and compare it with target of the user
-        hash_bin = algolib.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+        if settings.ALGO_NAME != "SHA256":
+            hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+        else:
+            hash_bin = algolib.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         hash_int = util.uint256_from_str(hash_bin)
         scrypt_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)
