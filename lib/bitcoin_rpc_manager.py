@@ -52,24 +52,24 @@ class BitcoinRPCManager(object):
     def check_height(self):
         while True:
             try:
-                resp = (yield self.conns[self.curr_conn]._call('getinfo', []))
+                resp = (yield self.conns[self.curr_conn]._call('getblockcount', []))
                 break
             except:
                 log.error("Check Height -- Pool %i Down!" % (self.curr_conn) )
                 self.next_connection()
-        curr_height = json.loads(resp)['result']['blocks']
+        curr_height = json.loads(resp)['result']
         log.debug("Check Height -- Current Pool %i : %i" % (self.curr_conn,curr_height) )
         for i in self.conns:
             if i == self.curr_conn:
                 continue
 
             try:
-                resp = (yield self.conns[i]._call('getinfo', []))
+                resp = (yield self.conns[i]._call('getblockcount', []))
             except:
                 log.error("Check Height -- Pool %i Down!" % (i,) )
                 continue
 
-            height = json.loads(resp)['result']['blocks']
+            height = json.loads(resp)['result']
             log.debug("Check Height -- Pool %i : %i" % (i,height) )
             if height > curr_height:
                 self.curr_conn = i
