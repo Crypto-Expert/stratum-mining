@@ -10,14 +10,14 @@ from lib.exceptions import SubmitException
 import json
 import lib.logger
 log = lib.logger.get_logger('mining')
-                
+
 class MiningService(GenericService):
     '''This service provides public API for Stratum mining proxy
     or any Stratum-compatible miner software.
-    
+
     Warning - any callable argument of this class will be propagated
     over Stratum protocol for public audience!'''
-    
+
     service_type = 'mining'
     service_vendor = 'stratum'
     is_default = True
@@ -25,7 +25,7 @@ class MiningService(GenericService):
 
     @admin
     def get_server_stats(self):
-        serialized = '' 
+        serialized = ''
         for subscription in Pubsub.iterate_subscribers(self.event):
             try:
                 if subscription != None:
@@ -47,13 +47,13 @@ class MiningService(GenericService):
 
     @admin
     def update_block(self):
-        '''Connect this RPC call to 'litecoind -blocknotify' for 
+        '''Connect this RPC call to 'litecoind -blocknotify' for
         instant notification about new block on the network.
         See blocknotify.sh in /scripts/ for more info.'''
-        
+
         log.info("New block notification received")
         Interfaces.template_registry.update_block()
-        return True 
+        return True
 
     @admin
     def add_litecoind(self, *args):
@@ -64,14 +64,14 @@ class MiningService(GenericService):
         #(host, port, user, password) = args
         Interfaces.template_registry.bitcoin_rpc.add_connection(args[0], args[1], args[2], args[3])
         log.info("New litecoind connection added %s:%s" % (args[0], args[1]))
-        return True 
-    
+        return True
+
     def authorize(self, worker_name, worker_password):
         '''Let authorize worker on this connection.'''
-        
+
         session = self.connection_ref().get_session()
         session.setdefault('authorized', {})
-        
+
         if Interfaces.worker_manager.authorize(worker_name, worker_password):
             session['authorized'][worker_name] = worker_password
             is_ext_diff = False
@@ -91,26 +91,25 @@ class MiningService(GenericService):
             if worker_name in Interfaces.worker_manager.worker_log['authorized']:
                 del Interfaces.worker_manager.worker_log['authorized'][worker_name]
             return False
-        
+
     def subscribe(self, *args):
         '''Subscribe for receiving mining jobs. This will
         return subscription details, extranonce1_hex and extranonce2_size'''
-        
+
         extranonce1 = Interfaces.template_registry.get_new_extranonce1()
         extranonce2_size = Interfaces.template_registry.extranonce2_size
         extranonce1_hex = binascii.hexlify(extranonce1)
-        
+
         session = self.connection_ref().get_session()
         session['extranonce1'] = extranonce1
         session['difficulty'] = settings.POOL_TARGET  # Following protocol specs, default diff is 1
         return Pubsub.subscribe(self.connection_ref(), MiningSubscription()) + (extranonce1_hex, extranonce2_size)
-        
+
     def submit(self, worker_name, work_id, extranonce2, ntime, nonce):
         '''Try to solve block candidate using given parameters.'''
-        
         session = self.connection_ref().get_session()
         session.setdefault('authorized', {})
-        
+
         # Check if worker is authorized to submit shares
         ip = self.connection_ref()._get_ip()
         if not Interfaces.worker_manager.authorize(worker_name, session['authorized'].get(worker_name)):
@@ -119,11 +118,10 @@ class MiningService(GenericService):
 
         # Check if extranonce1 is in connection session
         extranonce1_bin = session.get('extranonce1', None)
-        
         if not extranonce1_bin:
             log.info("Connection is not subscribed for mining: IP %s", str(ip))
             raise SubmitException("Connection is not subscribed for mining")
-        
+
         # Get current block job_id
         difficulty = session['difficulty']
         if worker_name in Interfaces.worker_manager.job_log and work_id in Interfaces.worker_manager.job_log[worker_name]:
@@ -132,7 +130,6 @@ class MiningService(GenericService):
             job_ts = Interfaces.timestamper.time()
             Interfaces.worker_manager.job_log.setdefault(worker_name, {})[work_id] = (work_id, difficulty, job_ts)
             job_id = work_id
-        #log.debug("worker_job_log: %s" % repr(Interfaces.worker_manager.job_log))
 
         submit_time = Interfaces.timestamper.time()
 
@@ -156,9 +153,9 @@ class MiningService(GenericService):
             (valid, invalid, is_banned, last_ts) = (0, 0, is_banned, Interfaces.timestamper.time())
 
         log.debug("%s (%d, %d, %s, %s, %d) %0.2f%% work_id(%s) job_id(%s) diff(%f)" % (worker_name, valid, invalid, is_banned, is_ext_diff, last_ts, percent, work_id, job_id, difficulty))
-        if not is_ext_diff:    
+        if not is_ext_diff:
             Interfaces.share_limiter.submit(self.connection_ref, job_id, difficulty, submit_time, worker_name)
-            
+
         # This checks if submitted share meet all requirements
         # and it is valid proof of work.
         try:
@@ -171,9 +168,9 @@ class MiningService(GenericService):
 
             if is_banned:
                 raise SubmitException("Worker is temporarily banned")
- 
+
             Interfaces.share_manager.on_submit_share(worker_name, False, False, difficulty,
-                submit_time, False, ip, e[0], 0)   
+                submit_time, False, ip, e[0], 0)
             raise
 
         valid += 1
@@ -181,7 +178,7 @@ class MiningService(GenericService):
 
         if is_banned:
             raise SubmitException("Worker is temporarily banned")
- 
+
         Interfaces.share_manager.on_submit_share(worker_name, block_header,
             block_hash, difficulty, submit_time, True, ip, '', share_diff)
 
@@ -192,18 +189,18 @@ class MiningService(GenericService):
                 worker_name, block_header, block_hash, submit_time, ip, share_diff)
 
         return True
-            
+
     # Service documentation for remote discovery
     update_block.help_text = "Notify Stratum server about new block on the network."
     update_block.params = [('password', 'string', 'Administrator password'), ]
-    
+
     authorize.help_text = "Authorize worker for submitting shares on this connection."
     authorize.params = [('worker_name', 'string', 'Name of the worker, usually in the form of user_login.worker_id.'),
                         ('worker_password', 'string', 'Worker password'), ]
-    
+
     subscribe.help_text = "Subscribes current connection for receiving new mining jobs."
     subscribe.params = []
-    
+
     submit.help_text = "Submit solved share back to the server. Excessive sending of invalid shares "\
                        "or shares above indicated target (see Stratum mining docs for set_target()) may lead "\
                        "to temporary or permanent ban of user,worker or IP address."
@@ -212,4 +209,3 @@ class MiningService(GenericService):
                      ('extranonce2', 'string', 'hex-encoded big-endian extranonce2, length depends on extranonce2_size from mining.notify.'),
                      ('ntime', 'string', 'UNIX timestamp (32bit integer, big-endian, hex-encoded), must be >= ntime provided by mining,notify and <= current time'),
                      ('nonce', 'string', '32bit integer, hex-encoded, big-endian'), ]
-        

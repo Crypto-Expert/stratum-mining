@@ -6,7 +6,7 @@ log = lib.logger.get_logger('DB_Mysql')
 
 import MySQLdb
 import DB_Mysql
-                
+
 class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
     def __init__(self):
         DB_Mysql.DB_Mysql.__init__(self)
@@ -17,13 +17,13 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
         self.execute(
             """
             UPDATE `pool_worker`
-            SET `speed` = 0, 
+            SET `speed` = 0,
               `alive` = 0
             """
         );
-        
+
         stime = '%.0f' % (time.time() - averageOverTime);
-        
+
         self.execute(
             """
             UPDATE `pool_worker` pw
@@ -34,7 +34,7 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 GROUP BY `worker`
             ) AS leJoin
             ON leJoin.`worker` = pw.`id`
-            SET pw.`alive` = 1, 
+            SET pw.`alive` = 1,
               pw.`speed` = leJoin.`speed`
             WHERE pw.`id` = leJoin.`worker`
             """,
@@ -43,7 +43,7 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 "average": int(averageOverTime) * 1000000
             }
         )
-            
+
         self.execute(
             """
             UPDATE `pool`
@@ -55,36 +55,36 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
             WHERE `parameter` = 'pool_speed'
             """
         )
-        
+
         self.dbh.commit()
-    
+
     def archive_check(self):
         # Check for found shares to archive
         self.execute(
             """
             SELECT `time`
-            FROM `shares` 
+            FROM `shares`
             WHERE `upstream_result` = 1
-            ORDER BY `time` 
+            ORDER BY `time`
             LIMIT 1
             """
         )
-        
+
         data = self.dbc.fetchone()
-        
+
         if data is None or (data[0] + getattr(settings, 'ARCHIVE_DELAY')) > time.time():
             return False
-        
+
         return data[0]
 
     def archive_found(self, found_time):
         self.execute(
             """
             INSERT INTO `shares_archive_found`
-            SELECT s.`id`, s.`time`, s.`rem_host`, pw.`id`, s.`our_result`, 
-              s.`upstream_result`, s.`reason`, s.`solution`, s.`block_num`, 
+            SELECT s.`id`, s.`time`, s.`rem_host`, pw.`id`, s.`our_result`,
+              s.`upstream_result`, s.`reason`, s.`solution`, s.`block_num`,
               s.`prev_block_hash`, s.`useragent`, s.`difficulty`
-            FROM `shares` s 
+            FROM `shares` s
             LEFT JOIN `pool_worker` pw
               ON s.`worker` = pw.`id`
             WHERE `upstream_result` = 1
@@ -94,17 +94,17 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 "time": found_time
             }
         )
-        
+
         self.dbh.commit()
 
     def archive_to_db(self, found_time):
         self.execute(
             """
             INSERT INTO `shares_archive`
-            SELECT s.`id`, s.`time`, s.`rem_host`, pw.`id`, s.`our_result`, 
-              s.`upstream_result`, s.`reason`, s.`solution`, s.`block_num`, 
+            SELECT s.`id`, s.`time`, s.`rem_host`, pw.`id`, s.`our_result`,
+              s.`upstream_result`, s.`reason`, s.`solution`, s.`block_num`,
               s.`prev_block_hash`, s.`useragent`, s.`difficulty`
-            FROM `shares` s 
+            FROM `shares` s
             LEFT JOIN `pool_worker` pw
               ON s.`worker` = pw.`id`
             WHERE `time` <= FROM_UNIXTIME(%(time)s)
@@ -113,65 +113,61 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 "time": found_time
             }
         )
-        
         self.dbh.commit()
 
     def archive_cleanup(self, found_time):
         self.execute(
             """
-            DELETE FROM `shares` 
+            DELETE FROM `shares`
             WHERE `time` <= FROM_UNIXTIME(%(time)s)
             """,
             {
                 "time": found_time
             }
         )
-        
         self.dbh.commit()
 
     def archive_get_shares(self, found_time):
         self.execute(
             """
             SELECT *
-            FROM `shares` 
+            FROM `shares`
             WHERE `time` <= FROM_UNIXTIME(%(time)s)
             """,
             {
                 "time": found_time
             }
         )
-        
         return self.dbc
 
     def import_shares(self, data):
         # Data layout
-        # 0: worker_name, 
-        # 1: block_header, 
-        # 2: block_hash, 
-        # 3: difficulty, 
-        # 4: timestamp, 
-        # 5: is_valid, 
-        # 6: ip, 
-        # 7: self.block_height, 
+        # 0: worker_name,
+        # 1: block_header,
+        # 2: block_hash,
+        # 3: difficulty,
+        # 4: timestamp,
+        # 5: is_valid,
+        # 6: ip,
+        # 7: self.block_height,
         # 8: self.prev_hash,
-        # 9: invalid_reason, 
+        # 9: invalid_reason,
         # 10: share_diff
 
-        log.debug("Importing Shares")
         checkin_times = {}
         total_shares = 0
         best_diff = 0
-        
+
         for k, v in enumerate(data):
             total_shares += v[3]
-            
+
             if v[0] in checkin_times:
                 if v[4] > checkin_times[v[0]]:
                     checkin_times[v[0]]["time"] = v[4]
             else:
                 checkin_times[v[0]] = {
-                    "time": v[4], 
-                    "shares": 0, 
+                    "time": v[4],
+                    "shares": 0,
                     "rejects": 0
                 }
 
@@ -185,14 +181,14 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
 
             self.execute(
                 """
-                INSERT INTO `shares` 
-                (time, rem_host, worker, our_result, upstream_result, 
-                  reason, solution, block_num, prev_block_hash, 
-                  useragent, difficulty) 
+                INSERT INTO `shares`
+                (time, rem_host, worker, our_result, upstream_result,
+                  reason, solution, block_num, prev_block_hash,
+                  useragent, difficulty)
                 VALUES
-                (FROM_UNIXTIME(%(time)s), %(host)s, 
+                (FROM_UNIXTIME(%(time)s), %(host)s,
                   (SELECT `id` FROM `pool_worker` WHERE `username` = %(uname)s),
-                  %(lres)s, 0, %(reason)s, %(solution)s, 
+                  %(lres)s, 0, %(reason)s, %(solution)s,
                   %(blocknum)s, %(hash)s, '', %(difficulty)s)
                 """,
                 {
@@ -210,24 +206,24 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
 
         self.execute(
             """
-            SELECT `parameter`, `value` 
-            FROM `pool` 
+            SELECT `parameter`, `value`
+            FROM `pool`
             WHERE `parameter` = 'round_best_share'
               OR `parameter` = 'round_shares'
               OR `parameter` = 'bitcoin_difficulty'
               OR `parameter` = 'round_progress'
             """
         )
-            
+
         current_parameters = {}
-        
+
         for data in self.dbc.fetchall():
             current_parameters[data[0]] = data[1]
-        
+
         round_best_share = int(current_parameters['round_best_share'])
         difficulty = float(current_parameters['bitcoin_difficulty'])
         round_shares = int(current_parameters['round_shares']) + total_shares
-            
+
         updates = [
             {
                 "param": "round_shares",
@@ -238,27 +234,27 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 "value": 0 if difficulty == 0 else (round_shares / difficulty) * 100
             }
         ]
-            
+
         if best_diff > round_best_share:
             updates.append({
                 "param": "round_best_share",
                 "value": best_diff
             })
-        
+
         self.executemany(
             """
-            UPDATE `pool` 
+            UPDATE `pool`
             SET `value` = %(value)s
             WHERE `parameter` = %(param)s
             """,
             updates
         )
-    
+
         for k, v in checkin_times.items():
             self.execute(
                 """
                 UPDATE `pool_worker`
-                SET `last_checkin` = FROM_UNIXTIME(%(time)s), 
+                SET `last_checkin` = FROM_UNIXTIME(%(time)s),
                   `total_shares` = `total_shares` + %(shares)s,
                   `total_rejects` = `total_rejects` + %(rejects)s
                 WHERE `username` = %(uname)s
@@ -266,11 +262,10 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 {
                     "time": v["time"],
                     "shares": v["shares"],
-                    "rejects": v["rejects"], 
+                    "rejects": v["rejects"],
                     "uname": k
                 }
             )
-        
         self.dbh.commit()
 
 
@@ -287,19 +282,19 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
             SET `upstream_result` = %(result)s,
               `solution` = %(solution)s
             WHERE `time` = FROM_UNIXTIME(%(time)s)
-              AND `worker` =  (SELECT id 
-                FROM `pool_worker` 
+              AND `worker` =  (SELECT id
+                FROM `pool_worker`
                 WHERE `username` = %(uname)s)
             LIMIT 1
             """,
             {
-                "result": data[5], 
-                "solution": data[2], 
-                "time": data[4], 
+                "result": data[5],
+                "solution": data[2],
+                "time": data[4],
                 "uname": data[0]
             }
         )
-        
+
         if data[5] == True:
             self.execute(
                 """
@@ -319,7 +314,7 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 """
             )
             total_found = int(self.dbc.fetchone()[0]) + 1
-            
+
             self.executemany(
                 """
                 UPDATE `pool`
@@ -349,9 +344,8 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                     }
                 ]
             )
-            
         self.dbh.commit()
-        
+
     def update_pool_info(self, pi):
         self.executemany(
             """
@@ -382,7 +376,7 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 }
             ]
         )
-        
+
         self.dbh.commit()
 
     def get_pool_stats(self):
@@ -391,12 +385,11 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
             SELECT * FROM `pool`
             """
         )
-        
+
         ret = {}
-        
+
         for data in self.dbc.fetchall():
             ret[data[0]] = data[1]
-            
         return ret
 
     def get_workers_stats(self):
@@ -408,9 +401,8 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
             WHERE `id` > 0
             """
         )
-        
         ret = {}
-        
+
         for data in self.dbc.fetchall():
             ret[data[0]] = {
                 "username": data[0],
@@ -422,5 +414,4 @@ class DB_Mysql_Extended(DB_Mysql.DB_Mysql):
                 "alive": True if data[6] is 1 else False,
                 "difficulty": int(data[7])
             }
-            
         return ret

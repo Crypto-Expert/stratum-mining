@@ -17,46 +17,46 @@ class SpeedBuffer:
         self.max = size_max
         self.data = []
         self.cur = 0
-        
+
     def append(self, x):
         self.data.append(x)
         self.cur += 1
         if len(self.data) == self.max:
             self.cur = 0
             self.__class__ = SpeedBufferFull
-            
+
     def avg(self):
         return sum(self.data) / self.cur
-       
+
     def pos(self):
         return self.cur
-           
+
     def clear(self):
         self.data = []
         self.cur = 0
-            
+
     def size(self):
         return self.cur
 
 class SpeedBufferFull:
     def __init__(self, n):
         raise "you should use SpeedBuffer"
-           
-    def append(self, x):                
+
+    def append(self, x):
         self.data[self.cur] = x
         self.cur = (self.cur + 1) % self.max
-            
+
     def avg(self):
         return sum(self.data) / self.max
-           
+
     def pos(self):
         return self.cur
-           
+
     def clear(self):
         self.data = []
         self.cur = 0
         self.__class__ = SpeedBuffer
-            
+
     def size(self):
         return self.max
 
@@ -86,12 +86,12 @@ class BasicShareLimiter(object):
     def submit(self, connection_ref, job_id, current_difficulty, timestamp, worker_name):
         ts = int(timestamp)
 
-        # Init the stats for this worker if it isn't set.        
+        # Init the stats for this worker if it isn't set.
         if worker_name not in self.worker_stats or self.worker_stats[worker_name]['last_ts'] < ts - settings.DB_USERCACHE_TIME :
             self.worker_stats[worker_name] = {'last_rtc': (ts - self.retarget / 2), 'last_ts': ts, 'buffer': SpeedBuffer(self.buffersize) }
             dbi.update_worker_diff(worker_name, settings.POOL_TARGET)
             return
-        
+
         # Standard share update of data
         self.worker_stats[worker_name]['buffer'].append(ts - self.worker_stats[worker_name]['last_ts'])
         self.worker_stats[worker_name]['last_ts'] = ts
@@ -105,7 +105,7 @@ class BasicShareLimiter(object):
         avg = self.worker_stats[worker_name]['buffer'].avg()
         log.debug("Checking Retarget for %s (%i) avg. %i target %i+-%i" % (worker_name, current_difficulty, avg,
                 self.target, self.variance))
-        
+
         if avg < 1:
             log.warning("Reseting avg = 1 since it's SOOO low")
             avg = 1
@@ -133,7 +133,7 @@ class BasicShareLimiter(object):
             # For fractional 0.1 ddiff's just up by 1
             if settings.VDIFF_X2_TYPE:
                 ddiff = 2
-                # Don't go above LITECOIN or VDIFF_MAX_TARGET            
+                # Don't go above LITECOIN or VDIFF_MAX_TARGET
                 if settings.USE_COINDAEMON_DIFF:
                     self.update_litecoin_difficulty()
                     diff_max = min([settings.VDIFF_MAX_TARGET, self.litecoin_diff])
@@ -154,7 +154,7 @@ class BasicShareLimiter(object):
 
                 if (ddiff + current_difficulty) > diff_max:
                     ddiff = diff_max - current_difficulty
-            
+
         else:  # If we are here, then we should not be retargeting.
             return
 
@@ -171,11 +171,9 @@ class BasicShareLimiter(object):
         (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, _) = \
             Interfaces.template_registry.get_last_broadcast_args()
         work_id = Interfaces.worker_manager.register_work(worker_name, job_id, new_diff)
-        
+
         session['difficulty'] = new_diff
         connection_ref().rpc('mining.set_difficulty', [new_diff, ], is_notification=True)
-        log.debug("Notified of New Difficulty")
         connection_ref().rpc('mining.notify', [work_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, False, ], is_notification=True)
-        log.debug("Sent new work")
         dbi.update_worker_diff(worker_name, new_diff)
 

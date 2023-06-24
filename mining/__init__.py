@@ -15,23 +15,19 @@ def setup(on_startup):
     want to use another Worker manager or Share manager,
     you should set proper reference to Interfaces class
     *before* you call setup() in the launcher script.'''
-    
     import lib.settings as settings
-           
+
     # Get logging online as soon as possible
     import lib.logger
     log = lib.logger.get_logger('mining')
-    if settings.CONFIG_VERSION == None:
-	settings.CONFIG_VERSION = 0
-    else: pass
+
     from interfaces import Interfaces
-    
     from lib.block_updater import BlockUpdater
     from lib.template_registry import TemplateRegistry
     from lib.bitcoin_rpc_manager import BitcoinRPCManager
     from lib.block_template import BlockTemplate
     from lib.coinbaser import SimpleCoinbaser
-    
+
     bitcoin_rpc = BitcoinRPCManager()
     # Check litecoind
     #         Check we can connect (sleep)
@@ -63,7 +59,7 @@ def setup(on_startup):
                 if result['version'] >= 1:
                     result = (yield bitcoin_rpc.getdifficulty())
                     if isinstance(result,dict):
-                        if 'proof-of-stake' in result: 
+                        if 'proof-of-stake' in result:
                             settings.COINDAEMON_REWARD = 'POS'
                             log.info("Coin detected as POS")
                             break
@@ -97,32 +93,32 @@ def setup(on_startup):
                     log.error("Failed Connect(HTTP 500 or Invalid JSON), Check Username and Password!")
                     reactor.stop()
         time.sleep(1)  # If we didn't get a result or the connect failed
-        
+
     log.info('Connected to the coind - Begining to load Address and Module Checks!')
     # Start the coinbaser
     coinbaser = SimpleCoinbaser(bitcoin_rpc, getattr(settings, 'CENTRAL_WALLET'))
     (yield coinbaser.on_load)
-    
+
     registry = TemplateRegistry(BlockTemplate,
                                 coinbaser,
                                 bitcoin_rpc,
                                 getattr(settings, 'INSTANCE_ID'),
                                 MiningSubscription.on_template,
                                 Interfaces.share_manager.on_network_block)
-    
+
     # Template registry is the main interface between Stratum service
     # and pool core logic
     Interfaces.set_template_registry(registry)
-    
+
     # Set up polling mechanism for detecting new block on the network
     # This is just failsafe solution when -blocknotify
-    # mechanism is not working properly    
+    # mechanism is not working properly
     BlockUpdater(registry, bitcoin_rpc)
 
     prune_thr = threading.Thread(target=WorkLogPruner, args=(Interfaces.worker_manager.job_log,))
     prune_thr.daemon = True
     prune_thr.start()
-    
+
     log.info("MINING SERVICE IS READY")
     on_startup.callback(True)
 

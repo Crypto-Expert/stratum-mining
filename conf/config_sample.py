@@ -15,7 +15,7 @@ COINDAEMON_TRUSTED_PORT = 8332
 COINDAEMON_TRUSTED_USER = 'user'
 COINDAEMON_TRUSTED_PASSWORD = 'somepassword'
 
-ALGO_NAME = 'lyra2re2_hash'      # Name of module implementing getPoWHash
+ALGO_NAME = 'SHA256'      # Name of module implementing getPoWHash
 COINDAEMON_TX = False         # For Coins which support TX Messages please enter yes in the TX selection
 COINDAEMON_HAS_SEGWIT = False
 #CUSTOM_HEADER =  "000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"

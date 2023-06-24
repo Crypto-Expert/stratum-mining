@@ -17,9 +17,8 @@ from lib.bitcoin_rpc import BitcoinRPC
 
 
 class BitcoinRPCManager(object):
-    
+
     def __init__(self):
-        log.debug("Got to Bitcoin RPC Manager")
         self.conns = {}
         self.conns[0] = BitcoinRPC(settings.COINDAEMON_TRUSTED_HOST,
                                  settings.COINDAEMON_TRUSTED_PORT,
@@ -53,24 +52,24 @@ class BitcoinRPCManager(object):
     def check_height(self):
         while True:
             try:
-                resp = (yield self.conns[self.curr_conn]._call('getinfo', []))
+                resp = (yield self.conns[self.curr_conn]._call('getblockcount', []))
                 break
             except:
                 log.error("Check Height -- Pool %i Down!" % (self.curr_conn) )
                 self.next_connection()
-        curr_height = json.loads(resp)['result']['blocks']
+        curr_height = json.loads(resp)['result']
         log.debug("Check Height -- Current Pool %i : %i" % (self.curr_conn,curr_height) )
         for i in self.conns:
             if i == self.curr_conn:
                 continue
 
             try:
-                resp = (yield self.conns[i]._call('getinfo', []))
+                resp = (yield self.conns[i]._call('getblockcount', []))
             except:
                 log.error("Check Height -- Pool %i Down!" % (i,) )
                 continue
 
-            height = json.loads(resp)['result']['blocks']
+            height = json.loads(resp)['result']
             log.debug("Check Height -- Pool %i : %i" % (i,height) )
             if height > curr_height:
                 self.curr_conn = i
@@ -110,7 +109,7 @@ class BitcoinRPCManager(object):
                 return self.conns[self.curr_conn].getinfo()
             except:
                 self.next_connection()
-    
+
     def getblocktemplate(self):
         while True:
             try:
@@ -125,7 +124,7 @@ class BitcoinRPCManager(object):
                 return self.conns[self.curr_conn].prevhash()
             except:
                 self.next_connection()
-        
+
     def validateaddress(self, address):
         while True:
             try:

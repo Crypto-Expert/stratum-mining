@@ -1,5 +1,4 @@
 # This File is used to create a list of requirements needed for testing stratum-mining or to create a clone install
-MySQL-python==1.2.3
 Twisted==12.0.0
 argparse==1.2.1
 autobahn==0.6.5

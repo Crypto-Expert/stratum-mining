@@ -6,6 +6,8 @@ This is a implementation of stratum-mining for most coins. It is compatible with
 The goal is to make a reliable stratum mining server for a wide range of coins unlike other forks where the code is limited to specific algorithm's. Over time I will develop this to be more feature rich and very stable. If you would like to see a feature please file a feature request. 
 
 **NOTE:** This fork is still in development. Many features may be broken. Please report any broken features or issues.
+Users wanting to pay for professional setup can hire me here:
+https://www.fiverr.com/ahmedbodi/setup-a-cryptocurrency-mining-pool
 
 # Features
 

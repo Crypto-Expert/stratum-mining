@@ -17,7 +17,7 @@ class DBInterface():
 
     def init_main(self):
         self.dbi.check_tables()
- 
+
         self.q = Queue.Queue()
         self.queueclock = None
 
@@ -41,29 +41,23 @@ class DBInterface():
 
     def connectDB(self):
         if settings.DATABASE_DRIVER == "sqlite":
-            log.debug('DB_Sqlite INIT')
             import DB_Sqlite
             return DB_Sqlite.DB_Sqlite()
         elif settings.DATABASE_DRIVER == "mysql":
              if settings.VARIABLE_DIFF:
-                log.debug("DB_Mysql_Vardiff INIT")
                 import DB_Mysql_Vardiff
                 return DB_Mysql_Vardiff.DB_Mysql_Vardiff()
-             else:  
-                log.debug('DB_Mysql INIT')
+             else:
                 import DB_Mysql
                 return DB_Mysql.DB_Mysql()
         elif settings.DATABASE_DRIVER == "postgresql":
-            log.debug('DB_Postgresql INIT')
             import DB_Postgresql
             return DB_Postgresql.DB_Postgresql()
         elif settings.DATABASE_DRIVER == "none":
-            log.debug('DB_None INIT')
             import DB_None
             return DB_None.DB_None()
         else:
             log.error('Invalid DATABASE_DRIVER -- using NONE')
-            log.debug('DB_None INIT')
             import DB_None
             return DB_None.DB_None()
 
@@ -73,37 +67,29 @@ class DBInterface():
             use_thread = False
         else:
             use_thread = True
-        
+
         if use_thread:
             self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import_thread)
         else:
             self.queueclock = reactor.callLater(settings.DB_LOADER_CHECKTIME , self.run_import)
-    
+
     def run_import_thread(self):
-        log.debug("run_import_thread current size: %d", self.q.qsize())
-        
         if self.q.qsize() >= settings.DB_LOADER_REC_MIN or time.time() >= self.next_force_import_time:  # Don't incur thread overhead if we're not going to run
             reactor.callInThread(self.import_thread)
-                
+
         self.scheduleImport()
 
     def run_import(self):
-        log.debug("DBInterface.run_import called")
-        
         self.do_import(self.dbi, False)
-        
         self.scheduleImport()
-        
+
     def run_import_force(self):
-        log.debug("DBInterface.run_import called")
-        
         self.do_import(self.dbi, True)
-        
         self.scheduleImport()
 
     def import_thread(self):
         # Here we are in the thread.
-        dbi = self.connectDB()        
+        dbi = self.connectDB()
         self.do_import(dbi, False)
         dbi.close()
 
@@ -113,7 +99,7 @@ class DBInterface():
 
     def do_import(self, dbi, force):
         log.debug("DBInterface.do_import called. force: %s, queue size: %s", 'yes' if force == True else 'no', self.q.qsize())
-        
+
         # Flush the whole queue on force
         forcesize = 0
         if force == True:
@@ -122,12 +108,12 @@ class DBInterface():
         # Only run if we have data
         while self.q.empty() == False and (force == True or self.q.qsize() >= settings.DB_LOADER_REC_MIN or time.time() >= self.next_force_import_time or forcesize > 0):
             self.next_force_import_time = time.time() + settings.DB_LOADER_FORCE_TIME
-            
+
             force = False
             # Put together the data we want to import
             sqldata = []
             datacnt = 0
-            
+
             while self.q.empty() == False and datacnt < settings.DB_LOADER_REC_MAX:
                 datacnt += 1
                 data = self.q.get()
@@ -135,7 +121,7 @@ class DBInterface():
                 self.q.task_done()
 
             forcesize -= datacnt
-                
+
             # try to do the import, if we fail, log the error and put the data back in the queue
             try:
                 log.info("Inserting %s Share Records", datacnt)
@@ -169,7 +155,7 @@ class DBInterface():
         if username.count('.') > 1:
             log.info("Username contains multiple . ")
             defer.returnValue(False)
-        
+
         # Force username and password to be strings
         username = str(username)
         password = str(password)
@@ -186,13 +172,13 @@ class DBInterface():
                 self.dbi.insert_worker(uid, username, password)
                 self.cache.set(username, password)
                 defer.returnValue(True)
-        
+
         log.info("Authentication for %s failed" % username)
         defer.returnValue(False)
-    
+
     def list_users(self):
         return self.dbi.list_users()
-    
+
     @defer.inlineCallbacks
     def get_user(self, id):
         log.debug("get_user %s" % id)
@@ -211,15 +197,15 @@ class DBInterface():
             defer.returnValue(True)
         user = yield self.get_user(username)
         defer.returnValue(user is not None)
- 
-    def insert_user(self, username, password):        
+
+    def insert_user(self, username, password):
         return self.dbi.insert_user(username, password)
 
     def delete_user(self, username):
         self.mc.delete(username)
         self.usercache = {}
         return self.dbi.delete_user(username)
-        
+
     def update_user(self, username, password):
         self.mc.delete(username)
         self.mc.set(username, password)
@@ -230,7 +216,7 @@ class DBInterface():
 
     def get_pool_stats(self):
         return self.dbi.get_pool_stats()
-    
+
     def get_workers_stats(self):
         return self.dbi.get_workers_stats()
 
